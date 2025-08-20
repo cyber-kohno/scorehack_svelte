@@ -11,7 +11,9 @@ namespace DesignInitializer {
             { key: '--pitch-item-height', value: `${Layout.pitch.ITEM_HEIGHT}px` },
             { key: '--timeline-header-height', value: `${Layout.timeline.HEADER_HEIGHT}px` },
             { key: '--timeline-pitch-width', value: `${Layout.timeline.PITCH_WIDTH}px` },
-            { key: '--block-height', value: `${Layout.timelineHeader.BLOCK_HEIGHT}px` }
+            { key: '--block-height', value: `${Layout.timelineHeader.BLOCK_HEIGHT}px` },
+            { key: '--outline-header-height', value: `${Layout.outline.HEADER_HEIGHT}px` },
+            { key: '--element-list-height', value: `calc(100% - ${Layout.outline.HEADER_HEIGHT + Layout.outline.FOOTER_HEIGHT}px)` },
         ]);
     }
     export const initVariableProps = (lastStore: StoreProps) => {

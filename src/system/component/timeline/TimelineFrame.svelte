@@ -7,7 +7,9 @@
 <div class="wrap">
   <div class="header">
     <div class="blank"></div>
-    <ChordListFrame />
+    <div class="active">
+      <ChordListFrame />
+    </div>
   </div>
   <div class="main">
     <PitchListFrame />
@@ -22,6 +24,7 @@
     width: calc(100% - var(--outline-width));
     height: 100%;
     background-color: #c6dee1;
+    vertical-align: top;
   }
   .header {
     display: inline-block;
@@ -38,6 +41,14 @@
     width: var(--pitch-width);
     height: 100%;
     background-color: #2fd4f9;
+  }
+  .active {
+    display: inline-block;
+    position: relative;
+    width: calc(100% - var(--pitch-width));
+    height: 100%;
+    overflow: hidden;
+    background-color: aliceblue;
   }
   .main {
     display: inline-block;

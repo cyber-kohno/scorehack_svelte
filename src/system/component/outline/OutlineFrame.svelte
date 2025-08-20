@@ -1,8 +1,13 @@
 <script lang="ts">
   import Layout from "../../const/layout";
+  import ElementCurrentInfo from "./ElementCurrentInfo.svelte";
+  import ElementListFrame from "./ElementListFrame.svelte";
 </script>
 
-<div class="wrap" style:width="{Layout.root.OUTLINE_WIDTH}px"></div>
+<div class="wrap">
+  <ElementCurrentInfo />
+  <ElementListFrame />
+</div>
 
 <style>
   .wrap {
@@ -11,5 +16,6 @@
     width: var(--outline-width);
     height: 100%;
     background-color: #82cce9;
+    vertical-align: top;
   }
 </style>

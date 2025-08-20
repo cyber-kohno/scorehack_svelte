@@ -4,9 +4,12 @@
   import MainFrame from "./system/MainFrame.svelte";
   import store, { createStoreUtil } from "./system/store/store";
   import DesignInitializer from "./system/util/disignInitializer";
+  import useReducerCache from "./system/store/reducer/reducerCache";
 
   onMount(() => {
+    const { calculate } = useReducerCache(createStoreUtil($store));
     DesignInitializer.initConstProps();
+    calculate();
   });
 
   $: {

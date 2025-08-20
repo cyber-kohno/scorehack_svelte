@@ -22,6 +22,7 @@
     width: var(--pitch-width);
     height: 100%;
     overflow: hidden;
+    vertical-align: top;
   }
   .item {
     display: inline-block;

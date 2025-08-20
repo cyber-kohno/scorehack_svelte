@@ -55,6 +55,7 @@ const useReducerOutline = (storeUtil: StoreUtil) => {
         const length = lastStore.data.elements.length;
         const next = focus + val;
         if (next >= 0 && next <= length - 1) lastStore.control.outline.focus = next;
+        commit();
     };
 
     const renameSectionData = (value: string) => {
