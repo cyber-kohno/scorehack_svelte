@@ -2,12 +2,12 @@
   import RootHeader from "./component/header/RootHeader.svelte";
   import OutlineFrame from "./component/outline/OutlineFrame.svelte";
   import TimelineFrame from "./component/timeline/TimelineFrame.svelte";
-  import Layout from "./const/layout";
+
 </script>
 
 <div class="wrap">
   <RootHeader />
-  <div class="main" style:height="calc(100% - {Layout.root.HEADER}px)">
+  <div class="main">
     <OutlineFrame />
     <TimelineFrame />
   </div>
@@ -26,6 +26,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
+    height: calc(100% - var(--root-header-height));
     background-color: #aced09;
   }
 </style>

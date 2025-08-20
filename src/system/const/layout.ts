@@ -1,7 +1,7 @@
 namespace Layout {
 
     export const root = {
-        HEADER: 40,
+        HEADER_HEIGHT: 40,
         OUTLINE_WIDTH: 210,
     }
     export const timelineHeader = {

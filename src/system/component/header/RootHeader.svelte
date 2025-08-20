@@ -1,11 +1,13 @@
 <script lang="ts">
-  import Layout from "../../const/layout";
+  import store from "../../store/store";
   import ModeSwitch from "./ModeSwitch.svelte";
+
+  $: mode = $store.control.mode;
 </script>
 
-<div class="wrap" style:height="{Layout.root.HEADER}px">
-    <ModeSwitch name="Harmonize" isActive={true}/>
-    <ModeSwitch name="Melody" isActive={false}/>
+<div class="wrap">
+  <ModeSwitch name="Harmonize" isActive={mode === "harmonize"} />
+  <ModeSwitch name="Melody" isActive={mode === "melody"} />
 </div>
 
 <style>
@@ -13,6 +15,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
+    height: var(--root-header-height);
     background-color: #a2b7c4;
   }
 </style>
