@@ -1,13 +1,13 @@
 namespace StoreRef {
 
     export type Props = {
-        grid?: HTMLDivElement;
-        header?: HTMLDivElement;
-        pitch?: HTMLDivElement;
-        outline?: HTMLDivElement;
-        terminal?: HTMLDivElement;
+        grid?: HTMLElement ;
+        header?: HTMLElement  ;
+        pitch?: HTMLElement ;
+        outline?: HTMLElement ;
+        terminal?: HTMLElement ;
 
-        elementRefs: { seq: number, ref: HTMLDivElement }[];
+        elementRefs: { seq: number, ref: HTMLElement  }[];
     }
 
     export const INITIAL: Props = {

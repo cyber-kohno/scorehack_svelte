@@ -1,0 +1,134 @@
+<script lang="ts">
+  import store from "../../../store/store";
+  import MusicTheory from "../../../util/musicTheory";
+
+  type Diff = {
+    prev: string;
+    next: string;
+  };
+  $: [chordList, changeList] = (() => {
+    const chordList: {
+      x: number;
+      time: number;
+    }[] = [];
+    const changeList: {
+      x: number;
+      section?: string;
+      modulate?: Diff;
+      tempo?: Diff;
+    }[] = [];
+    $store.cache.chordCaches.forEach((chordCache) => {
+      const x = chordCache.viewPosLeft;
+      chordList.push({
+        x,
+        time: chordCache.startTime,
+      });
+
+      const section = chordCache.sectionStart;
+      const modulateCache = chordCache.modulate;
+      const tempoCache = chordCache.tempo;
+      if (
+        section != undefined ||
+        modulateCache != undefined ||
+        tempoCache != undefined
+      ) {
+        let modulate: Diff | undefined = undefined;
+        let tempo: Diff | undefined = undefined;
+        if (modulateCache != undefined) {
+          modulate = {
+            prev: MusicTheory.getScaleName(modulateCache.prev),
+            next: MusicTheory.getScaleName(modulateCache.next),
+          };
+        } else if (tempoCache != undefined) {
+          tempo = {
+            prev: tempoCache.prev.toString(),
+            next: tempoCache.next.toString(),
+          };
+        }
+        changeList.push({
+          x,
+          section,
+          modulate,
+          tempo,
+        });
+      }
+    });
+    // console.log(list.length);
+    return [chordList, changeList];
+  })();
+
+  const formatNumber = (num: number, decimalPlaces: number) => {
+    // toFixedで指定した桁数にフォーマット
+    const formattedNumber = num.toFixed(decimalPlaces);
+
+    // parseFloatを使って余分な0を削除し、フォーマットを保つ
+    return parseFloat(formattedNumber).toString();
+  };
+</script>
+
+<div class="wrap">
+  {#each chordList as chord}
+    <div class="chord" style:left="{chord.x}px" style:top="0">
+      <div class="time">{formatNumber(chord.time * 0.001, 2)}s</div>
+    </div>
+  {/each}
+
+  {#each changeList as change}
+    <div class="chord" style:left=" {change.x}px" style:top="20px">
+      {#if change.section != undefined}
+        <div class="section">
+          {`${change.section}`}
+        </div>
+      {/if}
+      {#if change.modulate != undefined}
+        <div class="scale">
+          {`${change.modulate.prev} → ${change.modulate.next}`}
+        </div>
+      {/if}
+      {#if change.tempo != undefined}
+        <div class="scale">
+          {`${change.tempo.prev} → ${change.tempo.next}`}
+        </div>
+      {/if}
+    </div>
+  {/each}
+</div>
+
+<style>
+  .wrap {
+    display: inline-block;
+    position: relative;
+    background-color: rgba(45, 62, 90, 0.419);
+    min-width: 100%;
+    width: var(--beat-sum);
+    height: var(--info-height);
+  }
+
+  .chord {
+    display: inline-block;
+    position: absolute;
+    height: 100%;
+    /* border: 1px solid #aaaaaa; */
+    /* box-sizing: border-box; */
+    * {
+      display: inline-block;
+      position: relative;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 0 2px;
+      box-sizing: border-box;
+    }
+  }
+  .time {
+    color: rgb(255, 255, 255);
+    /* background-color: rgba(255, 255, 255, 0.18); */
+  }
+  .section {
+    color: rgb(250, 241, 145);
+    /* background-color: rgba(127, 255, 212, 0.18); */
+  }
+  .scale {
+    color: rgb(0, 231, 231);
+    background-color: rgba(127, 255, 212, 0.18);
+  }
+</style>

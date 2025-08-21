@@ -12,6 +12,8 @@
     calculate();
   });
 
+  $: isStandby = $store.cache.elementCaches.length === 0;
+
   $: {
     const { controlKeyDown, controlKeyUp } = useInputRoot(
       createStoreUtil($store)
@@ -24,5 +26,7 @@
 </script>
 
 <main>
-  <MainFrame />
+  {#if !isStandby}
+    <MainFrame />
+  {/if}
 </main>

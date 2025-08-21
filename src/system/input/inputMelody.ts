@@ -45,6 +45,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         note.pitch = temp;
         playSF(note.pitch);
         adjustGridScrollYFromCursor(note);
+        commit();
     }
 
     const control = (eventKey: string) => {
@@ -86,6 +87,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 reducerOutline.syncChordSeqFromNote(cursor);
                 adjustOutlineScroll();
                 reducerMelody.judgeOverlap();
+                commit();
             }
             switch (eventKey) {
                 case 'ArrowLeft': moveCursor(-1); break;
