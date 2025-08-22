@@ -7,14 +7,14 @@
   import PitchListFrame from "./pitch/PitchListFrame.svelte";
   import store from "../../store/store";
 
-  let ref: HTMLElement | undefined = undefined;
-  onMount(() => ($store.ref.header = ref));
+  // let ref: HTMLElement | undefined = undefined;
+  // onMount(() => ($store.ref.header = ref));
 </script>
 
 <div class="wrap">
   <div class="header">
     <div class="blank"></div>
-    <div class="active" bind:this={ref}>
+    <div class="active" bind:this={$store.ref.header}>
       <ChordListFrame />
       <ProgressInfo />
       <BeatMeasureFrame />

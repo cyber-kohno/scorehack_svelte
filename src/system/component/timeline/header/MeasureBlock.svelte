@@ -15,6 +15,7 @@
   $: width = baseCache.lengthBeat * beatWidth;
 
   $: memoriList = (() => {
+    // console.log(baseCache);
     const list: {
       x: number;
       width: number;

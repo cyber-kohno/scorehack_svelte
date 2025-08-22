@@ -1,8 +1,6 @@
-import type { StoreProps, StoreUtil } from "../store";
+import type { StoreProps } from "../store";
 
-const useReducerRoot = (storeUtil: StoreUtil) => {
-
-    const {lastStore, commit} = storeUtil;
+const useReducerRoot = (lastStore: StoreProps) => {
 
     // const reducerMelody = useReducerMelody();
 
@@ -15,7 +13,6 @@ const useReducerRoot = (storeUtil: StoreUtil) => {
     type InputKey = keyof StoreProps['input'];
     const setInputHold = (key: InputKey, isDown: boolean) => {
         lastStore.input[key] = isDown;
-        commit();
     }
 
     const hasHold = () => {

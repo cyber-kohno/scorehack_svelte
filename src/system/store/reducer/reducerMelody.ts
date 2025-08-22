@@ -1,15 +1,13 @@
 import SoundFont, { type InstrumentName } from "soundfont-player";
 import StoreMelody from "../props/storeMelody";
 import useReducerOutline from "./reducerOutline";
-import type { StoreUtil } from "../store";
+import type { StoreProps, StoreUtil } from "../store";
 import useReducerRef from "./reducerRef";
 
-const useReducerMelody = (storeUtil: StoreUtil) => {
+const useReducerMelody = (lastStore: StoreProps) => {
 
-    const { lastStore, commit } = storeUtil;
-
-    const { syncChordSeqFromNote } = useReducerOutline(storeUtil);
-    const { adjustGridScrollXFromNote } = useReducerRef(storeUtil);
+    const { syncChordSeqFromNote } = useReducerOutline(lastStore);
+    const { adjustGridScrollXFromNote } = useReducerRef(lastStore);
 
     const syncCursorFromElementSeq = () => {
         const focus = lastStore.control.outline.focus;

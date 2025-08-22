@@ -4,8 +4,8 @@
   import MusicTheory from "../../../util/musicTheory";
   import store from "../../../store/store";
 
-  let ref: HTMLElement | undefined = undefined;
-  onMount(() => ($store.ref.pitch = ref));
+  // let ref: HTMLElement | undefined = undefined;
+  // onMount(() => ($store.ref.pitch = ref));
 
   const pitchNames = [...Array(Layout.pitch.NUM).keys()]
     .map((v) => MusicTheory.getPitchKey(v).reverse().join(""))
@@ -13,7 +13,7 @@
     .reverse();
 </script>
 
-<div class="wrap" bind:this={ref}>
+<div class="wrap" bind:this={$store.ref.pitch}>
   {#each pitchNames as pitch}
     <div class="item">{pitch}</div>
   {/each}

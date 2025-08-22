@@ -9,9 +9,9 @@ import MusicTheory from "../util/musicTheory";
 const useInputOutline = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
 
-    const reducerOutline = useReducerOutline(storeUtil);
-    const reducerCache = useReducerCache(storeUtil);
-    const reducerRef = useReducerRef(storeUtil);
+    const reducerOutline = useReducerOutline(lastStore);
+    const reducerCache = useReducerCache(lastStore);
+    const reducerRef = useReducerRef(lastStore);
 
     const control = (eventKey: string) => {
 
@@ -26,6 +26,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                     data
                 });
                 reducerCache.calculate();
+                commit();
             } break;
             case 's': {
                 const data: StoreOutline.DataSection = {
@@ -36,6 +37,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                     data
                 });
                 reducerCache.calculate();
+                commit();
             } break;
             case 'm': {
                 const data: StoreOutline.DataModulate = {
@@ -47,6 +49,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                     data
                 });
                 reducerCache.calculate();
+                commit();
             } break;
             case 'Delete': {
                 reducerOutline.removeCurElement();
@@ -57,12 +60,13 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 reducerOutline.moveFocus(-1);
                 reducerRef.adjustGridScrollXFromOutline();
                 reducerRef.adjustOutlineScroll();
+                commit();
             } break;
             case 'ArrowDown': {
                 reducerOutline.moveFocus(1);
                 reducerRef.adjustGridScrollXFromOutline();
                 reducerRef.adjustOutlineScroll();
-
+                commit();
             } break;
             case '1':
             case '2':
@@ -80,6 +84,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                     chordData.degree = diatonic;
                     reducerOutline.setChordData(chordData);
                     reducerCache.calculate();
+                    commit();
                 }
             } break;
         }
@@ -132,6 +137,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                         // reducerOutline.setChordData(chordData);
                         reducerCache.calculate();
                         reducerRef.adjustGridScrollXFromOutline();
+                        commit();
                     }
                     switch (eventKey) {
                         case 'ArrowLeft': modBeat(-1); break;
@@ -160,6 +166,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                     reducerCache.calculate();
                     reducerRef.adjustGridScrollXFromOutline();
                 }
+                commit();
             }
             switch (eventKey) {
                 case 'ArrowLeft': modEat(-1); break;

@@ -1,8 +1,8 @@
 <script lang="ts">
   import useReducerCache from "../../../store/reducer/reducerCache";
-  import store, { createStoreUtil } from "../../../store/store";
+  import store from "../../../store/store";
 
-  $: reduerCache = useReducerCache(createStoreUtil($store));
+  $: reduerCache = useReducerCache($store);
 
   $: values = reduerCache.getFocusInfo();
 </script>

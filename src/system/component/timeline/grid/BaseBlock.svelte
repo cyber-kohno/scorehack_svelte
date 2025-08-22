@@ -7,13 +7,13 @@
   type PitchType = "tonic" | "other" | "scale";
 
   export let baseCache: StoreCache.BaseCache;
-  export let index: number;
 
   $: beatDiv16Count = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
 
   $: beatWidth = $store.env.beatWidth * (beatDiv16Count / 4);
 
   $: measureLines = (() => {
+    console.log(baseCache);
     const list: {
       left: number;
       width: number;
@@ -75,7 +75,7 @@
     <div
       class="line"
       style:left="{line.left}px"
-      style:width="{line.width}px;"
+      style:width="{line.width}px"
     ></div>
   {/each}
 
@@ -84,7 +84,7 @@
     <div
       class="pitch"
       style:top="{pitch.top}px"
-      style:background-color="{getRecordColor(pitch.type)};"
+      style:background-color="{getRecordColor(pitch.type)}"
     ></div>
   {/each}
 </div>
@@ -95,7 +95,7 @@
     position: absolute;
     z-index: 1;
 
-    background-color: #509784;
+    background-color: #3e97ce86;
     top: 0;
     height: var(--pitch-frame-height);
   }

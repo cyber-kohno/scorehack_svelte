@@ -1,11 +1,9 @@
 import StoreMelody from "../props/storeMelody";
 import type StoreOutline from "../props/storeOutline";
-import type { StoreUtil } from "../store";
+import type { StoreProps } from "../store";
 
 
-const useReducerOutline = (storeUtil: StoreUtil) => {
-
-    const { lastStore, commit } = storeUtil;
+const useReducerOutline = (lastStore: StoreProps) => {
 
     const getCurrentElement = () => {
         const elementIndex = lastStore.control.outline.focus;
@@ -55,7 +53,6 @@ const useReducerOutline = (storeUtil: StoreUtil) => {
         const length = lastStore.data.elements.length;
         const next = focus + val;
         if (next >= 0 && next <= length - 1) lastStore.control.outline.focus = next;
-        commit();
     };
 
     const renameSectionData = (value: string) => {

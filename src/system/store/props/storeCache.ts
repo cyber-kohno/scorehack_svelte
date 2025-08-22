@@ -33,6 +33,7 @@ namespace StoreCache {
     }
 
     export interface ChordCache extends BeatRange {
+        chordSeq: number;
         elementSeq: number;
 
         beat: BeatCache;

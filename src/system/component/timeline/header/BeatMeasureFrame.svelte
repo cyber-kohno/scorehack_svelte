@@ -1,10 +1,12 @@
 <script lang="ts">
   import store from "../../../store/store";
   import MeasureBlock from "./MeasureBlock.svelte";
+
+  $: baseCaches = $store.cache.baseCaches;
 </script>
 
 <div class="wrap">
-  {#each $store.cache.baseCaches as baseCache}
+  {#each baseCaches as baseCache}
     <MeasureBlock {baseCache} />
   {/each}
 </div>

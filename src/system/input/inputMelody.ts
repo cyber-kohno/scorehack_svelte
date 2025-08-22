@@ -12,12 +12,11 @@ import MusicTheory from "../util/musicTheory";
 const useInputMelody = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
 
-    const { adjustGridScrollYFromCursor, adjustGridScrollXFromNote, adjustOutlineScroll } = useReducerRef(storeUtil);
-    const reducerOutline = useReducerOutline(storeUtil);
-    const reducerCache = useReducerCache(storeUtil);
-    const reducerMelody = useReducerMelody(storeUtil);
+    const { adjustGridScrollYFromCursor, adjustGridScrollXFromNote, adjustOutlineScroll } = useReducerRef(lastStore);
+    const reducerOutline = useReducerOutline(lastStore);
+    const reducerCache = useReducerCache(lastStore);
+    const reducerMelody = useReducerMelody(lastStore);
     // const { isPreview } = useAccessorPreview(lastStore);
-
 
     const melody = lastStore.control.melody;
     const playSF = (pitchIndex: number) => {
@@ -61,6 +60,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             cursor.pos = Math.floor(cursor.pos * rate);
 
             reducerMelody.judgeOverlap();
+            commit();
         }
 
         // if (isPreview()) {
@@ -103,6 +103,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                         reducerMelody.addNoteFromCursor();
                         // reducerMelody.judgeOverlap();
                         reducerMelody.focusInNearNote(1);
+                        commit();
                     }
                 } break;
             }
@@ -114,6 +115,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 const note = getFocusNote();
                 reducerOutline.syncChordSeqFromNote(note);
                 adjustGridScrollXFromNote(note);
+                commit();
             }
             const changeFocusNoteDiv = (div: number) => {
                 const note = getFocusNote();
@@ -125,6 +127,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 note.norm.div = div;
                 note.pos = tempPos;
                 note.len = tempLen;
+                commit();
             }
             switch (eventKey) {
                 case 'ArrowLeft': moveFocus(-1); break;
@@ -136,6 +139,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     reducerMelody.focusOutNoteSide(getFocusNote(), -1);
                     notes.splice(focus, 1);
                     melody.isOverlap = false;
+                    commit();
                 } break;
                 case 'a': {
                     const tempNote: StoreMelody.Note = JSON.parse(JSON.stringify(getFocusNote()));
@@ -148,6 +152,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                         const note = getFocusNote();
                         reducerOutline.syncChordSeqFromNote(note);
                         adjustGridScrollXFromNote(note);
+                        commit();
                     }
                 } break;
                 case '1': { changeFocusNoteDiv(4); } break;
@@ -180,15 +185,24 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         }
         callbacks.holdE = () => {
 
+            const focusInNearNote = (dir: -1 | 1) => {
+                reducerMelody.focusInNearNote(dir);
+                commit();
+            }
+            const focusOutNoteSide = (dir: -1 | 1) => {
+                reducerMelody.focusOutNoteSide(getFocusNote(), dir);
+                commit();
+            }
+
             if (isCursor()) {
                 switch (eventKey) {
-                    case 'ArrowLeft': reducerMelody.focusInNearNote(-1); break;
-                    case 'ArrowRight': reducerMelody.focusInNearNote(1); break;
+                    case 'ArrowLeft': focusInNearNote(-1); break;
+                    case 'ArrowRight': focusInNearNote(1); break;
                 }
             } else {
                 switch (eventKey) {
-                    case 'ArrowLeft': reducerMelody.focusOutNoteSide(getFocusNote(), -1); break;
-                    case 'ArrowRight': reducerMelody.focusOutNoteSide(getFocusNote(), 1); break;
+                    case 'ArrowLeft': focusOutNoteSide(-1); break;
+                    case 'ArrowRight': focusOutNoteSide(1); break;
                 }
             }
         }
@@ -207,6 +221,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     if (matchNode != undefined) return;
                     note.len = temp.len;
                     adjustGridScrollXFromNote(note);
+                    commit();
                 }
                 switch (eventKey) {
                     case 'ArrowLeft': scaleNote(getFocusNote(), -1); break;
@@ -229,6 +244,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     note.pos = temp.pos;
                     reducerOutline.syncChordSeqFromNote(note);
                     adjustGridScrollXFromNote(note);
+                    commit();
                 }
                 switch (eventKey) {
                     case 'ArrowLeft': moveNote(getFocusNote(), -1); break;
@@ -254,6 +270,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 note.pitch = temp;
                 playSF(note.pitch);
                 adjustGridScrollYFromCursor(note);
+                commit();
             }
             if (isCursor()) {
                 switch (eventKey) {
@@ -279,6 +296,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
                 if (cursor.norm.tuplets === 1) cursor.norm.tuplets = undefined;
                 reducerMelody.judgeOverlap();
+                commit();
             }
             if (isCursor()) {
                 switch (eventKey) {

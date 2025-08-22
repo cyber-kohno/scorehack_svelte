@@ -1,10 +1,8 @@
 import Layout from "../../const/layout";
 import StoreMelody from "../props/storeMelody";
-import type { StoreUtil } from "../store";
+import type { StoreProps, StoreUtil } from "../store";
 
-const useReducerRef = (storeUtil: StoreUtil) => {
-
-    const { lastStore, commit } = storeUtil;
+const useReducerRef = (lastStore: StoreProps) => {
 
     const adjustGridScrollX = (getLeft: ((width: number) => number)) => {
 

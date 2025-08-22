@@ -7,9 +7,11 @@
   import useReducerCache from "./system/store/reducer/reducerCache";
 
   onMount(() => {
-    const { calculate } = useReducerCache(createStoreUtil($store));
+    const {lastStore, commit} = createStoreUtil($store);
+    const { calculate } = useReducerCache(lastStore);
     DesignInitializer.initConstProps();
     calculate();
+    commit();
   });
 
   $: isStandby = $store.cache.elementCaches.length === 0;

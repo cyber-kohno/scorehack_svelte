@@ -6,12 +6,16 @@
   export let data!: StoreOutline.DataChord;
   export let elementSeq!: number;
 
-  $: chordSeq = $store.cache.chordCaches.findIndex(
-    (c) => c.elementSeq == elementSeq
-  );
+  $: chordCaches = $store.cache.chordCaches;
+
+  $: chordSeq = chordCaches.findIndex((c) => c.elementSeq == elementSeq);
+
+  $: {
+    console.log(chordSeq);
+  }
 
   $: beatTips = ((): number[] => {
-    const chordInfo = $store.cache.chordCaches[chordSeq];
+    const chordInfo = chordCaches[chordSeq];
     const eatHead = -chordInfo.beat.eatHead;
     const eatTail = chordInfo.beat.eatTail;
     const beat = chordInfo.beat.num;

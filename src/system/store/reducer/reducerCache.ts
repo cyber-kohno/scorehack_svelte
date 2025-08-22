@@ -1,11 +1,9 @@
 import MusicTheory from "../../util/musicTheory";
 import type StoreCache from "../props/storeCache";
 import type StoreOutline from "../props/storeOutline";
-import type { StoreUtil } from "../store";
+import type { StoreProps } from "../store";
 
-const useReducerCache = (storeUtil: StoreUtil) => {
-
-    const { lastStore, commit } = storeUtil;
+const useReducerCache = (lastStore: StoreProps) => {
 
     const cache = lastStore.cache;
 
@@ -140,6 +138,7 @@ const useReducerCache = (storeUtil: StoreUtil) => {
                         eatTail: data.eat,
                     }
                     const chordCache: StoreCache.ChordCache = {
+                        chordSeq: lastChordSeq,
                         elementSeq: i,
                         beat,
                         compiledChord,
@@ -267,7 +266,6 @@ const useReducerCache = (storeUtil: StoreUtil) => {
                 }
             }
             elementCaches.push(elementIndex);
-            commit();
         });
 
         // 後処理

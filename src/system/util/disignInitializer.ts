@@ -19,6 +19,8 @@ namespace DesignInitializer {
             { key: '--info-height', value: `${Layout.timelineHeader.INFO_HEIGHT}px` },
             { key: '--outline-header-height', value: `${OL.HEADER_HEIGHT}px` },
             { key: '--element-list-height', value: `calc(100% - ${OL.HEADER_HEIGHT + OL.FOOTER_HEIGHT}px)` },
+
+            { key: '--factor-center', value: `${Math.floor((PL.ITEM_HEIGHT + 4) / 2)}px` },
         ]);
     }
     export const initVariableProps = (lastStore: StoreProps) => {

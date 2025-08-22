@@ -1,6 +1,6 @@
 import type StoreInput from "../store/props/storeInput";
 import useReducerRoot from "../store/reducer/reducerRoot";
-import type { StoreUtil } from "../store/store";
+import type { StoreProps, StoreUtil } from "../store/store";
 import store from "../store/store";
 import useInputMelody from "./inputMelody";
 import useInputOutline from "./inputOutline";
@@ -8,7 +8,7 @@ import useInputOutline from "./inputOutline";
 
 const useInputRoot = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
-    const reducerRoot = useReducerRoot(storeUtil);
+    const reducerRoot = useReducerRoot(lastStore);
     // const reducerTerminal = useReducerTerminal();
 
     const inputOutline = useInputOutline(storeUtil);
@@ -18,7 +18,11 @@ const useInputRoot = (storeUtil: StoreUtil) => {
     const control = lastStore.control;
 
     const controlKeyHold = (eventKey: string, isDown: boolean) => {
-        const set = reducerRoot.setInputHold;
+
+        const set = (key: keyof StoreProps['input'], isDown: boolean) => {
+            reducerRoot.setInputHold(key, isDown);
+            commit();
+        };
         switch (eventKey) {
             case "e": { set('holdE', isDown) } break;
             case "d": { set('holdD', isDown) } break;

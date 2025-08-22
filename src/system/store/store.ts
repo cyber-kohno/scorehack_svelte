@@ -45,7 +45,8 @@ export type StoreUtil = {
 export const createStoreUtil = (lastStore: StoreProps): StoreUtil => {
     return {
         lastStore,
-        commit: () => store.set({ ...lastStore }),
+        // commit: () => store.set({ ...lastStore }),
+        commit: () => store.set(lastStore),
     };
 }
 

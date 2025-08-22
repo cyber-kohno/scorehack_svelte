@@ -37,8 +37,9 @@
     class="flag"
     style:top="{Layout.getPitchTop(noteInfo.pitch)}px"
     style:width="{width - 10}px"
-    data-isOverlap={noteInfo.isOverlap}
-  ></div>
+  >
+    <div class="info">{unit}</div>
+  </div>
 </div>
 
 <style>
@@ -52,9 +53,6 @@
     background-color: #22ff00;
     opacity: 0.7;
   }
-  .line[data-isOverlap="true"] {
-    background-color: #ff0000;
-  }
   .flag {
     display: inline-block;
     position: absolute;
@@ -63,5 +61,25 @@
     height: var(--pitch-item-height);
     background-color: #22ff00;
     border-radius: 0 2px 2px 0;
+  }
+
+  .info {
+    display: inline-block;
+    position: absolute;
+    left: 4px;
+    top: -28px;
+    z-index: 2;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    white-space: nowrap;
+    color: #22ff00;
+  }
+  .line[data-isOverlap="true"],
+  .line[data-isOverlap="true"] .flag {
+    background-color: #ff0000; /* lineとflagの背景色 */
+  }
+  .line[data-isOverlap="true"] .flag .info {
+    color: #ff0000; /* info要素の文字色の条件付きスタイル */
   }
 </style>
