@@ -3,6 +3,7 @@
   import Layout from "../../../const/layout";
   import MusicTheory from "../../../util/musicTheory";
   import store from "../../../store/store";
+  import PitchFocus from "./PitchFocus.svelte";
 
   // let ref: HTMLElement | undefined = undefined;
   // onMount(() => ($store.ref.pitch = ref));
@@ -17,6 +18,7 @@
   {#each pitchNames as pitch}
     <div class="item">{pitch}</div>
   {/each}
+  <PitchFocus />
 </div>
 
 <style>

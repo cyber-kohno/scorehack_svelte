@@ -16,6 +16,9 @@
 
   $: memoriList = (() => {
     // console.log(baseCache);
+    const ref = $store.ref.header;
+    if (ref == undefined) return [];
+    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
     const list: {
       x: number;
       width: number;
@@ -27,6 +30,8 @@
     for (let i = 0; i < num; i++) {
       let bar: number | undefined = undefined;
       const x = (beatWidth / beatDiv16Count) * i;
+
+      if (Math.abs(scrollPos - x) > 500) continue;
       let width = 1;
       let height = 10;
       let isBar = false;

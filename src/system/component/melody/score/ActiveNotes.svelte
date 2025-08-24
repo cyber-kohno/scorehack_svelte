@@ -9,8 +9,15 @@
     ] as StoreMelody.ScoreTrack;
     return layer.notes;
   })();
+
+  $: scrollPos = (() => {
+    const ref = $store.ref.grid;
+    if (ref == undefined) return [];
+    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
+    return scrollPos;
+  })();
 </script>
 
 {#each notes as note, index}
-  <Note {note} {index} />
+  <Note {note} {index} {scrollPos} />
 {/each}

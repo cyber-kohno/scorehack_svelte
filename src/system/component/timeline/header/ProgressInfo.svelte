@@ -7,6 +7,9 @@
     next: string;
   };
   $: [chordList, changeList] = (() => {
+    const ref = $store.ref.header;
+    if (ref == undefined) return [[], []];
+    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
     const chordList: {
       x: number;
       time: number;
@@ -19,6 +22,7 @@
     }[] = [];
     $store.cache.chordCaches.forEach((chordCache) => {
       const x = chordCache.viewPosLeft;
+      if(Math.abs(scrollPos - (x + chordCache.viewPosWidth / 2)) > 500) return 1;
       chordList.push({
         x,
         time: chordCache.startTime,

@@ -73,12 +73,12 @@ namespace StoreOutline {
         }
         list.push({ type: 'init', data: initData });
         list.push({ type: 'section', data: firstSectionData });
-        const dataChord: StoreOutline.DataChord = {
+        const dataChord = (): StoreOutline.DataChord => ({
             beat: 4,
             eat: 0
-        }
+        });
         for (let i = 0; i < 200; i++) {
-            list.push({ type: 'chord', data: dataChord });
+            list.push({ type: 'chord', data: dataChord() });
         }
         return list;
     }

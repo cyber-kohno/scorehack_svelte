@@ -5,6 +5,16 @@
 
   $: focus = $store.control.outline.focus;
 
+  $: chordCaches = (() => {
+    const ref = $store.ref.header;
+    if (ref == undefined) return [];
+    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
+
+    return $store.cache.chordCaches.filter(
+      (c) => Math.abs(scrollPos - (c.viewPosLeft + c.viewPosWidth / 2)) < 500
+    );
+  })();
+
   const getChordName = (cache: StoreCache.ChordCache) => {
     const compiledChord = cache.compiledChord;
     if (compiledChord == undefined) return "-";
@@ -13,7 +23,7 @@
 </script>
 
 <div class="wrap">
-  {#each $store.cache.chordCaches as chordCache}
+  {#each chordCaches as chordCache}
     <div
       class="item"
       style:left="{chordCache.viewPosLeft}px"

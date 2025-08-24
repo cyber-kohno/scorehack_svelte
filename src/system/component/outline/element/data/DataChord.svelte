@@ -10,10 +10,6 @@
 
   $: chordSeq = chordCaches.findIndex((c) => c.elementSeq == elementSeq);
 
-  $: {
-    console.log(chordSeq);
-  }
-
   $: beatTips = ((): number[] => {
     const chordInfo = chordCaches[chordSeq];
     const eatHead = -chordInfo.beat.eatHead;

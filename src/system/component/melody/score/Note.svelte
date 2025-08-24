@@ -8,6 +8,7 @@
 
   export let note: StoreMelody.Note;
   export let index: number;
+  export let scrollPos;
 
   $: tonality = (() => {
     const { getBaseFromBeat } = useReducerCache($store);
@@ -15,17 +16,14 @@
       .tonality;
   })();
 
-  $: noteInfo = (() => {
-    const beatSize = StoreMelody.calcBeat(note.norm, note.pos);
-    const left = $store.env.beatWidth * beatSize;
-    const pitchIndex = note.pitch;
+  $: [isDisp, left, scaleIndex, width] = (() => {
+    const beatSide = StoreMelody.calcBeatSide(note);
+    const [left, width] = [beatSide.pos, beatSide.len].map(
+      (v) => v * $store.env.beatWidth
+    );
+    const isDisp = Math.abs(scrollPos - (left + width / 2)) <= 500;
     const scaleIndex = (note.pitch - tonality.key12) % 12;
-    return { left, pitchIndex, scaleIndex };
-  })();
-
-  $: width = (() => {
-    const beatSize = StoreMelody.calcBeat(note.norm, note.len);
-    return $store.env.beatWidth * beatSize;
+    return [isDisp, left, scaleIndex, width];
   })();
 
   $: isScale = (() => {
@@ -50,20 +48,24 @@
   };
 </script>
 
-<div
-  class="column"
-  style:left="{noteInfo.left}px"
-  style:width="{width}px"
-  style:background-color={getOperationHighlight()}
->
+{#if isDisp}
   <div
-    class="frame"
-    style:top="{Layout.getPitchTop(note.pitch) - 2}px"
-    data-isScale={isScale}
+    class="column"
+    style:left="{left}px"
+    style:width="{width}px"
+    style:background-color={getOperationHighlight()}
   >
-    <Factors {note} />
+    <div
+      class="frame"
+      style:top="{Layout.getPitchTop(note.pitch) - 2}px"
+      data-isScale={isScale}
+    >
+      <div class="protrusion"></div>
+      <div class="info">{scaleIndex}</div>
+      <Factors {note} />
+    </div>
   </div>
-</div>
+{/if}
 
 <style>
   .column {
@@ -90,5 +92,28 @@
   }
   .frame[data-isScale="false"] {
     background: linear-gradient(to bottom, #eacb1dd5, #e8e1adac, #eacb1dd5);
+  }
+
+  .protrusion {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: -10px;
+    height: 10px;
+    width: 8px;
+    background-color: #ff00007a;
+    /* background-color: ${props => props.isScale ? '#1ccf49d5' : '#eacb1dd5'}; */
+    border-radius: 4px 4px 0 0;
+  }
+
+  .info {
+    display: inline-block;
+    position: absolute;
+    z-index: 4;
+    color: rgba(156, 0, 0, 0.726);
+    left: 0;
+    top: 32px;
+    font-size: 12px;
+    font-weight: 600;
   }
 </style>
