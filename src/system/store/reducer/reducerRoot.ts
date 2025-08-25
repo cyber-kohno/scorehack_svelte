@@ -1,13 +1,14 @@
 import type { StoreProps } from "../store";
+import useReducerMelody from "./reducerMelody";
 
 const useReducerRoot = (lastStore: StoreProps) => {
 
-    // const reducerMelody = useReducerMelody();
+    const reducerMelody = useReducerMelody(lastStore);
 
     const switchMode = () => {
-        // const mode = store.control.mode;
-        // if (mode === 'harmonize') reducerMelody.syncCursorFromElementSeq();
-        // store.control.mode = mode === 'harmonize' ? 'melody' : 'harmonize';
+        const mode = lastStore.control.mode;
+        if (mode === 'harmonize') reducerMelody.syncCursorFromElementSeq();
+        lastStore.control.mode = mode === 'harmonize' ? 'melody' : 'harmonize';
     };
 
     type InputKey = keyof StoreProps['input'];

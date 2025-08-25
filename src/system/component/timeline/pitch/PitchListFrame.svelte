@@ -12,13 +12,17 @@
     .map((v) => MusicTheory.getPitchKey(v).reverse().join(""))
     // 音程は低い順に下から並べる
     .reverse();
+
+  $: isMelodyMode = $store.control.mode === "melody";
 </script>
 
 <div class="wrap" bind:this={$store.ref.pitch}>
   {#each pitchNames as pitch}
     <div class="item">{pitch}</div>
   {/each}
-  <PitchFocus />
+  {#if isMelodyMode}
+    <PitchFocus />
+  {/if}
 </div>
 
 <style>

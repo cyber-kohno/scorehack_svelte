@@ -65,9 +65,12 @@ namespace StoreCache {
     };
 
     export interface ElementCache extends StoreOutline.Element {
+        elementSeq: number;
         chordSeq: number;
         baseSeq: number;
         lastChordSeq: number;
+
+        outlineTop: number;
     }
 }
 export default StoreCache;

@@ -5,12 +5,14 @@ namespace StoreData {
 
     export type Props = {
         elements: StoreOutline.Element[];
-        tracks: StoreMelody.Track[];
+        scoreTracks: StoreMelody.ScoreTrack[];
+        audioTracks: StoreMelody.AudioTrack[];
     }
 
     export const INITIAL: Props = {
         elements: StoreOutline.getInitialElements(),
-        tracks: [StoreMelody.createMelodyTrackScoreInitial()],
+        scoreTracks: [StoreMelody.createMelodyTrackScoreInitial()],
+        audioTracks: []
     }
 }
 export default StoreData;

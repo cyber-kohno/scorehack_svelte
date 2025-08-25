@@ -1,15 +1,15 @@
 <script lang="ts">
+  import type StoreRef from "../../../store/props/storeRef";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
+
+  export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   type Diff = {
     prev: string;
     next: string;
   };
   $: [chordList, changeList] = (() => {
-    const ref = $store.ref.header;
-    if (ref == undefined) return [[], []];
-    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
     const chordList: {
       x: number;
       time: number;
@@ -22,7 +22,12 @@
     }[] = [];
     $store.cache.chordCaches.forEach((chordCache) => {
       const x = chordCache.viewPosLeft;
-      if(Math.abs(scrollPos - (x + chordCache.viewPosWidth / 2)) > 500) return 1;
+      if (
+        Math.abs(
+          scrollLimitProps.scrollMiddleX - (x + chordCache.viewPosWidth / 2)
+        ) > scrollLimitProps.rectWidth
+      )
+        return 1;
       chordList.push({
         x,
         time: chordCache.startTime,

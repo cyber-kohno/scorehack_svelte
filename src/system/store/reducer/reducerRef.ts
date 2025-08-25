@@ -63,27 +63,24 @@ const useReducerRef = (lastStore: StoreProps) => {
 
     const adjustOutlineScroll = () => {
 
-        if (lastStore.ref.outline) {
-            const ref = lastStore.ref.outline;
-            const { height: outlineHeight, top: outlineTop } = ref.getBoundingClientRect();
-
-            const focus = lastStore.control.outline.focus;
-            let top = 0;
-            const elementRef = lastStore.ref.elementRefs.find(r => r.seq === focus);
-            if (elementRef) {
-                const rect = elementRef.ref.getBoundingClientRect();
-                // console.log(`seq:${elementRef.seq}, y:${rect.y}`);
-                const domY = rect.y - outlineTop + ref.scrollTop;
-                top = domY + rect.height / 2 - outlineHeight / 2;
+        const ref = lastStore.ref.outline;
+        if (ref) {
+            const { height: outlineHeight } = ref.getBoundingClientRect();
+            const elementSeq = lastStore.control.outline.focus;
+            const element = lastStore.cache.elementCaches[elementSeq];
+            const elementRef = lastStore.ref.elementRefs.find(r => r.seq === elementSeq);
+            if (elementRef != undefined) {
+                const height = elementRef.ref.getBoundingClientRect().height;
+                const top = element.outlineTop - outlineHeight / 2 + height / 2;
+                ref.scrollTo({ top, behavior: "smooth" });
             }
-            ref.scrollTo({ top, behavior: "smooth" });
         }
     }
     const adjustTerminalScroll = () => {
 
         if (lastStore.ref.terminal) {
             const ref = lastStore.ref.terminal;
-            const {height: frameHeight} = ref.getBoundingClientRect();
+            const { height: frameHeight } = ref.getBoundingClientRect();
 
             const top = ref.scrollHeight - frameHeight / 2;
             ref.scrollTo({ top, behavior: "smooth" });

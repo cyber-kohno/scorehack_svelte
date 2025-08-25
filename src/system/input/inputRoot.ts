@@ -1,19 +1,21 @@
 import type StoreInput from "../store/props/storeInput";
+import StoreTerminal from "../store/props/storeTerminal";
 import useReducerRoot from "../store/reducer/reducerRoot";
+import useReducerTermianl from "../store/reducer/reducerTerminal";
 import type { StoreProps, StoreUtil } from "../store/store";
-import store from "../store/store";
 import useInputMelody from "./inputMelody";
 import useInputOutline from "./inputOutline";
+import useInputTerminal from "./inputTerminal";
 
 
 const useInputRoot = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
     const reducerRoot = useReducerRoot(lastStore);
-    // const reducerTerminal = useReducerTerminal();
+    const reducerTerminal = useReducerTermianl(lastStore);
 
     const inputOutline = useInputOutline(storeUtil);
     const inputMelody = useInputMelody(storeUtil);
-    // const inputTerminal = useInputTerminal();
+    const inputTerminal = useInputTerminal(storeUtil);
 
     const control = lastStore.control;
 
@@ -51,27 +53,24 @@ const useInputRoot = (storeUtil: StoreUtil) => {
     const controlKeyDown = (e: KeyboardEvent) => {
         const eventKey = e.key;
 
-        switch (eventKey) {
-            case 'r': {
-                control.mode = control.mode === 'harmonize' ? 'melody' : 'harmonize';
-                commit();
-            } break;
-        }
-
         const mode = control.mode;
 
         if (!reducerRoot.hasHold()) {
-            // if (reducerTerminal.isUse()) {
-            //     inputTerminal.control(eventKey);
-            //     return;
-            // }
+            if (reducerTerminal.isUse()) {
+                inputTerminal.control(eventKey);
+                commit();
+                return;
+            }
 
             switch (eventKey) {
                 case 'r': {
                     reducerRoot.switchMode();
+                    commit();
                 } break;
                 case 't': {
                     // reducerTerminal.open();
+                    lastStore.terminal = StoreTerminal.createInitial();
+                    commit();
                 } break;
             }
 

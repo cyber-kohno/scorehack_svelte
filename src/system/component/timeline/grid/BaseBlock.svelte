@@ -1,12 +1,14 @@
 <script lang="ts">
   import Layout from "../../../const/layout";
   import type StoreCache from "../../../store/props/storeCache";
+  import StoreRef from "../../../store/props/storeRef";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
 
   type PitchType = "tonic" | "other" | "scale";
 
   export let baseCache: StoreCache.BaseCache;
+  export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   $: beatDiv16Count = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
 
@@ -14,9 +16,6 @@
 
   $: measureLines = (() => {
     // console.log(baseCache);
-    const ref = $store.ref.grid;
-    if (ref == undefined) return [];
-    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
     const list: {
       left: number;
       width: number;
@@ -24,7 +23,11 @@
     const cnt = baseCache.lengthBeat * beatDiv16Count;
     for (let i = 0; i < cnt; i++) {
       const left = (beatWidth / beatDiv16Count) * i;
-      if (Math.abs(scrollPos - left) > 500) continue;
+      if (
+        Math.abs(scrollLimitProps.scrollMiddleX - left) >
+        scrollLimitProps.rectWidth
+      )
+        continue;
       let width = 1;
       if (i % beatDiv16Count === 0) width = 3;
       list.push({ left, width });
@@ -33,9 +36,6 @@
   })();
 
   $: pitchItems = (() => {
-    const ref = $store.ref.grid;
-    if (ref == undefined) return [];
-    const scrollPos = ref.scrollTop + ref.getBoundingClientRect().height / 2;
     const pitchNum = Layout.pitch.NUM;
     const tonality = baseCache.scoreBase.tonality;
     const scaleList =
@@ -48,7 +48,11 @@
     }[] = [];
     for (let i = 0; i < pitchNum; i++) {
       const top = i * Layout.pitch.ITEM_HEIGHT;
-      if (Math.abs(scrollPos - top) > 500) continue;
+      if (
+        Math.abs(scrollLimitProps.scrollMiddleY - top) >
+        scrollLimitProps.rectHeight
+      )
+        continue;
       let type: PitchType = "other";
 
       const pitchIndex = pitchNum - 1 - i;

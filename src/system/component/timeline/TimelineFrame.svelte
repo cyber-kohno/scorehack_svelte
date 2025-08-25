@@ -1,23 +1,24 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import GridRootFrame from "./grid/GridRootFrame.svelte";
   import BeatMeasureFrame from "./header/BeatMeasureFrame.svelte";
   import ChordListFrame from "./header/ChordListFrame.svelte";
   import ProgressInfo from "./header/ProgressInfo.svelte";
   import PitchListFrame from "./pitch/PitchListFrame.svelte";
   import store from "../../store/store";
+  import StoreRef from "../../store/props/storeRef";
 
-  // let ref: HTMLElement | undefined = undefined;
-  // onMount(() => ($store.ref.header = ref));
+  $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.header);
 </script>
 
 <div class="wrap">
   <div class="header">
     <div class="blank"></div>
     <div class="active" bind:this={$store.ref.header}>
-      <ChordListFrame />
-      <ProgressInfo />
-      <BeatMeasureFrame />
+      {#if scrollLimitProps != null}
+        <ChordListFrame {scrollLimitProps} />
+        <ProgressInfo {scrollLimitProps} />
+        <BeatMeasureFrame {scrollLimitProps} />
+      {/if}
     </div>
   </div>
   <div class="main">

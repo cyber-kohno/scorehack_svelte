@@ -1,10 +1,11 @@
 <script lang="ts">
   import type StoreCache from "../../../store/props/storeCache";
+  import type StoreRef from "../../../store/props/storeRef";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
-  import MeasureFocus from "./MeasureFocus.svelte";
 
   export let baseCache!: StoreCache.BaseCache;
+  export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   $: barDivBeatCnt = MusicTheory.getBarDivBeatCount(baseCache.scoreBase.ts);
   $: beatDiv16Count = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
@@ -16,9 +17,6 @@
 
   $: memoriList = (() => {
     // console.log(baseCache);
-    const ref = $store.ref.header;
-    if (ref == undefined) return [];
-    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
     const list: {
       x: number;
       width: number;
@@ -31,7 +29,11 @@
       let bar: number | undefined = undefined;
       const x = (beatWidth / beatDiv16Count) * i;
 
-      if (Math.abs(scrollPos - x) > 500) continue;
+      if (
+        Math.abs(scrollLimitProps.scrollMiddleX - x) >
+        scrollLimitProps.rectWidth
+      )
+        continue;
       let width = 1;
       let height = 10;
       let isBar = false;
@@ -67,7 +69,6 @@
       {/if}
     </div>
   {/each}
-  <MeasureFocus />
 </div>
 
 <style>

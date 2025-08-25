@@ -20,7 +20,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
     const melody = lastStore.control.melody;
     const playSF = (pitchIndex: number) => {
-        const track = lastStore.data.tracks[melody.trackIndex] as StoreMelody.ScoreTrack;
+        const track = lastStore.data.scoreTracks[melody.trackIndex] as StoreMelody.ScoreTrack;
         if (track.soundFont === '') return;
         const sfName = StorePreview.validateSFName(track.soundFont);
         const sf = lastStore.preview.sfItems.find(item => item.instrumentName === sfName);

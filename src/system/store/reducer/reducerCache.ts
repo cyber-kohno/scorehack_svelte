@@ -1,6 +1,6 @@
 import MusicTheory from "../../util/musicTheory";
 import type StoreCache from "../props/storeCache";
-import type StoreOutline from "../props/storeOutline";
+import StoreOutline from "../props/storeOutline";
 import type { StoreProps } from "../store";
 
 const useReducerCache = (lastStore: StoreProps) => {
@@ -40,18 +40,22 @@ const useReducerCache = (lastStore: StoreProps) => {
 
         let viewPos = 0;
 
+        let outlineTop = StoreOutline.MARGIN_HEAD;
+
         let sectionStart: string | undefined = undefined;
         let lastModulate: StoreCache.ModulateCahce | undefined = undefined;
         let lastTempo: StoreCache.TempoCahce | undefined = undefined;
 
         elements.forEach((el, i) => {
-            // let beatSize = 0;
-            const elementIndex: StoreCache.ElementCache = {
+
+            const elementCache: StoreCache.ElementCache = {
                 // データ要素をディープコピー
                 ...JSON.parse(JSON.stringify(el)),
                 baseSeq: baseCaches.length,
+                elementSeq: i,
                 chordSeq: -1,
-                lastChordSeq
+                lastChordSeq,
+                outlineTop
             }
 
             // let modulateCache: StoreCache.ModulateCahce | undefined = undefined;
@@ -65,7 +69,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                 case 'chord': {
 
                     lastChordSeq++;
-                    elementIndex.lastChordSeq = lastChordSeq;
+                    elementCache.lastChordSeq = lastChordSeq;
 
                     const data = el.data as StoreOutline.DataChord;
 
@@ -167,7 +171,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                     lastTempo = undefined;
 
                     chordCaches.push(chordCache);
-                    elementIndex.chordSeq = lastChordSeq;
+                    elementCache.chordSeq = lastChordSeq;
 
                     // 経過時間の加算
                     elapsedTime += sustainTime;
@@ -265,7 +269,12 @@ const useReducerCache = (lastStore: StoreProps) => {
                     }
                 }
             }
-            elementCaches.push(elementIndex);
+
+            outlineTop += StoreOutline.getElementViewHeight(el);
+            outlineTop += 2; // 上下のボーダー
+            outlineTop += StoreOutline.MARGIN_HEAD;
+
+            elementCaches.push(elementCache);
         });
 
         // 後処理

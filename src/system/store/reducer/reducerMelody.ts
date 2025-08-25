@@ -33,8 +33,7 @@ const useReducerMelody = (lastStore: StoreProps) => {
     }
     const addNote = (note: StoreMelody.Note) => {
         const melody = lastStore.control.melody;
-        const layer = lastStore.data.tracks[melody.trackIndex];
-        if (layer.method !== 'score') throw new Error();
+        const layer = lastStore.data.scoreTracks[melody.trackIndex];
         const notes = (layer as StoreMelody.ScoreTrack).notes;
         notes.push(note);
         notes.sort((n1, n2) => {
@@ -49,19 +48,16 @@ const useReducerMelody = (lastStore: StoreProps) => {
 
     const judgeOverlap = () => {
         const melody = lastStore.control.melody;
-        const layer = getCurrScoreTrack();
-        const notes = (layer as StoreMelody.ScoreTrack).notes;
-        const overlapNote = notes.find(n => {
+        const track = getCurrScoreTrack();
+        const overlapNote = track.notes.find(n => {
             return StoreMelody.judgeOverlapNotes(n, melody.cursor);
         });
         melody.isOverlap = overlapNote != undefined;
     }
-    
+
     const getCurrScoreTrack = () => {
         const melody = lastStore.control.melody;
-        const layer = lastStore.data.tracks[melody.trackIndex];
-        if (layer.method !== 'score') throw new Error();
-        return layer as StoreMelody.ScoreTrack;
+        return lastStore.data.scoreTracks[melody.trackIndex];
     }
 
     const focusInNearNote = (dir: -1 | 1) => {
@@ -100,27 +96,18 @@ const useReducerMelody = (lastStore: StoreProps) => {
         adjustGridScrollXFromNote(cursor);
     }
 
-    const changeScoreTrack = (trackIndex: number) => {
+    const changeScoreTrack = (nextIndex: number) => {
         const melody = lastStore.control.melody;
-        const tracks = lastStore.data.tracks;
-        if (tracks[trackIndex] == undefined) throw new Error();
+        const tracks = lastStore.data.scoreTracks;
+        if (tracks[nextIndex] == undefined) throw new Error();
         const prevIndex = melody.trackIndex;
         const prevTrack = tracks[prevIndex];
-        const nextTrack = tracks[trackIndex];
-        if (nextTrack.method !== 'score') throw new Error();
 
-        melody.trackIndex = trackIndex;
-        if (prevTrack.method === 'score' && melody.focus !== -1) {
-            const notes = (prevTrack as StoreMelody.ScoreTrack).notes;
-            focusOutNoteSide(notes[melody.focus], -1);
-        }
+        const notes = prevTrack.notes;
+        focusOutNoteSide(notes[melody.focus], -1);
     }
     const setSFCurTrack = (sfName: InstrumentName) => {
-        const melody = lastStore.control.melody;
-        const track = lastStore.data.tracks[melody.trackIndex] as StoreMelody.ScoreTrack;
-        if (track == undefined) throw new Error();
-        if (track.method !== 'score') throw new Error();
-
+        const track = getCurrScoreTrack();
         track.soundFont = sfName;
 
         const items = lastStore.preview.sfItems;

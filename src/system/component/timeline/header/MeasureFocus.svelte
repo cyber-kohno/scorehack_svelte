@@ -16,6 +16,7 @@
     const side = StoreMelody.calcBeatSide(note);
     return [side.pos, side.len].map((v) => v * $store.env.beatWidth);
   })();
+  $: isMelodyMode = $store.control.mode === "melody";
 </script>
 
 <div
@@ -24,11 +25,9 @@
   style:width="{values.width}px"
   data-isChord={values.isChord}
 ></div>
-<div
-  class="note"
-  style:left="{noteLeft}px"
-  style:width="{noteWidth}px"
-></div>
+{#if isMelodyMode}
+  <div class="note" style:left="{noteLeft}px" style:width="{noteWidth}px"></div>
+{/if}
 
 <style>
   .chord {

@@ -2,12 +2,20 @@
   import store from "../../store/store";
   import Element from "./element/Element.svelte";
 
-  $: elements = $store.cache.elementCaches;
+  $: elements = (() => {
+    const elementSeq = $store.control.outline.focus;
+    const elementCaches = $store.cache.elementCaches;
+    let start = elementSeq - 12;
+    if (start < 0) start = 0;
+    let end = elementSeq + 12;
+    if (end > elementCaches.length) end = elementCaches.length;
+    return elementCaches.slice(start, end);
+  })();
 </script>
 
-<div class="wrap">
-  {#each elements as element, index}
-    <Element {element} {index} />
+<div class="wrap" bind:this={$store.ref.outline}>
+  {#each elements as element}
+    <Element {element} />
   {/each}
 </div>
 

@@ -1,40 +1,46 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import store, { createStoreUtil } from "../../../store/store";
+  import store from "../../../store/store";
   import BaseBlock from "./BaseBlock.svelte";
   import ChordBlock from "./ChordBlock.svelte";
   import GridFocus from "./GridFocus.svelte";
   import Cursor from "../../melody/Cursor.svelte";
-  import OtherTrackNotes from "../../melody/score/OtherTrackNotes.svelte";
-  import ActiveNotes from "../../melody/score/ActiveNotes.svelte";
+  import StoreRef from "../../../store/props/storeRef";
+  import TimelineLastMargin from "../TimelineLastMargin.svelte";
+  import ShadeTracks from "../../melody/score/ShadeTracks.svelte";
+  import ActiveTrack from "../../melody/score/ActiveTrack.svelte";
 
   $: cache = $store.cache;
 
-  // let ref: HTMLElement | undefined = undefined;
-  // onMount(() => ($store.ref.grid = ref));
+  $: isMelodyMode = (() => $store.control.mode === "melody")();
 
   $: isDispCursor =
-    $store.control.mode === "melody" &&
+    isMelodyMode &&
     $store.preview.timerKeys == null &&
     $store.control.melody.focus === -1;
-  $: isMelodyMode = (() => $store.control.mode === "melody")();
+
+  $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
 </script>
 
 <div class="wrap" bind:this={$store.ref.grid}>
-  {#each cache.baseCaches as baseCache}
-    <BaseBlock {baseCache}/>
-  {/each}
-  {#each cache.chordCaches as chordCache, index}
-    <ChordBlock {chordCache} {index} />
-  {/each}
+  {#if scrollLimitProps != null}
+    {#each cache.baseCaches as baseCache}
+      <BaseBlock {baseCache} {scrollLimitProps} />
+    {/each}
+    {#each cache.chordCaches as chordCache, index}
+      <ChordBlock {chordCache} {index} />
+    {/each}
+    <TimelineLastMargin />
+  {/if}
   <GridFocus />
   {#if isDispCursor}
     <Cursor />
   {/if}
 
   <div class="noteswrap" data-isMelodyMode={isMelodyMode}>
-    <ActiveNotes />
-    <OtherTrackNotes />
+    {#if isMelodyMode}
+      <ActiveTrack />
+    {/if}
+    <ShadeTracks />
   </div>
 </div>
 
@@ -55,6 +61,6 @@
     position: relative;
   }
   .noteswrap[data-isMelodyMode="false"] {
-    opacity: 0.6;
+    opacity: 0.8;
   }
 </style>

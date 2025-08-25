@@ -1,6 +1,7 @@
 <script lang="ts">
   import Layout from "../../../const/layout";
   import StoreMelody from "../../../store/props/storeMelody";
+  import type StoreRef from "../../../store/props/storeRef";
   import useReducerCache from "../../../store/reducer/reducerCache";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
@@ -8,7 +9,7 @@
 
   export let note: StoreMelody.Note;
   export let index: number;
-  export let scrollPos;
+  export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   $: tonality = (() => {
     const { getBaseFromBeat } = useReducerCache($store);
@@ -21,7 +22,9 @@
     const [left, width] = [beatSide.pos, beatSide.len].map(
       (v) => v * $store.env.beatWidth
     );
-    const isDisp = Math.abs(scrollPos - (left + width / 2)) <= 500;
+    const isDisp =
+      Math.abs(scrollLimitProps.scrollMiddleX - (left + width / 2)) <=
+      scrollLimitProps.rectWidth;
     const scaleIndex = (note.pitch - tonality.key12) % 12;
     return [isDisp, left, scaleIndex, width];
   })();
@@ -44,6 +47,7 @@
     else if (input.holdF) return "#232affaa";
     else if (input.holdC) return "#ffd53faa";
     else if (input.holdX) return "#ffa03baa";
+    else if (input.holdShift) return "#ff0000aa";
     return "#ffffff88";
   };
 </script>

@@ -5,10 +5,12 @@ import StoreInput from "./props/storeInput";
 import StorePreview from "./props/storePreview";
 import StoreCache from "./props/storeCache";
 import StoreRef from "./props/storeRef";
+import type StoreTerminal from "./props/storeTerminal";
 
 export type StoreProps = {
 
     control: StoreControl.Props;
+    terminal: null | StoreTerminal.Props;
     data: StoreData.Props;
     input: StoreInput.Props;
     preview: StorePreview.Props;
@@ -24,6 +26,7 @@ export type StoreProps = {
 
 const store = writable<StoreProps>({
     control: StoreControl.INITIAL,
+    terminal: null,
     data: StoreData.INITIAL,
     input: StoreInput.INITIAL,
     preview: StorePreview.INITIAL,

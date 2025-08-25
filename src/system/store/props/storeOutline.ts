@@ -77,10 +77,26 @@ namespace StoreOutline {
             beat: 4,
             eat: 0
         });
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 2; i++) {
             list.push({ type: 'chord', data: dataChord() });
         }
         return list;
+    }
+
+    export const MARGIN_HEAD = 4;
+
+    export const getElementViewHeight = (element: Element) => {
+        switch (element.type) {
+            case 'init': return (30 + 4) * 3;
+            case 'section': return 60;
+            case 'chord': {
+                const data = element.data as DataChord;
+                let ret = 15 + 20 + 30;
+                if (data.degree != undefined) ret += 20;
+                return ret;
+            }
+        }
+        return 0;
     }
 }
 

@@ -1,17 +1,20 @@
 <script lang="ts">
   import type StoreCache from "../../../store/props/storeCache";
+  import type StoreRef from "../../../store/props/storeRef";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
+  import TimelineLastMargin from "../TimelineLastMargin.svelte";
+
+  export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   $: focus = $store.control.outline.focus;
 
   $: chordCaches = (() => {
-    const ref = $store.ref.header;
-    if (ref == undefined) return [];
-    const scrollPos = ref.scrollLeft + ref.getBoundingClientRect().width / 2;
-
     return $store.cache.chordCaches.filter(
-      (c) => Math.abs(scrollPos - (c.viewPosLeft + c.viewPosWidth / 2)) < 500
+      (c) =>
+        Math.abs(
+          scrollLimitProps.scrollMiddleX - (c.viewPosLeft + c.viewPosWidth / 2)
+        ) < scrollLimitProps.rectWidth
     );
   })();
 
@@ -34,6 +37,7 @@
       </div>
     </div>
   {/each}
+  <TimelineLastMargin />
 </div>
 
 <style>

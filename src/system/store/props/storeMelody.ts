@@ -63,13 +63,10 @@ namespace StoreMelody {
         pitch: number;
     }
 
-    export type TrackMethod = 'score' | 'audio';
-
     export interface Track {
         name: string;
         isMute: boolean;
         volume: number;
-        method: TrackMethod;
     }
     export interface ScoreTrack extends Track {
         soundFont: string;
@@ -78,7 +75,6 @@ namespace StoreMelody {
     export const createMelodyTrackScoreInitial = (): ScoreTrack => {
         return {
             name: 'track0',
-            method: 'score',
             volume: 10,
             isMute: false,
             notes: [],

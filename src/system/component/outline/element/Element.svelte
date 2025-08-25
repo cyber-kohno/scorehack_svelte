@@ -9,14 +9,33 @@
   import DataTempo from "./data/DataTempo.svelte";
 
   export let element!: StoreCache.ElementCache;
-  export let index!: number;
+
+  $: index = element.elementSeq;
+
+  let ref: HTMLElement | null = null;
+  $: {
+    if (ref != null) {
+      const refs = $store.ref.elementRefs;
+
+      let instance = refs.find((r) => r.seq === index);
+      if (instance == undefined) {
+        instance = { seq: index, ref };
+        refs.push(instance);
+      } else instance.ref = ref;
+    }
+  }
 
   $: isFocus = $store.control.outline.focus === index;
 
   $: data = element.data;
 </script>
 
-<div class="wrap" data-type={element.type}>
+<div
+  class="wrap"
+  style:top="{element.outlineTop}px"
+  data-type={element.type}
+  bind:this={ref}
+>
   {#if element.type === "init"}
     <DataInit {data} />
   {:else if element.type === "section"}
@@ -35,17 +54,17 @@
 <style>
   .wrap {
     display: inline-block;
-    position: relative;
+    position: absolute;
     /* background-color: rgba(30, 255, 0, 0.119); */
     width: 180px;
     min-height: 60px;
-    margin-top: 4px;
-    margin-left: 25px;
+    /* margin-top: 4px; */
+    left: 25px;
   }
   .wrap[data-type="init"] {
-    margin-left: 4px;
+    left: 4px;
   }
   .wrap[data-type="section"] {
-    margin-left: 10px;
+    left: 10px;
   }
 </style>

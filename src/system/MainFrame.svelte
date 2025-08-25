@@ -1,8 +1,11 @@
 <script lang="ts">
   import RootHeader from "./component/header/RootHeader.svelte";
   import OutlineFrame from "./component/outline/OutlineFrame.svelte";
+  import TerminalFrame from "./component/terminal/TerminalFrame.svelte";
   import TimelineFrame from "./component/timeline/TimelineFrame.svelte";
+  import store from "./store/store";
 
+  $: isDispTerminal = $store.terminal != null;
 </script>
 
 <div class="wrap">
@@ -11,6 +14,9 @@
     <OutlineFrame />
     <TimelineFrame />
   </div>
+  {#if isDispTerminal}
+    <TerminalFrame />
+  {/if}
 </div>
 
 <style>
