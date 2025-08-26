@@ -68,8 +68,7 @@ const useInputRoot = (storeUtil: StoreUtil) => {
                     commit();
                 } break;
                 case 't': {
-                    // reducerTerminal.open();
-                    lastStore.terminal = StoreTerminal.createInitial();
+                    reducerTerminal.open();
                     commit();
                 } break;
             }

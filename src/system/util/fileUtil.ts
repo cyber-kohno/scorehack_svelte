@@ -2,6 +2,9 @@ import MidiWriter from 'midi-writer-js';
 import pako from 'pako';
 import useReducerCache from '../store/reducer/reducerCache';
 import type StoreOutline from '../store/props/storeOutline';
+import type StoreMelody from '../store/props/storeMelody';
+import type StoreData from '../store/props/storeData';
+import type StoreFile from '../store/props/storeFile';
 
 namespace FileUtil {
 
@@ -12,8 +15,8 @@ namespace FileUtil {
         // Define an instrument (optional):
         track.addEvent(new MidiWriter.ProgramChangeEvent({ instrument: 1 }));
 
-        const initData: StoreOutline.DataInit = store.cache.elementCaches[0].data;
-        track.addEvent(new MidiWriter.TempoEvent({ bpm: initData.tempo }));
+        // const initData: StoreOutline.DataInit = store.cache.elementCaches[0].data;
+        // track.addEvent(new MidiWriter.TempoEvent({ bpm: initData.tempo }));
 
         // const timeline = store.timeline;
         // const layer = timeline.layers[timeline.layerIndex] as TimelineStore.MelodyLayerNotes;
@@ -65,12 +68,12 @@ namespace FileUtil {
         extension: string;
     }
 
-    export const saveScoreFile = (props: SaveBase) => {
-        const saveFileStr = getSaveFile();
-        FileUtil.saveFile({ ...props, plainData: saveFileStr, extension: 'rcv1' });
-    }
-    export const saveFile = (props: SaveFile) => {
-        let fileHandle = store.fileHandle.score;
+    // export const saveScoreFile = (props: SaveBase, fileHandle: StoreFile.Props) => {
+    //     const saveFileStr = getSaveFile();
+    //     FileUtil.saveFile({ ...props, plainData: saveFileStr, extension: 'rcv1' }, fileHandle);
+    // }
+
+    export const saveFile = (props: SaveFile, fileHandle: StoreFile.Props) => {
 
         const options: SaveFilePickerOptions = {
             types: [
@@ -82,10 +85,11 @@ namespace FileUtil {
             ],
         };
 
-        if (fileHandle) {
+        if (fileHandle.score) {
+            const storeFileHandle = fileHandle.score;
             (async () => {
                 //ファイルへ書き込むための FileSystemWritableFileStream を作成
-                const writable = await fileHandle.createWritable();
+                const writable = await storeFileHandle.createWritable();
                 //テキストデータの書き込み
                 const text = gZip(props.plainData);
                 await writable.write(text);
@@ -105,7 +109,7 @@ namespace FileUtil {
                     await writable.write(text);
                     //ファイルを閉じる
                     await writable.close();
-                    store.fileHandle.score = handle;
+                    fileHandle.score = handle;
 
                     if (props.successCallback != undefined) props.successCallback();
                     props.update();
@@ -118,33 +122,33 @@ namespace FileUtil {
         }
     }
 
-    const getSaveFile = (): string => {
-        return JSON.stringify(store.data);
+    const getSaveFile = (data: StoreData.Props): string => {
+        return JSON.stringify(data);
     }
 
-    export const loadScoreFile = (update: () => void) => {
-        const options: SaveFilePickerOptions = {
-            types: [
-                {
-                    accept: {
-                        // 'text/plain': [`.${props.extension}`],
-                        'text/plain': [`.rcv1`],
-                    },
-                },
-            ],
-        };
-        (async () => {
-            const [fileHandle] = await window.showOpenFilePicker(options);
-            const file = await fileHandle.getFile();
-            const fileContents = await file.text();
-            store.fileHandle = fileHandle;
-            const text = unZip(fileContents);
-            store.data = JSON.parse(text);
+    // export const loadScoreFile = (update: () => void) => {
+    //     const options: SaveFilePickerOptions = {
+    //         types: [
+    //             {
+    //                 accept: {
+    //                     // 'text/plain': [`.${props.extension}`],
+    //                     'text/plain': [`.rcv1`],
+    //                 },
+    //             },
+    //         ],
+    //     };
+    //     (async () => {
+    //         const [newFileHandle] = await window.showOpenFilePicker(options);
+    //         const file = await newFileHandle.getFile();
+    //         const fileContents = await file.text();
+    //         fileHandle.score = newFileHandle;
+    //         const text = unZip(fileContents);
+    //         store.data = JSON.parse(text);
 
-            useReducerCache().calculate();
-            update();
-        })();
-    }
+    //         useReducerCache().calculate();
+    //         update();
+    //     })();
+    // }
 
 
     /**
@@ -184,7 +188,7 @@ namespace FileUtil {
     }
 
     
-    export const loadMp3 = (layer: StoreMelody.AudioTrack) => {
+    export const loadMp3 = (track: StoreMelody.AudioTrack) => {
         (async () => {
             // ファイルピッカーでMP3ファイルを選択
             const options: OpenFilePickerOptions = {
@@ -203,13 +207,13 @@ namespace FileUtil {
             try {
                 const [fileHandle] = await window.showOpenFilePicker(options);
                 const file = await fileHandle.getFile();
-                layer.fileName = file.name;
+                track.fileName = file.name;
                 // ファイルをArrayBufferとして読み込む
                 const arrayBuffer = await file.arrayBuffer();
 
                 // ArrayBufferをBase64にエンコード
                 const base64String = arrayBufferToBase64(arrayBuffer);
-                layer.source = base64String;
+                track.source = base64String;
 
             } catch (error) {
                 console.error('ファイルの読み込みエラー:', error);

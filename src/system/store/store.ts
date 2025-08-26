@@ -6,6 +6,7 @@ import StorePreview from "./props/storePreview";
 import StoreCache from "./props/storeCache";
 import StoreRef from "./props/storeRef";
 import type StoreTerminal from "./props/storeTerminal";
+import StoreFile from "./props/storeFile";
 
 export type StoreProps = {
 
@@ -19,9 +20,7 @@ export type StoreProps = {
         beatWidth: number;
     },
     ref: StoreRef.Props;
-    fileHandle: {
-        score?: FileSystemFileHandle
-    },
+    fileHandle: StoreFile.Props,
 }
 
 const store = writable<StoreProps>({
@@ -35,9 +34,7 @@ const store = writable<StoreProps>({
         beatWidth: 120
     },
     ref: StoreRef.INITIAL,
-    fileHandle: {
-
-    }
+    fileHandle: StoreFile.INITIAL
 });
 
 export type StoreUtil = {

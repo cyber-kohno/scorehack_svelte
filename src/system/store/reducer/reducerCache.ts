@@ -40,7 +40,7 @@ const useReducerCache = (lastStore: StoreProps) => {
 
         let viewPos = 0;
 
-        let outlineTop = StoreOutline.MARGIN_HEAD;
+        let outlineTailPos = StoreOutline.MARGIN_HEAD;
 
         let sectionStart: string | undefined = undefined;
         let lastModulate: StoreCache.ModulateCahce | undefined = undefined;
@@ -55,7 +55,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                 elementSeq: i,
                 chordSeq: -1,
                 lastChordSeq,
-                outlineTop
+                outlineTop: outlineTailPos
             }
 
             // let modulateCache: StoreCache.ModulateCahce | undefined = undefined;
@@ -270,9 +270,9 @@ const useReducerCache = (lastStore: StoreProps) => {
                 }
             }
 
-            outlineTop += StoreOutline.getElementViewHeight(el);
-            outlineTop += 2; // 上下のボーダー
-            outlineTop += StoreOutline.MARGIN_HEAD;
+            outlineTailPos += StoreOutline.getElementViewHeight(el);
+            outlineTailPos += 2; // 上下のボーダー
+            outlineTailPos += StoreOutline.MARGIN_HEAD;
 
             elementCaches.push(elementCache);
         });
@@ -281,9 +281,9 @@ const useReducerCache = (lastStore: StoreProps) => {
         baseBlock.viewPosWidth = viewPos - baseBlock.viewPosLeft;
         baseCaches.push(baseBlock);
 
-        lastStore.cache.baseCaches = baseCaches;
-        lastStore.cache.chordCaches = chordCaches;
-        lastStore.cache.elementCaches = elementCaches;
+        lastStore.cache = {
+            baseCaches, chordCaches, elementCaches, outlineTailPos
+        }
     };
 
     const getChordInfoFromElementSeq = (elementSeq: number) => {

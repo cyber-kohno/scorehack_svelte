@@ -2,9 +2,11 @@
 import useReducerMelody from "../../store/reducer/reducerMelody";
 import useReducerCache from "../../store/reducer/reducerCache";
 import useReducerRef from "../../store/reducer/reducerRef";
-import { StoreProps } from "../../store/store";
 import MusicTheory from "../musicTheory"; import SoundFont, { instrument, type InstrumentName } from 'soundfont-player';
 import StoreMelody from "../../store/props/storeMelody";
+import StoreCache from "../../store/props/storeCache";
+import FileUtil from "../fileUtil";
+import type { StoreProps } from "../../store/store";
 
 namespace PreviewUtil {
 
@@ -29,6 +31,7 @@ namespace PreviewUtil {
         const { outline, melody } = store.control;
         const { chordCaches, elementCaches } = store.cache;
         const { elements, scoreTracks, audioTracks } = store.data;
+        const baseCaches = store.cache.baseCaches;
         const preview = store.preview;
         const { getChordFromBeat } = useReducerCache(store);
 
@@ -96,7 +99,7 @@ namespace PreviewUtil {
                 });
                 // ノート情報の追加
                 trackScore.notes.forEach(note => {
-                    const playInfo = buildNotePlayer(timelineStart, note, track.volume);
+                    const playInfo = buildNotePlayer(baseCaches, timelineStart, note, track.volume);
                     if (playInfo == null) return 1;
                     notes.push(playInfo);
                 });
@@ -134,7 +137,7 @@ namespace PreviewUtil {
         const getIntervalKeys = () => preview.intervalKeys as number[];
 
         // 開始の拍から時間を取得
-        const startTime = getTimeFromPosBeat(timelineStart);
+        const startTime = getTimeFromPosBeat(baseCaches, timelineStart);
 
         const endTime = (() => {
             const tailChordCache = chordCaches[chordCaches.length - 1];
@@ -177,7 +180,7 @@ namespace PreviewUtil {
             // console.log(cache.progressTime);
             preview.lastTime = nowTime;
 
-            const posBeat = getPosBeatFromTime(preview.progressTime);
+            const posBeat = getPosBeatFromTime(baseCaches, preview.progressTime);
             // console.log(`posBeat: ${posBeat}`);
             preview.linePos = posBeat;
 
@@ -194,15 +197,15 @@ namespace PreviewUtil {
 
         // 全てのノートを再生し終えたら止める
         const endKey = setTimeout(() => {
-            stopTest();
+            stopTest(store);
         }, autoStopTime);
         preview.timerKeys.push(endKey);
     }
 
-    const getTimeFromPosBeat = (left: number) => {
+    const getTimeFromPosBeat = (baseCaches: StoreCache.BaseCache[], left: number) => {
 
         let time = 0;
-        store.cache.baseCaches.some(base => {
+        baseCaches.some(base => {
             const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
             const beatRate = beatDiv16Cnt / 4;
             let tempo = base.scoreBase.tempo * beatRate;
@@ -220,13 +223,14 @@ namespace PreviewUtil {
 
     /**
      * 経過時間から拍ポジションを取得して返す。
+     * @param baseCaches
      * @param time 経過時間
      * @returns 拍ポジション
      */
-    const getPosBeatFromTime = (time: number) => {
+    const getPosBeatFromTime = (baseCaches: StoreCache.BaseCache[], time: number) => {
 
         let beat = 0;
-        store.cache.baseCaches.some(base => {
+        baseCaches.some(base => {
             const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
             const beatRate = beatDiv16Cnt / 4;
             let tempo = base.scoreBase.tempo * beatRate;
@@ -247,14 +251,18 @@ namespace PreviewUtil {
         return beat;
     }
 
-
     /**
      * 鳴らすノーツの情報を返す。
+     * @param baseCaches
      * @param currentLeft 
      * @param note 
      * @returns 
      */
-    export const buildNotePlayer = (currentLeft: number, note: StoreMelody.Note, velocity: number): NotePlayer | null => {
+    export const buildNotePlayer = (
+        baseCaches: StoreCache.BaseCache[],
+        currentLeft: number, note: StoreMelody.Note,
+        velocity: number
+    ): NotePlayer | null => {
 
         const side = StoreMelody.calcBeatSide(note);
         const [left, right] = [side.pos, side.pos + side.len];
@@ -274,8 +282,7 @@ namespace PreviewUtil {
         let sustainMs = 0;
 
         // ベースリストを走査する
-        // console.log(cache.baseBlocks);
-        const baseCaches = store.cache.baseCaches;
+        // console.log(baseBlocks);
         baseCaches.some(base => {
             /** ベースの終端 */
             const end = base.startBeatNote + base.lengthBeatNote;
@@ -334,8 +341,8 @@ namespace PreviewUtil {
         }
     }
 
-    export const stopTest = () => {
-        const { syncCursorFromElementSeq } = useReducerMelody();
+    export const stopTest = (store: StoreProps) => {
+        const { syncCursorFromElementSeq } = useReducerMelody(store);
 
         const preview = store.preview;
         if (preview.timerKeys == null) throw new Error('cache.timerKeysがnullであってはならない。');

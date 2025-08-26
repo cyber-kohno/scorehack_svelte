@@ -37,10 +37,17 @@ const useReducerTermianl = (lastStore: StoreProps) => {
     const close = () => {
         lastStore.terminal = null;
     };
+
+        const getTerminal = () => {
+        const terminal = lastStore.terminal;
+        if (terminal == null) throw new Error('terminalがnullでgetTerminalを呼び出さしてはならない。');
+        return terminal;
+    }
     return {
         isUse,
         open,
         close,
+        getTerminal,
     };
 }
 

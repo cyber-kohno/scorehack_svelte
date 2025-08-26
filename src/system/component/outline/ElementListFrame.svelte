@@ -17,6 +17,11 @@
   {#each elements as element}
     <Element {element} />
   {/each}
+  <div
+    class="lastmargin"
+    style:top="{$store.cache.outlineTailPos}px"
+    style:height="{300}px"
+  ></div>
 </div>
 
 <style>
@@ -27,5 +32,14 @@
     height: var(--element-list-height);
     background-color: #ced3e9;
     overflow: hidden;
+  }
+
+  .lastmargin {
+    display: inline-block;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    width: 100%;
+    /* background-color: aliceblue; */
   }
 </style>

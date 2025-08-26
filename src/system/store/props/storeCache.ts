@@ -8,12 +8,15 @@ namespace StoreCache {
 
         chordCaches: ChordCache[];
         elementCaches: ElementCache[];
+
+        outlineTailPos: number;
     }
 
     export const INITIAL: Props = {
         baseCaches: [],
         chordCaches: [],
-        elementCaches: []
+        elementCaches: [],
+        outlineTailPos: 0
     };
 
     export interface BeatRange {
