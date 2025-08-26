@@ -74,6 +74,7 @@ namespace StoreCache {
         lastChordSeq: number;
 
         outlineTop: number;
+        curSection: string;
     }
 }
 export default StoreCache;

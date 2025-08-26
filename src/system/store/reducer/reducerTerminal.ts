@@ -38,16 +38,46 @@ const useReducerTermianl = (lastStore: StoreProps) => {
         lastStore.terminal = null;
     };
 
-        const getTerminal = () => {
+    const getTerminal = () => {
         const terminal = lastStore.terminal;
         if (terminal == null) throw new Error('terminalがnullでgetTerminalを呼び出さしてはならない。');
         return terminal;
+    }
+
+
+    const setCommand = (callback: (prev: string) => string) => {
+        const terminal = getTerminal();
+        terminal.command = callback(terminal.command);
+    }
+
+    const splitCommand = () => {
+        const terminal = getTerminal();
+        const splitStringAtIndex = (str: string, index: number) => {
+            return [str.slice(0, index), str.slice(index)];
+        }
+        return splitStringAtIndex(terminal.command, terminal.focus);
+    }
+
+    const removeCommand = () => {
+        const [left, right] = splitCommand();
+        if (left.length === 0) return;
+        setCommand(() => left.slice(0, left.length - 1) + right);
+        getTerminal().focus--;
+    }
+
+    const insertCommand = (key: string) => {
+        const [left, right] = splitCommand();
+        setCommand(() => left + key + right);
+        getTerminal().focus += key.length;
     }
     return {
         isUse,
         open,
         close,
         getTerminal,
+        splitCommand,
+        removeCommand,
+        insertCommand,
     };
 }
 

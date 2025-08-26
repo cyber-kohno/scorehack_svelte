@@ -2,9 +2,8 @@
   import useReducerCache from "../../store/reducer/reducerCache";
   import store from "../../store/store";
 
-  const accessorCache = useReducerCache($store);
-
   $: [left, width] = (() => {
+    const { getChordBlockRight } = useReducerCache($store);
     let width = 0;
     const ref = $store.ref.grid;
     if (ref) {
@@ -12,7 +11,7 @@
     }
     // console.log(width);
 
-    const left = accessorCache.getChordBlockRight();
+    const left = getChordBlockRight();
     return [left, width];
   })();
 </script>

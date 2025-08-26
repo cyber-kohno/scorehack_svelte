@@ -2,6 +2,7 @@
   import Layout from "../../../const/layout";
   import type StoreCache from "../../../store/props/storeCache";
   import StoreRef from "../../../store/props/storeRef";
+  import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
 
@@ -9,6 +10,8 @@
 
   export let baseCache: StoreCache.BaseCache;
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
+
+  $: reducerRoot = useReducerRoot($store);
 
   $: beatDiv16Count = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
 
@@ -21,11 +24,13 @@
       width: number;
     }[] = [];
     const cnt = baseCache.lengthBeat * beatDiv16Count;
+    const focusPos = reducerRoot.getTimelineFocusPos();
     for (let i = 0; i < cnt; i++) {
       const left = (beatWidth / beatDiv16Count) * i;
       if (
         Math.abs(scrollLimitProps.scrollMiddleX - left) >
-        scrollLimitProps.rectWidth
+          scrollLimitProps.rectWidth &&
+        Math.abs(focusPos - left) > scrollLimitProps.rectWidth
       )
         continue;
       let width = 1;

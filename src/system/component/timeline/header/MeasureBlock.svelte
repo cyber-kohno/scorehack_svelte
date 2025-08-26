@@ -1,6 +1,7 @@
 <script lang="ts">
   import type StoreCache from "../../../store/props/storeCache";
   import type StoreRef from "../../../store/props/storeRef";
+  import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
 
@@ -16,6 +17,7 @@
   $: width = baseCache.lengthBeat * beatWidth;
 
   $: memoriList = (() => {
+    const { getTimelineFocusPos } = useReducerRoot($store);
     // console.log(baseCache);
     const list: {
       x: number;
@@ -25,13 +27,15 @@
       bar?: number;
     }[] = [];
     const num = baseCache.lengthBeat * beatDiv16Count;
+    const focusPos = getTimelineFocusPos();
     for (let i = 0; i < num; i++) {
       let bar: number | undefined = undefined;
       const x = (beatWidth / beatDiv16Count) * i;
 
       if (
         Math.abs(scrollLimitProps.scrollMiddleX - x) >
-        scrollLimitProps.rectWidth
+          scrollLimitProps.rectWidth &&
+        Math.abs(focusPos - x) > scrollLimitProps.rectWidth
       )
         continue;
       let width = 1;

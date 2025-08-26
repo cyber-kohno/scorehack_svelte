@@ -1,9 +1,13 @@
 import StoreMelody from "../props/storeMelody";
 import type StoreOutline from "../props/storeOutline";
 import type { StoreProps } from "../store";
+import useReducerRef from "./reducerRef";
 
 
 const useReducerOutline = (lastStore: StoreProps) => {
+
+    const elements = lastStore.data.elements;
+    const outline = lastStore.control.outline;
 
     const getCurrentElement = () => {
         const elementIndex = lastStore.control.outline.focus;
@@ -75,6 +79,20 @@ const useReducerOutline = (lastStore: StoreProps) => {
         lastStore.control.outline.focus = chord.elementSeq;
     }
 
+    const moveSectionFocus = (dir: -1 | 1) => {
+        // if (isLock) return;
+        // sectionタイプのエレメントが見つかるまで走査
+        let tempFocus = outline.focus;
+        const isIncrement = () => dir === -1 ? tempFocus > 0 : tempFocus < elements.length - 1;
+        while (isIncrement()) {
+            tempFocus += dir;
+            if (elements[tempFocus].type === 'section' || tempFocus === elements.length - 1) {
+                outline.focus = tempFocus;
+                break;
+            }
+        }
+    }
+
     return {
         getCurrentElement,
         getCurrentSectionData,
@@ -88,6 +106,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
         renameSectionData,
         setChordData,
         syncChordSeqFromNote,
+        moveSectionFocus
     }
 };
 

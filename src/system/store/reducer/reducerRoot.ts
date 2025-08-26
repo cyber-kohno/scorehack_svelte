@@ -20,10 +20,25 @@ const useReducerRoot = (lastStore: StoreProps) => {
         return Object.values(lastStore.input).find(flg => flg) != undefined;
     }
 
+    const getTimelineFocusPos = () => {
+        let pos = 0;
+        const chordSeq = lastStore.cache.elementCaches[lastStore.control.outline.focus].lastChordSeq;
+        if (chordSeq !== -1) {
+            const chordCache = lastStore.cache.chordCaches[chordSeq];
+            pos = chordCache.viewPosLeft + chordCache.viewPosWidth / 2;
+        }
+        // if(lastStore.control.mode === 'harmonize') {
+        // } else {
+
+        // }
+        return pos;
+    }
+
     return {
         switchMode,
         setInputHold,
-        hasHold
+        hasHold,
+        getTimelineFocusPos
     };
 }
 

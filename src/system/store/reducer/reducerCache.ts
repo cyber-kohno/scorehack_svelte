@@ -32,10 +32,9 @@ const useReducerCache = (lastStore: StoreProps) => {
         let startBeat = 0;
         let startBeatNote = 0;
         let elapsedTime = 0;
-        let lastSectionName = '';
+        let curSection = '';
         let prevEat = 0;
 
-        let prevStartBeat = 0;
         let lastChordSeq = -1;
 
         let viewPos = 0;
@@ -55,7 +54,8 @@ const useReducerCache = (lastStore: StoreProps) => {
                 elementSeq: i,
                 chordSeq: -1,
                 lastChordSeq,
-                outlineTop: outlineTailPos
+                outlineTop: outlineTailPos,
+                curSection
             }
 
             // let modulateCache: StoreCache.ModulateCahce | undefined = undefined;
@@ -64,7 +64,7 @@ const useReducerCache = (lastStore: StoreProps) => {
             switch (el.type) {
                 case 'section': {
                     const data = el.data as StoreOutline.DataSection;
-                    lastSectionName = sectionStart = data.name;
+                    curSection = sectionStart = data.name;
                 } break;
                 case 'chord': {
 

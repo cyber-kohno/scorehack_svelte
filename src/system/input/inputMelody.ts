@@ -165,6 +165,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
     const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
         const callbacks: StoreInput.Callbacks = {};
         const cursor = melody.cursor;
+        const notes = reducerMelody.getCurrScoreTrack().notes;
 
         // プレビュー中は処理しない。
         // if (isPreview()) return callbacks;
@@ -203,6 +204,14 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 switch (eventKey) {
                     case 'ArrowLeft': focusOutNoteSide(-1); break;
                     case 'ArrowRight': focusOutNoteSide(1); break;
+                    case 'Delete': {
+                        const focus = melody.focus;
+                        if (focus >= 1) {
+                            notes.splice(focus, 1);
+                            melody.focus--;
+                            commit();
+                        }
+                    }
                 }
             }
         }

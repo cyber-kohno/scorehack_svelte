@@ -4,33 +4,33 @@
   import store from "../../store/store";
   import MusicTheory from "../../util/musicTheory";
 
+  $: reducerCache = useReducerCache($store);
 
-    $: reducerCache = useReducerCache($store);
-    
-    
-    $: scoreBase =  reducerCache.getCurBase().scoreBase;
+  $: scoreBase = reducerCache.getCurBase().scoreBase;
+
+  $: elementCache = $store.cache.elementCaches[$store.control.outline.focus];
 </script>
 
 {#if scoreBase !== null}
   <div class="wrap">
     <div class="record">
-      <div class="title">ts:</div>
-      <div class="value">{MusicTheory.getTSName(scoreBase.ts)}</div>
-    </div>
-    <div class="record">
       <div class="title">scale:</div>
       <div class="value">{MusicTheory.getScaleName(scoreBase.tonality)}</div>
     </div>
     <div class="record">
-      <div class="title">tempo:</div>
-      <div class="value">{`bpm: ${scoreBase.tempo}`}</div>
+      <div class="title">ts:</div>
+      <div class="value">{MusicTheory.getTSName(scoreBase.ts)}</div>
     </div>
-    <!-- {#if section !== ""}
+    <div class="record">
+      <div class="title">tempo:</div>
+      <div class="value">{scoreBase.tempo}</div>
+    </div>
+    {#if elementCache.curSection !== ""}
       <div class="record section">
         <div class="title">section:</div>
-        <div class="value">{`${section}`}</div>
+        <div class="value">{elementCache.curSection}</div>
       </div>
-    {/if} -->
+    {/if}
   </div>
 {/if}
 
@@ -50,7 +50,7 @@
     margin: 2px 0 0 0;
     background-color: rgba(211, 224, 252, 0.298);
     width: 100%;
-    height: 20px;
+    height: 22px;
     /* border-radius: 8px; */
   }
   .record * {
@@ -76,6 +76,6 @@
     overflow: hidden;
   }
   .section {
-    /* background-color: rgba(123, 192, 158, 0.397); */
+    background-color: rgba(123, 192, 158, 0.397);
   }
 </style>

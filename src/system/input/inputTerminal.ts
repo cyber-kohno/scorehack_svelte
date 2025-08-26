@@ -27,7 +27,8 @@ const useInputTerminal = (storeUtil: StoreUtil) => {
             default: {
                 // 単一文字のキーのみ処理する
                 if (eventKey.length === 1) {
-                    // reducerTerminal.insertCommand(eventKey);
+                    reducerTerminal.insertCommand(eventKey);
+                    commit();
                 }
             } break;
         }

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type StoreRef from "../../../store/props/storeRef";
+  import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
 
@@ -20,12 +21,16 @@
       modulate?: Diff;
       tempo?: Diff;
     }[] = [];
+    const { getTimelineFocusPos } = useReducerRoot($store);
+    const focusPos = getTimelineFocusPos();
     $store.cache.chordCaches.forEach((chordCache) => {
       const x = chordCache.viewPosLeft;
       if (
         Math.abs(
           scrollLimitProps.scrollMiddleX - (x + chordCache.viewPosWidth / 2)
-        ) > scrollLimitProps.rectWidth
+        ) > scrollLimitProps.rectWidth &&
+        Math.abs(focusPos - (x + chordCache.viewPosWidth / 2)) >
+          scrollLimitProps.rectWidth
       )
         return 1;
       chordList.push({
@@ -107,7 +112,7 @@
   .wrap {
     display: inline-block;
     position: relative;
-    background-color: rgba(45, 62, 90, 0.419);
+    background-color: rgba(36, 121, 131, 0.467);
     min-width: 100%;
     width: var(--beat-sum);
     height: var(--info-height);

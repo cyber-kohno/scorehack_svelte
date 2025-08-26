@@ -68,6 +68,18 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 reducerRef.adjustOutlineScroll();
                 commit();
             } break;
+            case 'ArrowLeft': {
+                reducerOutline.moveSectionFocus(-1);
+                reducerRef.adjustGridScrollXFromOutline();
+                reducerRef.adjustOutlineScroll();
+                commit();
+            } break;
+            case 'ArrowRight': {
+                reducerOutline.moveSectionFocus(1);
+                reducerRef.adjustGridScrollXFromOutline();
+                reducerRef.adjustOutlineScroll();
+                commit();
+            } break;
             case '1':
             case '2':
             case '3':

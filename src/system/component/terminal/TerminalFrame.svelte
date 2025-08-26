@@ -2,6 +2,8 @@
   import useReducerTermianl from "../../store/reducer/reducerTerminal";
   import store from "../../store/store";
 
+  const convHtmlText = (str: string) => str.replace(/ /g, "\u00A0");
+
   $: reducer = useReducerTermianl($store);
   // $: {getTerminal} = useReducerTermianl($store);
   $: terminal = reducer.getTerminal();
@@ -11,6 +13,8 @@
   <div class="wrap">
     <div class="command">
       <span class="target">{terminal.target + ">"}</span>
+      {terminal.command}
+      <span class="cursor"></span>
     </div>
   </div>
 </div>
@@ -56,5 +60,25 @@
   }
   .target {
     color: yellow;
+  }
+
+  @keyframes blinkAnimation {
+    0%,
+    100% {
+      opacity: 0; /* 完全に非表示 */
+    }
+    50% {
+      opacity: 1; /* 完全に表示 */
+    }
+  }
+
+  .cursor {
+    display: inline-block;
+    position: relative;
+    margin: 3px 0 0 0;
+    width: 2px;
+    height: calc(100% - 6px);
+    background-color: #ffff3d;
+    animation: blinkAnimation 1s step-start infinite; /* 点滅するアニメーション */
   }
 </style>

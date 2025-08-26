@@ -1,6 +1,7 @@
 <script lang="ts">
   import type StoreCache from "../../../store/props/storeCache";
   import type StoreRef from "../../../store/props/storeRef";
+  import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
   import TimelineLastMargin from "../TimelineLastMargin.svelte";
@@ -10,11 +11,15 @@
   $: focus = $store.control.outline.focus;
 
   $: chordCaches = (() => {
+    const { getTimelineFocusPos } = useReducerRoot($store);
+    const focusPos = getTimelineFocusPos();
     return $store.cache.chordCaches.filter(
       (c) =>
         Math.abs(
           scrollLimitProps.scrollMiddleX - (c.viewPosLeft + c.viewPosWidth / 2)
-        ) < scrollLimitProps.rectWidth
+        ) < scrollLimitProps.rectWidth ||
+        Math.abs(focusPos - (c.viewPosLeft + c.viewPosWidth / 2)) <
+          scrollLimitProps.rectWidth
     );
   })();
 
@@ -44,7 +49,7 @@
   .wrap {
     display: inline-block;
     position: relative;
-    background-color: #cd68cb;
+    /* background-color: #cd68cb; */
     min-width: 100%;
     width: var(--beat-sum);
     height: var(--block-height);
