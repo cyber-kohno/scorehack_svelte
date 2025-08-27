@@ -6,6 +6,7 @@ namespace DesignInitializer {
     export const initConstProps = () => {
         const PL = Layout.pitch;
         const OL = Layout.outline;
+        const EL = Layout.element;
         setCustomProps([
             { key: '--root-header-height', value: `${Layout.root.HEADER_HEIGHT}px` },
             { key: '--outline-width', value: `${Layout.root.OUTLINE_WIDTH}px` },
@@ -21,6 +22,17 @@ namespace DesignInitializer {
             { key: '--element-list-height', value: `calc(100% - ${OL.HEADER_HEIGHT + OL.FOOTER_HEIGHT}px)` },
 
             { key: '--factor-center', value: `${Math.floor((PL.ITEM_HEIGHT + 4) / 2)}px` },
+
+            { key: '--init-record-height', value: `${EL.INIT_RECORD_HEIGHT}px` },
+            { key: '--init-record-margin', value: `${EL.INIT_RECORD_MARGIN}px` },
+            { key: '--section-label-height', value: `${EL.SECTION_LABEL_HEIGHT}px` },
+            { key: '--section-border-height', value: `${EL.SECTION_BORDER_HEIGHT}px` },
+            { key: '--section-bottom-margin', value: `${EL.SECTION_BOTTOM_MARGIN}px` },
+            { key: '--chord-sec-height', value: `${EL.CHORD_SEQ_HEIGHT}px` },
+            { key: '--chord-tip-height', value: `${EL.CHORD_TIP_HEIGHT}px` },
+            { key: '--chord-degree-height', value: `${EL.CHORD_DEGREE_HEIGHT}px` },
+            { key: '--chord-name-height', value: `${EL.CHORD_NAME_HEIGHT}px` },
+            { key: '--modulate-record-height', value: `${EL.MODULATE_RECRORD_HEIGHT}px` },
         ]);
     }
     export const initVariableProps = (lastStore: StoreProps) => {

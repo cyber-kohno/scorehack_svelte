@@ -1,21 +1,28 @@
 <script lang="ts">
   import useReducerTermianl from "../../store/reducer/reducerTerminal";
   import store from "../../store/store";
-
-  const convHtmlText = (str: string) => str.replace(/ /g, "\u00A0");
+  import History from "./History.svelte";
 
   $: reducer = useReducerTermianl($store);
   // $: {getTerminal} = useReducerTermianl($store);
   $: terminal = reducer.getTerminal();
+
+  $: [commandLeft, commandRight] = reducer.splitCommand();
 </script>
 
 <div class="frame">
-  <div class="wrap">
-    <div class="command">
-      <span class="target">{terminal.target + ">"}</span>
-      {terminal.command}
-      <span class="cursor"></span>
+  <div class="wrap" bind:this={$store.ref.terminal}>
+    <div class="histories">
+      {#each terminal.histories as history}
+        <History {history} />
+      {/each}
     </div>
+    <div class="command">
+      <span class="target">{terminal.target + ">"}</span>{commandLeft}<span
+        class="cursor"
+      ></span>{commandRight}
+    </div>
+    <div class="lastmargin"></div>
   </div>
 </div>
 
@@ -44,19 +51,30 @@
     width: calc(100% - 8px);
     height: calc(100% - 8px);
     background-color: rgba(240, 248, 255, 0.101);
+    overflow: hidden;
   }
 
+  .histories {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    /* background-color: #c2eaef2c; */
+  }
   .command {
     display: inline-block;
     position: relative;
     width: 100%;
     height: 24px;
-    background-color: #76ff062c;
+    background-color: #ffffff42;
 
     font-size: 18px;
     font-weight: 400;
     line-height: 21px;
     color: white;
+
+    * {
+      vertical-align: top;
+    }
   }
   .target {
     color: yellow;
@@ -79,6 +97,12 @@
     width: 2px;
     height: calc(100% - 6px);
     background-color: #ffff3d;
+    margin-right: -2px;
     animation: blinkAnimation 1s step-start infinite; /* 点滅するアニメーション */
+  }
+  .lastmargin {
+    width: 100%;
+    height: 100px;
+    /* background-color: #ffffff41; */
   }
 </style>

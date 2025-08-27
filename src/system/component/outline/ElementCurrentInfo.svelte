@@ -26,7 +26,7 @@
       <div class="value">{scoreBase.tempo}</div>
     </div>
     {#if elementCache.curSection !== ""}
-      <div class="record section">
+      <div class="record">
         <div class="title">section:</div>
         <div class="value">{elementCache.curSection}</div>
       </div>
@@ -55,7 +55,7 @@
   }
   .record * {
     display: inline-block;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     line-height: 20px;
     height: 100%;
@@ -71,11 +71,8 @@
   }
   .value {
     width: calc(100% - 80px);
-    color: rgba(243, 239, 178, 0.928);
+    color: rgba(255, 255, 254, 0.822);
     font-style: italic;
     overflow: hidden;
-  }
-  .section {
-    background-color: rgba(123, 192, 158, 0.397);
   }
 </style>

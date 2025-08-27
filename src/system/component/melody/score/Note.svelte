@@ -117,7 +117,7 @@
     color: rgba(156, 0, 0, 0.726);
     left: 0;
     top: 32px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
   }
 </style>

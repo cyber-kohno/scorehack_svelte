@@ -18,7 +18,7 @@
   $: beatWidth = $store.env.beatWidth * (beatDiv16Count / 4);
 
   $: measureLines = (() => {
-    // console.log(baseCache);
+    // console.log(baseCache.baseSeq);
     const list: {
       left: number;
       width: number;
@@ -27,14 +27,16 @@
     const focusPos = reducerRoot.getTimelineFocusPos();
     for (let i = 0; i < cnt; i++) {
       const left = (beatWidth / beatDiv16Count) * i;
+      const absLeft = baseCache.viewPosLeft + left;
       if (
-        Math.abs(scrollLimitProps.scrollMiddleX - left) >
+        Math.abs(scrollLimitProps.scrollMiddleX - absLeft) >
           scrollLimitProps.rectWidth &&
-        Math.abs(focusPos - left) > scrollLimitProps.rectWidth
+        Math.abs(focusPos - absLeft) > scrollLimitProps.rectWidth
       )
         continue;
       let width = 1;
       if (i % beatDiv16Count === 0) width = 3;
+      if (i === 0) width = 8;
       list.push({ left, width });
     }
     return list;
@@ -75,7 +77,7 @@
       case "other":
         return "#00000041";
       case "tonic":
-        return "#006aff68";
+        return "#3000ffaa";
       case "scale":
         return "#ffffff48";
     }
@@ -86,6 +88,7 @@
   class="wrap"
   style:left="{baseCache.viewPosLeft}px"
   style:width="{baseCache.viewPosWidth}px"
+  data-even={baseCache.baseSeq % 2 === 0}
 >
   <!-- 16分音符毎の補助ライン -->
   {#each measureLines as line}
@@ -112,9 +115,12 @@
     position: absolute;
     z-index: 1;
 
-    background-color: #3e97ce86;
+    background-color: #3ec9ce86;
     top: 0;
     height: var(--pitch-frame-height);
+  }
+  .wrap[data-even="false"] {
+    background-color: #3ecea386;
   }
 
   .line {
@@ -122,7 +128,7 @@
     position: absolute;
     z-index: 2;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.303);
+    background-color: rgba(0, 0, 0, 0.303);
   }
 
   .pitch {

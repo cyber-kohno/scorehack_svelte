@@ -41,7 +41,8 @@
     position: relative;
     width: 100%;
     height: var(--element-list-height);
-    background-color: #ced3e9;
+    /* background-color: #ced3e9; */
+    background: linear-gradient(to right, #91a2b6, #b1b1b1);
     overflow: hidden;
   }
 

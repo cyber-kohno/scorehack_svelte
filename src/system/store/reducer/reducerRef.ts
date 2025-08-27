@@ -77,12 +77,9 @@ const useReducerRef = (lastStore: StoreProps) => {
         }
     }
     const adjustTerminalScroll = () => {
-
-        if (lastStore.ref.terminal) {
-            const ref = lastStore.ref.terminal;
-            const { height: frameHeight } = ref.getBoundingClientRect();
-
-            const top = ref.scrollHeight - frameHeight / 2;
+        const ref = lastStore.ref.terminal;
+        if (ref) {
+            const top = ref.scrollHeight;
             ref.scrollTo({ top, behavior: "smooth" });
         }
     }

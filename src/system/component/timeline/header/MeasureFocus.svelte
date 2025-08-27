@@ -7,7 +7,7 @@
   $: reduerCache = useReducerCache($store);
   $: reducerMelody = useReducerMelody($store);
 
-  $: values = reduerCache.getFocusInfo();
+  $: focusInfo = reduerCache.getFocusInfo();
 
   $: [noteLeft, noteWidth] = (() => {
     const notes = reducerMelody.getCurrScoreTrack().notes;
@@ -19,12 +19,14 @@
   $: isMelodyMode = $store.control.mode === "melody";
 </script>
 
-<div
-  class="chord"
-  style:left="{values.left}px"
-  style:width="{values.width}px"
-  data-isChord={values.isChord}
-></div>
+{#if focusInfo.isChord}
+  <div
+    class="chord"
+    style:left="{focusInfo.left}px"
+    style:width="{focusInfo.width}px"
+    data-isChord={focusInfo.isChord}
+  ></div>
+{/if}
 {#if isMelodyMode}
   <div class="note" style:left="{noteLeft}px" style:width="{noteWidth}px"></div>
 {/if}

@@ -86,7 +86,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    height: 15px;
+    height: var(--chord-seq-height);
     text-align: left;
     padding: 0 0 0 4px;
     box-sizing: border-box;
@@ -100,7 +100,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    height: 20px;
+    height: var(--chord-tip-height);
     text-align: center;
   }
 
@@ -118,7 +118,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    height: 30px;
+    height: var(--chord-degree-height);
     text-align: center;
     font-size: 22px;
     font-weight: 600;
@@ -128,7 +128,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    height: 20px;
+    height: var(--chord-name-height);
     text-align: center;
     font-size: 16px;
     line-height: 18px;

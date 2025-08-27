@@ -70,6 +70,33 @@ const useReducerTermianl = (lastStore: StoreProps) => {
         setCommand(() => left + key + right);
         getTerminal().focus += key.length;
     }
+    const moveFocus = (dir: -1 | 1) => {
+        const terminal = getTerminal();
+        const newFocus = terminal.focus + dir;
+        const command = terminal.command;
+        if (newFocus >= 0 && newFocus <= command.length) terminal.focus = newFocus;
+    }
+
+    /**
+     * コマンドを実行する。
+     */
+    const registCommand = () => {
+
+        const terminal = getTerminal();
+
+        terminal.histories.push({
+            type: 'record',
+            texts: [{ str: `${terminal.target}>${terminal.command}` }]
+        });
+
+        if (terminal.command !== '') {
+            const orderItems = terminal.command.split(' ');
+            const funcName = orderItems[0];
+            const args = orderItems.slice(1);
+        }
+        terminal.focus = 0;
+        terminal.command = '';
+    }
     return {
         isUse,
         open,
@@ -78,6 +105,8 @@ const useReducerTermianl = (lastStore: StoreProps) => {
         splitCommand,
         removeCommand,
         insertCommand,
+        moveFocus,
+        registCommand,
     };
 }
 

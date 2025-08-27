@@ -33,6 +33,7 @@ namespace StoreCache {
     export interface BaseCache extends BeatRange {
         scoreBase: StoreOutline.DataInit;
         startBar: number;
+        baseSeq: number;
     }
 
     export interface ChordCache extends BeatRange {
@@ -75,6 +76,9 @@ namespace StoreCache {
 
         outlineTop: number;
         curSection: string;
+        
+        modulate?: ModulateCahce;
+        tempo?: TempoCahce;
     }
 }
 export default StoreCache;

@@ -16,7 +16,7 @@ const useReducerCache = (lastStore: StoreProps) => {
 
         const initialScoreBase: StoreOutline.DataInit = elements[0].data;
 
-        let baseBlock: StoreCache.BaseCache = {
+        let baseCache: StoreCache.BaseCache = {
             startTime: 0,
             sustainTime: 0,
             startBeat: 0,
@@ -26,13 +26,13 @@ const useReducerCache = (lastStore: StoreProps) => {
             viewPosLeft: 0,
             viewPosWidth: 0,
             scoreBase: JSON.parse(JSON.stringify(initialScoreBase)),
-            startBar: 1
+            startBar: 1,
+            baseSeq: 0
         }
 
         let startBeat = 0;
         let startBeatNote = 0;
         let elapsedTime = 0;
-        let curSection = '';
         let prevEat = 0;
 
         let lastChordSeq = -1;
@@ -45,6 +45,7 @@ const useReducerCache = (lastStore: StoreProps) => {
         let lastModulate: StoreCache.ModulateCahce | undefined = undefined;
         let lastTempo: StoreCache.TempoCahce | undefined = undefined;
 
+        let curSection = '';
         elements.forEach((el, i) => {
 
             const elementCache: StoreCache.ElementCache = {
@@ -65,6 +66,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                 case 'section': {
                     const data = el.data as StoreOutline.DataSection;
                     curSection = sectionStart = data.name;
+                    elementCache.curSection = curSection;
                 } break;
                 case 'chord': {
 
@@ -75,7 +77,7 @@ const useReducerCache = (lastStore: StoreProps) => {
 
                     let compiledChord: StoreCache.CompiledChord | undefined = undefined;
                     if (data.degree != undefined) {
-                        const tonality = baseBlock.scoreBase.tonality;
+                        const tonality = baseCache.scoreBase.tonality;
                         const chord = MusicTheory.getKeyChordFromDegree(tonality, data.degree);
                         const symbol = MusicTheory.getSymbolProps(chord.symbol);
                         const structs: MusicTheory.ChordStruct[] = symbol.structs.map(s => {
@@ -112,8 +114,8 @@ const useReducerCache = (lastStore: StoreProps) => {
                      */
                     const judgeStraddle = () => {
                         /** ベース上での経過拍数 */
-                        const baseOnBeat = startBeat - baseBlock.startBeat;
-                        const divCnt = MusicTheory.getBarDivBeatCount(baseBlock.scoreBase.ts);
+                        const baseOnBeat = startBeat - baseCache.startBeat;
+                        const divCnt = MusicTheory.getBarDivBeatCount(baseCache.scoreBase.ts);
                         const curBar = Math.floor(baseOnBeat / divCnt);
                         const nextBar = Math.floor((baseOnBeat + data.beat) / divCnt);
                         // 同じ小説に収まっている
@@ -123,7 +125,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                         return !(isSameBar || isNextFit);
                     };
 
-                    const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(baseBlock.scoreBase.ts);
+                    const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
                     const beatRate = beatDiv16Cnt / 4;
                     const beatSize = (data.beat + (prevEat * -1 + data.eat) / beatDiv16Cnt);
                     const beatSizeNote = (data.beat + (prevEat * -1 + data.eat) / beatDiv16Cnt) * beatRate;
@@ -134,7 +136,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                     // console.log(viewPosLeft);
                     // console.log(viewPosWidth);
 
-                    const sustainTime = (60000 / baseBlock.scoreBase.tempo) * (data.beat + (-prevEat + data.eat) / 4);
+                    const sustainTime = (60000 / baseCache.scoreBase.tempo) * (data.beat + (-prevEat + data.eat) / 4);
 
                     const beat: StoreCache.BeatCache = {
                         num: data.beat,
@@ -176,39 +178,42 @@ const useReducerCache = (lastStore: StoreProps) => {
                     // 経過時間の加算
                     elapsedTime += sustainTime;
                     prevEat = data.eat;
-                    baseBlock.sustainTime += sustainTime;
-                    baseBlock.lengthBeat += data.beat;
-                    baseBlock.lengthBeatNote += data.beat * beatRate;
+                    baseCache.sustainTime += sustainTime;
+                    baseCache.lengthBeat += data.beat;
+                    baseCache.lengthBeatNote += data.beat * beatRate;
                 } break;
                 case 'modulate':
                 case 'tempo': {
 
-                    baseBlock.viewPosWidth = viewPos - baseBlock.viewPosLeft;
-                    baseCaches.push(baseBlock);
+                    baseCache.viewPosWidth = viewPos - baseCache.viewPosLeft;
+                    baseCaches.push(baseCache);
+
+                    elementCache.baseSeq++;
                     // console.log(baseList);
 
                     // インスタンスを複製
-                    baseBlock = JSON.parse(JSON.stringify(baseBlock));
+                    baseCache = JSON.parse(JSON.stringify(baseCache));
 
-                    baseBlock.viewPosLeft = viewPos;
+                    baseCache.baseSeq++;
+                    baseCache.viewPosLeft = viewPos;
                     // console.log(viewPos);
 
-                    baseBlock.startTime = elapsedTime;
+                    baseCache.startTime = elapsedTime;
                     // 経過時間をリセット
-                    baseBlock.sustainTime = 0;
+                    baseCache.sustainTime = 0;
 
-                    const divCnt = MusicTheory.getBarDivBeatCount(baseBlock.scoreBase.ts);
-                    baseBlock.startBar += Math.ceil(baseBlock.lengthBeat / divCnt);
+                    const divCnt = MusicTheory.getBarDivBeatCount(baseCache.scoreBase.ts);
+                    baseCache.startBar += Math.ceil(baseCache.lengthBeat / divCnt);
 
-                    baseBlock.startBeat = baseBlock.startBeat + baseBlock.lengthBeat;
-                    baseBlock.startBeatNote += baseBlock.lengthBeatNote;
-                    baseBlock.lengthBeat = 0;
-                    baseBlock.lengthBeatNote = 0;
+                    baseCache.startBeat = baseCache.startBeat + baseCache.lengthBeat;
+                    baseCache.startBeatNote += baseCache.lengthBeatNote;
+                    baseCache.lengthBeat = 0;
+                    baseCache.lengthBeatNote = 0;
 
                     switch (el.type) {
                         case 'modulate': {
                             const data = el.data as StoreOutline.DataModulate;
-                            const tonality = baseBlock.scoreBase.tonality;
+                            const tonality = baseCache.scoreBase.tonality;
                             const prevTonality: MusicTheory.Tonality = JSON.parse(JSON.stringify(tonality));
 
                             const updateKey12 = (val: number) => {
@@ -246,10 +251,11 @@ const useReducerCache = (lastStore: StoreProps) => {
                                 prev: prevTonality,
                                 next: tonality
                             };
+                            elementCache.modulate = lastModulate;
                         } break;
                         case 'tempo': {
                             const data = el.data as StoreOutline.DataTempo;
-                            let tempo = baseBlock.scoreBase.tempo;
+                            let tempo = baseCache.scoreBase.tempo;
                             const prev = tempo;
 
                             switch (data.method) {
@@ -263,8 +269,9 @@ const useReducerCache = (lastStore: StoreProps) => {
                             lastTempo = {
                                 prev, next: tempo
                             };
+                            elementCache.tempo = lastTempo;
 
-                            baseBlock.scoreBase.tempo = tempo;
+                            baseCache.scoreBase.tempo = tempo;
                         } break;
                     }
                 }
@@ -278,8 +285,8 @@ const useReducerCache = (lastStore: StoreProps) => {
         });
 
         // 後処理
-        baseBlock.viewPosWidth = viewPos - baseBlock.viewPosLeft;
-        baseCaches.push(baseBlock);
+        baseCache.viewPosWidth = viewPos - baseCache.viewPosLeft;
+        baseCaches.push(baseCache);
 
         lastStore.cache = {
             baseCaches, chordCaches, elementCaches, outlineTailPos

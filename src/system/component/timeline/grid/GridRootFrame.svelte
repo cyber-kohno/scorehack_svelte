@@ -56,7 +56,7 @@
   }
 
   .noteswrap {
-    background-color: #647d92;
+    /* background-color: #647d92; */
     display: inline-block;
     position: relative;
   }

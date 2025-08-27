@@ -30,12 +30,12 @@
     const focusPos = getTimelineFocusPos();
     for (let i = 0; i < num; i++) {
       let bar: number | undefined = undefined;
-      const x = (beatWidth / beatDiv16Count) * i;
-
+      const left = (beatWidth / beatDiv16Count) * i;
+      const absLeft = baseCache.viewPosLeft + left;
       if (
-        Math.abs(scrollLimitProps.scrollMiddleX - x) >
+        Math.abs(scrollLimitProps.scrollMiddleX - absLeft) >
           scrollLimitProps.rectWidth &&
-        Math.abs(focusPos - x) > scrollLimitProps.rectWidth
+        Math.abs(focusPos - absLeft) > scrollLimitProps.rectWidth
       )
         continue;
       let width = 1;
@@ -53,7 +53,7 @@
         width = 2;
         height = 13;
       }
-      list.push({ x, width, height, isBar, bar });
+      list.push({ x: left, width, height, isBar, bar });
     }
     return list;
   })();

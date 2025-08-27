@@ -63,7 +63,7 @@
   .main {
     display: inline-block;
     position: relative;
-    background-color: #5b6466;
+    /* background-color: #5b6466; */
     width: 100%;
     height: calc(100% - var(--timeline-header-height));
   }

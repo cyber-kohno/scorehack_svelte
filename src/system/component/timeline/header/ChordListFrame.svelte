@@ -13,14 +13,14 @@
   $: chordCaches = (() => {
     const { getTimelineFocusPos } = useReducerRoot($store);
     const focusPos = getTimelineFocusPos();
-    return $store.cache.chordCaches.filter(
-      (c) =>
-        Math.abs(
-          scrollLimitProps.scrollMiddleX - (c.viewPosLeft + c.viewPosWidth / 2)
-        ) < scrollLimitProps.rectWidth ||
-        Math.abs(focusPos - (c.viewPosLeft + c.viewPosWidth / 2)) <
-          scrollLimitProps.rectWidth
-    );
+    return $store.cache.chordCaches.filter((c) => {
+      const middle = c.viewPosLeft + c.viewPosWidth / 2;
+      return (
+        Math.abs(scrollLimitProps.scrollMiddleX - middle) <
+          scrollLimitProps.rectWidth ||
+        Math.abs(focusPos - middle) < scrollLimitProps.rectWidth
+      );
+    });
   })();
 
   const getChordName = (cache: StoreCache.ChordCache) => {

@@ -13,9 +13,9 @@
 </script>
 
 <div class="wrap">
-  <div class="keyscale">{keyScaleName}</div>
-  <div class="ts">{tsName}</div>
-  <div class="tempo">{tempo}</div>
+  <div>{keyScaleName}</div>
+  <div>{tsName}</div>
+  <div>{tempo}</div>
 </div>
 
 <style>
@@ -27,35 +27,24 @@
     /* より強調された影 */
     /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6); */
     /* border: 1px solid #fff; */
-    padding: 0 2px 4px 2px;
+    padding: 0 2px var(--init-record-margin) 2px;
     box-sizing: border-box;
     * {
       display: inline-block;
       position: relative;
-      margin-top: 4px;
+      margin-top: var(--init-record-margin);
       width: 100%;
       background-color: #00a87e71;
       border-radius: 12px;
       color: rgb(255, 255, 255);
-    }
-  }
 
-  .keyscale {
-    height: 30px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 600;
-  }
-  .ts {
-    height: 30px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 600;
-  }
-  .tempo {
-    height: 30px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 600;
+      height: var(--init-record-height);
+      text-align: center;
+      font-size: 22px;
+      line-height: 28px;
+      font-weight: 600;
+      border: 1px solid rgb(207, 255, 233);
+      box-sizing: borderrgba(0, 0, 0, 0.465)
+    }
   }
 </style>

@@ -17,7 +17,7 @@
     color: #f00;
     text-align: center;
     width: 100%;
-    height: 30px;
+    height: var(--section-label-height);
     /* background-color: #5c75b634; */
   }
 
@@ -25,7 +25,8 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    height: 8px;
+    height: var(--section-border-height);
+    margin-bottom: var(--section-bottom-margin);
     background-color: red;
   }
 </style>

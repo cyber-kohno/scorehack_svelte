@@ -25,12 +25,11 @@
     const focusPos = getTimelineFocusPos();
     $store.cache.chordCaches.forEach((chordCache) => {
       const x = chordCache.viewPosLeft;
+      const middle = chordCache.viewPosLeft + chordCache.viewPosWidth / 2;
       if (
-        Math.abs(
-          scrollLimitProps.scrollMiddleX - (x + chordCache.viewPosWidth / 2)
-        ) > scrollLimitProps.rectWidth &&
-        Math.abs(focusPos - (x + chordCache.viewPosWidth / 2)) >
-          scrollLimitProps.rectWidth
+        Math.abs(scrollLimitProps.scrollMiddleX - middle) >
+          scrollLimitProps.rectWidth &&
+        Math.abs(focusPos - middle) > scrollLimitProps.rectWidth
       )
         return 1;
       chordList.push({
@@ -71,9 +70,9 @@
     return [chordList, changeList];
   })();
 
-  const formatNumber = (num: number, decimalPlaces: number) => {
+  const formatNumber = (num: number) => {
     // toFixedで指定した桁数にフォーマット
-    const formattedNumber = num.toFixed(decimalPlaces);
+    const formattedNumber = num.toFixed(2);
 
     // parseFloatを使って余分な0を削除し、フォーマットを保つ
     return parseFloat(formattedNumber).toString();
@@ -83,7 +82,7 @@
 <div class="wrap">
   {#each chordList as chord}
     <div class="chord" style:left="{chord.x}px" style:top="0">
-      <div class="time">{formatNumber(chord.time * 0.001, 2)}s</div>
+      <div class="time">{formatNumber(chord.time * 0.001)}s</div>
     </div>
   {/each}
 
@@ -124,13 +123,18 @@
     height: 100%;
     /* border: 1px solid #aaaaaa; */
     /* box-sizing: border-box; */
+    padding: 2px 0 0 0;
+    /* background-color: rgb(0, 47, 255); */
     * {
       display: inline-block;
       position: relative;
-      font-size: 14px;
+      font-size: 16px;
+      line-height: 18px;
       font-weight: 600;
-      padding: 0 2px;
+      padding: 2px 2px;
+      height: 50%;
       box-sizing: border-box;
+      /* background-color: red; */
     }
   }
   .time {
@@ -142,7 +146,7 @@
     /* background-color: rgba(127, 255, 212, 0.18); */
   }
   .scale {
-    color: rgb(0, 231, 231);
-    background-color: rgba(127, 255, 212, 0.18);
+    color: rgb(231, 0, 96);
+    background-color: rgba(168, 234, 212, 0.261);
   }
 </style>

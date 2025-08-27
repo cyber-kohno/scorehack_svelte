@@ -27,6 +27,19 @@ namespace Layout {
     export const getPitchTop = (index: number) => {
         return pitch.ITEM_HEIGHT * (pitch.NUM - 1 - index);
     }
+
+    export const element = {
+        INIT_RECORD_HEIGHT: 30,
+        INIT_RECORD_MARGIN: 4,
+        SECTION_LABEL_HEIGHT: 30,
+        SECTION_BORDER_HEIGHT: 8,
+        SECTION_BOTTOM_MARGIN: 20,
+        CHORD_SEQ_HEIGHT: 15,
+        CHORD_TIP_HEIGHT: 20,
+        CHORD_DEGREE_HEIGHT: 30,
+        CHORD_NAME_HEIGHT: 30,
+        MODULATE_RECRORD_HEIGHT: 30,
+    }
 };
 
 export default Layout;

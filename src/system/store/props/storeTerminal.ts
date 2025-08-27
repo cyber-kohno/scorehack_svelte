@@ -16,9 +16,17 @@ namespace StoreTerminal {
         }
     };
 
-    export type BlockType = '';
+    export type BlockType = 'record' | 'table';
+    export type HighlightType = 'func' | 'item';
+
+    export type TextItem = {
+        str: string;
+        highlight?: HighlightType;
+    }
     export type Block = {
         type: BlockType;
+
+        texts?: TextItem[];
     }
 }
 

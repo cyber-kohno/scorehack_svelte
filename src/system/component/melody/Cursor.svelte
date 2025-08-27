@@ -50,7 +50,7 @@
     z-index: 2;
     width: 10px;
     height: var(--pitch-frame-height);
-    background-color: #22ff00;
+    background-color: #4bd137;
     opacity: 0.7;
   }
   .flag {
@@ -59,7 +59,7 @@
     left: 10px;
     z-index: 2;
     height: var(--pitch-item-height);
-    background-color: #22ff00;
+    background-color: #4bd137;
     border-radius: 0 2px 2px 0;
   }
 
@@ -73,13 +73,13 @@
     font-weight: 600;
     line-height: 24px;
     white-space: nowrap;
-    color: #22ff00;
+    color: #4bd137;
   }
   .line[data-isOverlap="true"],
   .line[data-isOverlap="true"] .flag {
-    background-color: #ff0000; /* lineとflagの背景色 */
+    background-color: #d13333; /* lineとflagの背景色 */
   }
   .line[data-isOverlap="true"] .flag .info {
-    color: #ff0000; /* info要素の文字色の条件付きスタイル */
+    color: #d13333; /* info要素の文字色の条件付きスタイル */
   }
 </style>

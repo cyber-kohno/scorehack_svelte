@@ -19,6 +19,6 @@
 
     background-color: #ffffff20;
     top: 0;
-    height: 100%;
+    height: var(--pitch-frame-height);
   }
 </style>

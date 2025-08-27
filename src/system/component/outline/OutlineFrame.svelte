@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Layout from "../../const/layout";
   import ElementCurrentInfo from "./ElementCurrentInfo.svelte";
   import ElementListFrame from "./ElementListFrame.svelte";
 </script>
