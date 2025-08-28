@@ -111,7 +111,44 @@ const useInputOutline = (storeUtil: StoreUtil) => {
         const elements = lastStore.data.elements;
         const focus = lastStore.control.outline.focus;
         const element = elements[focus];
+        callbacks.holdC = () => {
 
+            const modSymbol = (dir: 'prev' | 'next' | 'lower' | 'upper') => {
+                if (data.degree == undefined) return;
+                const symbol = data.degree.symbol;
+                const symbolProps = getSymbolProps(symbol);
+
+                let temp: ChordSymol | undefined = undefined;
+
+                switch (dir) {
+                    case 'prev': { temp = getSameLevelSymbol(symbol, -1); } break;
+                    case 'next': { temp = getSameLevelSymbol(symbol, 1); } break;
+                    case 'lower': { temp = symbolProps.lower; } break;
+                    case 'upper': { temp = symbolProps.upper; } break;
+                }
+
+                if (temp != undefined) {
+                    data.degree.symbol = temp;
+                    CacheUtil.calcCache(store);
+                    adjustX();
+                    update();
+                }
+            }
+            switch (props.event.key) {
+                case "ArrowLeft": {
+                    modSymbol('prev');
+                } break;
+                case "ArrowRight": {
+                    modSymbol('next');
+                } break;
+                case "ArrowUp": {
+                    modSymbol('lower');
+                } break;
+                case "ArrowDown": {
+                    modSymbol('upper');
+                } break;
+            }
+        }
         callbacks.holdF = () => {
 
             switch (elementType) {

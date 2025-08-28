@@ -3,6 +3,7 @@
   import StoreRef from "../../store/props/storeRef";
   import store from "../../store/store";
   import Element from "./element/Element.svelte";
+  import ChordSelector from "./item/ChordSelector.svelte";
 
   $: elements = (() => {
     const elementSeq = $store.control.outline.focus;
@@ -22,6 +23,18 @@
         ) <= limitProps.rectHeight
     );
   })();
+
+  $: isDispChordSelector = (() => {
+    const control = $store.control;
+    const element = elements[control.outline.focus];
+    return (
+      // control.melody.dialog == null &&
+      control.mode === "harmonize" &&
+      $store.input.holdC &&
+      element.type === "chord" &&
+      (element.data as StoreOutline.DataChord).degree != undefined
+    );
+  })();
 </script>
 
 <div class="wrap" bind:this={$store.ref.outline}>
@@ -33,6 +46,11 @@
     style:top="{$store.cache.outlineTailPos}px"
     style:height="{300}px"
   ></div>
+</div>
+<div class="list-second">
+  {#if isDispChordSelector}
+    <ChordSelector />
+  {/if}
 </div>
 
 <style>
@@ -53,5 +71,14 @@
     left: 0;
     width: 100%;
     /* background-color: aliceblue; */
+  }
+  .list-second {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    /* background-color: rgba(126, 188, 243, 0.349); */
   }
 </style>
