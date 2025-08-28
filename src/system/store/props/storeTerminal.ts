@@ -1,7 +1,7 @@
 namespace StoreTerminal {
    
     export type Props = {
-        histories: Block[];
+        outputs: OutputBlock[];
         command: string;
         target: string;
         focus: number;
@@ -9,7 +9,7 @@ namespace StoreTerminal {
     export const createInitial = (): Props =>{
 
         return {
-            histories: [],
+            outputs: [],
             command: '',
             target: '',
             focus: 0
@@ -23,7 +23,7 @@ namespace StoreTerminal {
         str: string;
         highlight?: HighlightType;
     }
-    export type Block = {
+    export type OutputBlock = {
         type: BlockType;
 
         texts?: TextItem[];

@@ -13,7 +13,7 @@
 <div class="frame">
   <div class="wrap" bind:this={$store.ref.terminal}>
     <div class="histories">
-      {#each terminal.histories as history}
+      {#each terminal.outputs as history}
         <History {history} />
       {/each}
     </div>

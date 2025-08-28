@@ -6,7 +6,7 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
     const open = () => {
         lastStore.terminal = {
-            histories: [],
+            outputs: [],
             target: (() => {
                 const control = lastStore.control;
                 const data = lastStore.data;
@@ -84,7 +84,7 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
         const terminal = getTerminal();
 
-        terminal.histories.push({
+        terminal.outputs.push({
             type: 'record',
             texts: [{ str: `${terminal.target}>${terminal.command}` }]
         });
