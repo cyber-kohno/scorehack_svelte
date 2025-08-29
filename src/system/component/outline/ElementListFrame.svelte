@@ -37,20 +37,22 @@
   })();
 </script>
 
-<div class="wrap" bind:this={$store.ref.outline}>
-  {#each elements as element}
-    <Element {element} />
-  {/each}
-  <div
-    class="lastmargin"
-    style:top="{$store.cache.outlineTailPos}px"
-    style:height="{300}px"
-  ></div>
-</div>
-<div class="list-second">
-  {#if isDispChordSelector}
-    <ChordSelector />
-  {/if}
+<div class="wrap">
+  <div class="list-main" bind:this={$store.ref.outline}>
+    {#each elements as element}
+      <Element {element} />
+    {/each}
+    <div
+      class="lastmargin"
+      style:top="{$store.cache.outlineTailPos}px"
+      style:height="{300}px"
+    ></div>
+  </div>
+  <div class="list-second">
+    {#if isDispChordSelector}
+      <ChordSelector />
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -61,7 +63,6 @@
     height: var(--element-list-height);
     /* background-color: #ced3e9; */
     background: linear-gradient(to right, #91a2b6, #b1b1b1);
-    overflow: hidden;
   }
 
   .lastmargin {
@@ -72,6 +73,16 @@
     width: 100%;
     /* background-color: aliceblue; */
   }
+  .list-main {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    /* background-color: rgba(243, 200, 126, 0.482); */
+    overflow: hidden;
+  }
   .list-second {
     display: inline-block;
     position: absolute;
@@ -79,6 +90,6 @@
     height: 100%;
     top: 0;
     left: 0;
-    /* background-color: rgba(126, 188, 243, 0.349); */
+    /* background-color: rgba(128, 243, 126, 0.482); */
   }
 </style>

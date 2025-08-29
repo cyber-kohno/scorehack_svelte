@@ -22,7 +22,7 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 21px;
-    color: white;
+    color: rgba(255, 255, 255, 0.619);
 
     * {
       vertical-align: top;

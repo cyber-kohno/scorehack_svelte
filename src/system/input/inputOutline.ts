@@ -112,40 +112,44 @@ const useInputOutline = (storeUtil: StoreUtil) => {
         const focus = lastStore.control.outline.focus;
         const element = elements[focus];
         callbacks.holdC = () => {
+            switch (element.type) {
+                case 'chord': {
+                    const data = element.data as StoreOutline.DataChord;
 
-            const modSymbol = (dir: 'prev' | 'next' | 'lower' | 'upper') => {
-                if (data.degree == undefined) return;
-                const symbol = data.degree.symbol;
-                const symbolProps = getSymbolProps(symbol);
+                    const modSymbol = (dir: 'prev' | 'next' | 'lower' | 'upper') => {
+                        if (data.degree == undefined) return;
+                        const symbol = data.degree.symbol;
+                        const symbolProps = MusicTheory.getSymbolProps(symbol);
 
-                let temp: ChordSymol | undefined = undefined;
+                        let temp: MusicTheory.ChordSymol | undefined = undefined;
 
-                switch (dir) {
-                    case 'prev': { temp = getSameLevelSymbol(symbol, -1); } break;
-                    case 'next': { temp = getSameLevelSymbol(symbol, 1); } break;
-                    case 'lower': { temp = symbolProps.lower; } break;
-                    case 'upper': { temp = symbolProps.upper; } break;
-                }
+                        switch (dir) {
+                            case 'prev': { temp = MusicTheory.getSameLevelSymbol(symbol, -1); } break;
+                            case 'next': { temp = MusicTheory.getSameLevelSymbol(symbol, 1); } break;
+                            case 'lower': { temp = symbolProps.lower; } break;
+                            case 'upper': { temp = symbolProps.upper; } break;
+                        }
 
-                if (temp != undefined) {
-                    data.degree.symbol = temp;
-                    CacheUtil.calcCache(store);
-                    adjustX();
-                    update();
-                }
-            }
-            switch (props.event.key) {
-                case "ArrowLeft": {
-                    modSymbol('prev');
-                } break;
-                case "ArrowRight": {
-                    modSymbol('next');
-                } break;
-                case "ArrowUp": {
-                    modSymbol('lower');
-                } break;
-                case "ArrowDown": {
-                    modSymbol('upper');
+                        if (temp != undefined) {
+                            data.degree.symbol = temp;
+                            reducerCache.calculate();
+                            commit();
+                        }
+                    }
+                    switch (eventKey) {
+                        case "ArrowLeft": {
+                            modSymbol('prev');
+                        } break;
+                        case "ArrowRight": {
+                            modSymbol('next');
+                        } break;
+                        case "ArrowUp": {
+                            modSymbol('lower');
+                        } break;
+                        case "ArrowDown": {
+                            modSymbol('upper');
+                        } break;
+                    }
                 } break;
             }
         }

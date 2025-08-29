@@ -5,20 +5,32 @@
 
   $: outline = $store.control.outline;
 
+  // $: [left, top] = (() => {
+  //   const elementRef = $store.ref.elementRefs.find(
+  //     (r) => r.seq === outline.focus
+  //   );
+  //   const outlineRef = $store.ref.outline;
+  //   let left = 0;
+  //   let top = 0;
+  //   if (elementRef != undefined && outlineRef != null) {
+  //     const frameTop = outlineRef.getBoundingClientRect().top;
+  //     const rect = elementRef.ref.getBoundingClientRect();
+  //     left = rect.right + 4;
+  //     top = rect.top - frameTop;
+  //   }
+  //   return [left, top];
+  // })();
+
   $: [left, top] = (() => {
-    const elementRef = $store.ref.elementRefs.find(
-      (r) => r.seq === outline.focus
-    );
     const outlineRef = $store.ref.outline;
-    let left = 0;
-    let top = 0;
-    if (elementRef != undefined && outlineRef != null) {
-      const frameTop = outlineRef.getBoundingClientRect().top;
-      const rect = elementRef.ref.getBoundingClientRect();
-      left = rect.right + 4;
-      top = rect.top - frameTop;
+    if (outlineRef != undefined) {
+      const element = $store.cache.elementCaches[$store.control.outline.focus];
+      // const frameTop = outlineRef.getBoundingClientRect().top;
+      const top = element.outlineTop - outlineRef.scrollTop;
+      const left = 210;
+      return [left, top];
     }
-    return [left, top];
+    throw new Error();
   })();
 
   $: symbol = (() => {
@@ -114,9 +126,10 @@
   .frame {
     display: inline-block;
     position: absolute;
-    background-color: rgba(85, 124, 139, 0.8);
-    border: 1px solid black;
+    background-color: rgba(206, 232, 242, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.605);
     /* box-sizing: border-box; */
+    border-radius: 4px;
     width: 280px;
     height: 130px;
     z-index: 10;
@@ -126,7 +139,7 @@
     display: inline-block;
     position: absolute;
     background-color: rgb(172, 168, 192);
-    border: 1px solid rgba(255, 255, 255, 0.486);
+    border: 1px solid rgba(255, 255, 255, 0.662);
     box-sizing: border-box;
     width: 90px;
     height: 40px;

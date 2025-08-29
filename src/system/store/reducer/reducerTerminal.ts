@@ -1,4 +1,5 @@
 import type { StoreProps } from "../store";
+import useTerminalLogger from "./terminal/terminalLogger";
 
 const useReducerTermianl = (lastStore: StoreProps) => {
 
@@ -83,16 +84,17 @@ const useReducerTermianl = (lastStore: StoreProps) => {
     const registCommand = () => {
 
         const terminal = getTerminal();
+        const { backupCommand, undefinedFunction } = useTerminalLogger(terminal);
 
-        terminal.outputs.push({
-            type: 'record',
-            texts: [{ str: `${terminal.target}>${terminal.command}` }]
-        });
+
+        // コマンドのバックアップを出力する
+        backupCommand();
 
         if (terminal.command !== '') {
             const orderItems = terminal.command.split(' ');
             const funcName = orderItems[0];
             const args = orderItems.slice(1);
+
         }
         terminal.focus = 0;
         terminal.command = '';
