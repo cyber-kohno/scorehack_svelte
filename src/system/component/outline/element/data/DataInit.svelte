@@ -44,7 +44,7 @@
       line-height: 28px;
       font-weight: 600;
       border: 1px solid rgb(207, 255, 233);
-      box-sizing: borderrgba(0, 0, 0, 0.465)
+      box-sizing: border-box;
     }
   }
 </style>

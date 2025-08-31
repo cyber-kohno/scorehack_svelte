@@ -29,7 +29,7 @@ namespace Layout {
     }
 
     export const element = {
-        INIT_RECORD_HEIGHT: 30,
+        INIT_RECORD_HEIGHT: 32,
         INIT_RECORD_MARGIN: 4,
         SECTION_LABEL_HEIGHT: 30,
         SECTION_BORDER_HEIGHT: 8,

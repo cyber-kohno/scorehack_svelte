@@ -8,15 +8,15 @@
   import TimelineLastMargin from "../TimelineLastMargin.svelte";
   import ShadeTracks from "../../melody/score/ShadeTracks.svelte";
   import ActiveTrack from "../../melody/score/ActiveTrack.svelte";
+  import PreviewPosLine from "./PreviewPosLine.svelte";
 
   $: cache = $store.cache;
 
   $: isMelodyMode = (() => $store.control.mode === "melody")();
 
+  $: isPreview = $store.preview.timerKeys != null;
   $: isDispCursor =
-    isMelodyMode &&
-    $store.preview.timerKeys == null &&
-    $store.control.melody.focus === -1;
+    isMelodyMode && !isPreview && $store.control.melody.focus === -1;
 
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
 </script>
@@ -42,6 +42,10 @@
     {/if}
     <ShadeTracks />
   </div>
+
+  {#if isPreview}
+    <PreviewPosLine />
+  {/if}
 </div>
 
 <style>

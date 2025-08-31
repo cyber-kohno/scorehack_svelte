@@ -8,6 +8,7 @@ import useReducerOutline from "../store/reducer/reducerOutline";
 import useReducerRef from "../store/reducer/reducerRef";
 import type { StoreUtil } from "../store/store";
 import MusicTheory from "../util/musicTheory";
+import PreviewUtil from "../util/preview/previewUtil";
 
 const useInputMelody = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
@@ -17,6 +18,8 @@ const useInputMelody = (storeUtil: StoreUtil) => {
     const reducerCache = useReducerCache(lastStore);
     const reducerMelody = useReducerMelody(lastStore);
     // const { isPreview } = useAccessorPreview(lastStore);
+
+    const {startTest, stopTest} = PreviewUtil.useUpdater(storeUtil);
 
     const melody = lastStore.control.melody;
     const playSF = (pitchIndex: number) => {
@@ -47,6 +50,8 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         commit();
     }
 
+    const isPreview = lastStore.preview.timerKeys != null;
+
     const control = (eventKey: string) => {
         const cursor = melody.cursor;
         const notes = reducerMelody.getCurrScoreTrack().notes;
@@ -63,19 +68,18 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             commit();
         }
 
-        // if (isPreview()) {
+        if (lastStore.preview.timerKeys != null) {
 
-        //     switch (eventKey) {
-        //         case ' ': PreviewUtil.stopTest();
-        //     }
+            switch (eventKey) {
+                case ' ': stopTest();
+            }
 
-        //     return;
-        // }
+            return;
+        }
 
-        // switch (eventKey) {
-        //     case ' ': PreviewUtil.startTest({ target: 'all' });
-        // }
-
+        switch (eventKey) {
+            case ' ': startTest({ target: 'all' });
+        }
         if (isCursor()) {
             const moveCursor = (dir: -1 | 1) => {
                 const temp = cursor.pos + dir;
