@@ -352,13 +352,13 @@ namespace PreviewUtil {
             const preview = lastStore.preview;
             if (preview.timerKeys == null) throw new Error('cache.timerKeysがnullであってはならない。');
             preview.timerKeys.forEach(key => {
-                console.log(`clear timerKeys: [${key}]`);
+                // console.log(`clear timerKeys: [${key}]`);
                 clearTimeout(key);
             });
             preview.timerKeys = null;
             if (preview.intervalKeys != null) {
                 preview.intervalKeys.forEach(key => {
-                    console.log(`clear intervalKeys: [${key}]`);
+                    // console.log(`clear intervalKeys: [${key}]`);
                     clearInterval(key);
                 });
                 preview.intervalKeys = null;

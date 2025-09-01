@@ -1,12 +1,12 @@
 namespace StoreTerminal {
-   
+
     export type Props = {
         outputs: OutputBlock[];
         command: string;
         target: string;
         focus: number;
     }
-    export const createInitial = (): Props =>{
+    export const createInitial = (): Props => {
 
         return {
             outputs: [],
@@ -17,8 +17,14 @@ namespace StoreTerminal {
     };
 
     export type BlockType = 'record' | 'table';
-    export type HighlightType = 'func' | 'item';
 
+    export type RecordAttr = 'info' | 'backup' | 'error';
+    export type HighlightType = 'func' | 'item' | 'word';
+
+    export type RecordProps = {
+        attr: RecordAttr;
+        texts: TextItem[];
+    }
     export type TextItem = {
         str: string;
         highlight?: HighlightType;
@@ -26,7 +32,7 @@ namespace StoreTerminal {
     export type OutputBlock = {
         type: BlockType;
 
-        texts?: TextItem[];
+        record?: RecordProps;
     }
 }
 

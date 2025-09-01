@@ -5,14 +5,23 @@ const useTerminalLogger = (terminal: StoreTerminal.Props) => {
     const backupCommand = () => {
         terminal.outputs.push({
             type: 'record',
-            texts: [{ str: `${terminal.target}>${terminal.command}` }]
+            record: {
+                attr: 'backup',
+                texts: [{ str: `$${terminal.target}>${terminal.command}` }]
+            }
         });
     }
 
-    const undefinedFunction = () => {
+    const undefinedFunction = (funcKey: string) => {
         terminal.outputs.push({
             type: 'record',
-            texts: [{ str: `${terminal.target}>${terminal.command}` }]
+            record: {
+                attr: 'error',
+                texts: [
+                    { str: '[' }, { str: funcKey, highlight: 'word' }, { str: ']' },
+                    { str: ' command not found.' }
+                ]
+            }
         });
     }
 

@@ -115,12 +115,12 @@
     position: absolute;
     z-index: 1;
 
-    background-color: #3ec9ce86;
+    background-color: #3ec9ce70;
     top: 0;
     height: var(--pitch-frame-height);
   }
   .wrap[data-even="false"] {
-    background-color: #3ecea386;
+    background-color: #3ecea370;
   }
 
   .line {

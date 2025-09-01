@@ -27,6 +27,7 @@ namespace DesignInitializer {
             { key: '--init-record-margin', value: `${EL.INIT_RECORD_MARGIN}px` },
             { key: '--section-label-height', value: `${EL.SECTION_LABEL_HEIGHT}px` },
             { key: '--section-border-height', value: `${EL.SECTION_BORDER_HEIGHT}px` },
+            { key: '--section-top-margin', value: `${EL.SECTION_TOP_MARGIN}px` },
             { key: '--section-bottom-margin', value: `${EL.SECTION_BOTTOM_MARGIN}px` },
             { key: '--chord-sec-height', value: `${EL.CHORD_SEQ_HEIGHT}px` },
             { key: '--chord-tip-height', value: `${EL.CHORD_TIP_HEIGHT}px` },

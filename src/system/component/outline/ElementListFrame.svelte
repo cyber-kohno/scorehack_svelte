@@ -5,7 +5,7 @@
   import Element from "./element/Element.svelte";
   import ChordSelector from "./item/ChordSelector.svelte";
 
-  $: elements = (() => {
+  $: dispElements = (() => {
     const elementSeq = $store.control.outline.focus;
     const elementCaches = $store.cache.elementCaches;
     const limitProps = StoreRef.getScrollLimitProps($store.ref.outline);
@@ -25,6 +25,7 @@
   })();
 
   $: isDispChordSelector = (() => {
+    const elements = $store.cache.elementCaches;
     const control = $store.control;
     const element = elements[control.outline.focus];
     return (
@@ -39,7 +40,7 @@
 
 <div class="wrap">
   <div class="list-main" bind:this={$store.ref.outline}>
-    {#each elements as element}
+    {#each dispElements as element}
       <Element {element} />
     {/each}
     <div

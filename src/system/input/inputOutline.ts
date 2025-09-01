@@ -54,6 +54,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             case 'Delete': {
                 reducerOutline.removeCurElement();
                 reducerCache.calculate();
+                commit();
             } break;
 
             case 'ArrowUp': {
@@ -182,6 +183,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                             // reducerOutline.setChordData(chordData);
                             reducerCache.calculate();
                         }
+                        commit();
                     }
 
                     const modBeat = (dir: -1 | 1) => {

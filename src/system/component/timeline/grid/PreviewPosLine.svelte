@@ -1,32 +1,43 @@
 <script lang="ts">
   import store from "../../../store/store";
 
-  $: width = 400;
+  $: width = 300;
   $: pos = $store.preview.linePos * $store.env.beatWidth - width;
 </script>
 
-<div class="wrap" style:left="{pos}px">
+<div class="frame">
+  <div class="wrap" style:left="{pos}px">
     <div class="shade" style:width="{width}px"></div>
     <div class="line"></div>
+  </div>
 </div>
 
 <style>
+  .frame {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--beat-sum);
+    height: var(--pitch-frame-height);
+    z-index: 12;
+    /* background-color: rgba(255, 255, 249, 0.359); */
+  }
   .wrap {
     display: inline-block;
     position: absolute;
     top: 0;
-    z-index: 12;
-    height: var(--pitch-frame-height);
-    background-color: rgba(255, 255, 249, 0.359);
+    height: 100%;
+    /* background-color: rgba(255, 255, 249, 0.359); */
   }
   .shade {
     display: inline-block;
     position: relative;
     height: 100%;
     background: linear-gradient(
-      to Right,
-      rgba(255, 251, 39, 0.001),
-      rgba(255, 251, 39, 0.709)
+      to right,
+      rgba(255, 251, 39, 0),
+      rgba(39, 118, 255, 0.809)
     );
   }
   .line {
@@ -34,6 +45,6 @@
     position: relative;
     width: 6px;
     height: 100%;
-    background-color: rgba(170, 167, 0, 0.85);
+    background-color: rgba(0, 89, 255, 0.85);
   }
 </style>

@@ -6,7 +6,7 @@ const useInputTerminal = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
 
     const reducerTerminal = useReducerTerminal(lastStore);
-    const { adjustTerminalScroll } = useReducerRef(lastStore);
+    // const { adjustTerminalScroll } = useReducerRef(lastStore);
 
     const control = (eventKey: string) => {
 
@@ -16,11 +16,12 @@ const useInputTerminal = (storeUtil: StoreUtil) => {
             } break;
             case 'Enter': {
                 reducerTerminal.registCommand();
-                adjustTerminalScroll();
+                // adjustTerminalScroll();
                 commit();
             } break;
             case 'Backspace': {
-                // reducerTerminal.removeCommand();
+                reducerTerminal.removeCommand();
+                commit();
             } break;
             case 'ArrowLeft': {
                 reducerTerminal.moveFocus(-1);

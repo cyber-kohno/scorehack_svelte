@@ -1,15 +1,15 @@
 <script lang="ts">
   import type StoreTerminal from "../../../store/props/storeTerminal";
 
-  export let texts!: StoreTerminal.TextItem[] | undefined;
-  if (texts == undefined) throw new Error();
+  export let record!: StoreTerminal.RecordProps | undefined;
+  if (record == undefined) throw new Error();
 </script>
 
-{#each texts as text}
-  <div class="record">
+<div class="record" data-attr={record.attr}>
+  {#each record.texts as text}
     <span data-highlight={text.highlight}>{text.str}</span>
+  {/each}
 </div>
-{/each}
 
 <style>
   .record {
@@ -22,10 +22,30 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 21px;
-    color: rgba(255, 255, 255, 0.619);
+    /* color: rgba(116, 255, 246, 0.619); */
 
     * {
       vertical-align: top;
     }
+  }
+  .record[data-attr="info"] {
+    color: rgba(255, 255, 210, 0.808);
+  }
+  .record[data-attr="backup"] {
+    background-color: #0000001e;
+    color: rgba(167, 255, 249, 0.48);
+  }
+  .record[data-attr="error"] {
+    color: rgb(254, 2, 2);
+  }
+
+  [data-highlight="func"] {
+    color: rgb(27, 254, 2);
+  }
+  [data-highlight="item"] {
+    color: rgb(2, 254, 233);
+  }
+  [data-highlight="word"] {
+    color: rgba(255, 255, 255, 0.717);
   }
 </style>

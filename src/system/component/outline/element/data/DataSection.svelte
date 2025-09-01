@@ -17,6 +17,7 @@
     color: #f00;
     text-align: center;
     width: 100%;
+    margin-top: var(--section-top-margin);
     height: var(--section-label-height);
     /* background-color: #5c75b634; */
   }
@@ -28,5 +29,6 @@
     height: var(--section-border-height);
     margin-bottom: var(--section-bottom-margin);
     background-color: red;
+    border-radius: 4px;
   }
 </style>

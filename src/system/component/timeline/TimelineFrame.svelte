@@ -6,8 +6,38 @@
   import PitchListFrame from "./pitch/PitchListFrame.svelte";
   import store from "../../store/store";
   import StoreRef from "../../store/props/storeRef";
+  import PianoViewFrame from "./grid/PianoViewFrame.svelte";
+  import useReducerCache from "../../store/reducer/reducerCache";
+  import MusicTheory from "../../util/musicTheory";
 
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.header);
+
+  $: reducerCache = useReducerCache($store);
+
+  $: pianoInfo = (() => {
+    const element = reducerCache.getCurElement();
+
+    // コード要素以外では表示しない。
+    if (element.type !== "chord") return null;
+
+    const chordCache = reducerCache.getCurChord();
+
+    const base = reducerCache.getCurBase();
+    const tonality = base.scoreBase.tonality;
+    const scaleList = MusicTheory.getScaleKeyIndexesFromTonality(tonality);
+
+    let uses: number[] = [];
+
+    const compiledChord = chordCache.compiledChord;
+    if (compiledChord) {
+      uses = compiledChord.structs.map((s) => s.key12);
+    }
+
+    return {
+      scaleList,
+      uses,
+    };
+  })();
 </script>
 
 <div class="wrap">
@@ -24,6 +54,16 @@
   <div class="main">
     <PitchListFrame />
     <GridRootFrame />
+
+    {#if pianoInfo != null}
+      <div class="piano">
+        <PianoViewFrame
+          uiParam={{ width: 380, height: 80, wKeyNum: 14 }}
+          scaleList={pianoInfo.scaleList}
+          uses={pianoInfo.uses}
+        />
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -66,5 +106,15 @@
     /* background-color: #5b6466; */
     width: 100%;
     height: calc(100% - var(--timeline-header-height));
+  }
+  .piano {
+    display: inline-block;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    z-index: 4;
+    opacity: 0.95;
+    /* width: 300px;
+        height: 200px; */
   }
 </style>

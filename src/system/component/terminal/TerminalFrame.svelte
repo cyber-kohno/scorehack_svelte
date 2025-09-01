@@ -1,26 +1,47 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import useReducerTermianl from "../../store/reducer/reducerTerminal";
   import store from "../../store/store";
-  import History from "./History.svelte";
+  import CommandCursor from "./CommandCursor.svelte";
+  import TerminalOutput from "./TerminalOutput.svelte";
+  import useReducerRef from "../../store/reducer/reducerRef";
 
   $: reducer = useReducerTermianl($store);
   // $: {getTerminal} = useReducerTermianl($store);
   $: terminal = reducer.getTerminal();
 
   $: [commandLeft, commandRight] = reducer.splitCommand();
+
+  let lastScrollHeight = 0;
+  onMount(() => {
+    const unsubscribe = store.subscribe(($store) => {
+      setTimeout(() => {
+        const ref = $store.ref.terminal;
+        if (ref != undefined) {
+          if (lastScrollHeight !== ref.scrollHeight) {
+            const { adjustTerminalScroll } = useReducerRef($store);
+            adjustTerminalScroll();
+            lastScrollHeight = ref.scrollHeight;
+          }
+        }
+      }, 0);
+      return () => {
+        unsubscribe(); // 購読の解除
+      };
+    });
+  });
 </script>
 
 <div class="frame">
   <div class="wrap" bind:this={$store.ref.terminal}>
-    <div class="histories">
-      {#each terminal.outputs as history}
-        <History {history} />
+    <div class="outputs">
+      {#each terminal.outputs as output}
+        <TerminalOutput {output} />
       {/each}
     </div>
     <div class="command">
-      <span class="target">{terminal.target + ">"}</span>{commandLeft}<span
-        class="cursor"
-      ></span>{commandRight}
+      <span class="target">{"$" + terminal.target + ">"}</span>
+      <span>{commandLeft}</span><CommandCursor /><span>{commandRight}</span>
     </div>
     <div class="lastmargin"></div>
   </div>
@@ -54,7 +75,7 @@
     overflow: hidden;
   }
 
-  .histories {
+  .outputs {
     display: inline-block;
     position: relative;
     width: 100%;
@@ -70,6 +91,7 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 21px;
+    /* color: rgb(0, 255, 0); */
     color: white;
 
     * {
@@ -80,26 +102,6 @@
     color: yellow;
   }
 
-  @keyframes blinkAnimation {
-    0%,
-    100% {
-      opacity: 0; /* 完全に非表示 */
-    }
-    50% {
-      opacity: 1; /* 完全に表示 */
-    }
-  }
-
-  .cursor {
-    display: inline-block;
-    position: relative;
-    margin: 3px 0 0 0;
-    width: 2px;
-    height: calc(100% - 6px);
-    background-color: #ffff3d;
-    margin-right: -2px;
-    animation: blinkAnimation 1s step-start infinite; /* 点滅するアニメーション */
-  }
   .lastmargin {
     width: 100%;
     height: 100px;

@@ -1,4 +1,6 @@
 import type { StoreProps } from "../store";
+import useReducerRef from "./reducerRef";
+import CommandRegistUtil from "./terminal/commandRegistUtil";
 import useTerminalLogger from "./terminal/terminalLogger";
 
 const useReducerTermianl = (lastStore: StoreProps) => {
@@ -92,12 +94,24 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
         if (terminal.command !== '') {
             const orderItems = terminal.command.split(' ');
-            const funcName = orderItems[0];
+            const funcKey = orderItems[0];
             const args = orderItems.slice(1);
 
+            const register = CommandRegistUtil.useCommandRegister(lastStore);
+            const funcs = register.getFuncs();
+
+            const func = funcs.find(f => f.funcKey === funcKey);
+            if (func == undefined) {
+                undefinedFunction(funcKey);
+            } else {
+                func.callback(args);
+            }
         }
         terminal.focus = 0;
         terminal.command = '';
+
+        // const { adjustTerminalScroll } = useReducerRef(lastStore);
+        // adjustTerminalScroll();
     }
     return {
         isUse,
