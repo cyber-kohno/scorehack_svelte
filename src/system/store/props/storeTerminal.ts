@@ -33,6 +33,20 @@ namespace StoreTerminal {
         type: BlockType;
 
         record?: RecordProps;
+        table?: TableProps;
+    }
+
+
+    export type ColAttr = 'id' | 'item' | 'sentence' | 'def';
+    export type ColInfo = {
+        headerName: string;
+        width: number;
+        attr: ColAttr;
+        isNumber?: boolean;
+    }
+    export type TableProps = {
+        cols: ColInfo[];
+        table: string[][];
     }
 }
 

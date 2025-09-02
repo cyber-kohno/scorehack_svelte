@@ -40,7 +40,7 @@
     position: absolute;
     top: 0;
     height: var(--pitch-frame-height);
-    z-index: 2;
+    z-index: 1;
     box-sizing: border-box;
     /* background-color: rgba(240, 248, 255, 0.201); */
   }

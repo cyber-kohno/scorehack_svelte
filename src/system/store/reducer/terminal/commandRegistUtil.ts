@@ -5,14 +5,18 @@ import StorePreview from "../../props/storePreview";
 import { createStoreUtil, type StoreProps } from "../../store";
 import useReducerMelody from "../reducerMelody";
 import useReducerTermianl from "../reducerTerminal";
+import useBuilderChord from "./sector/builderChord";
+import useBuilderCommon from "./sector/builderCommon";
+import useBuilderMelody from "./sector/builderMelody";
+import useBuilderSection from "./sector/builderSection";
 
 namespace CommandRegistUtil {
 
-    type FuncArg = {
+    export type FuncArg = {
         name: string;
     }
 
-    interface FuncPropsDefault {
+    export interface FuncPropsDefault {
         sector: string;
         usage: string;
         args: FuncArg[];
@@ -22,15 +26,22 @@ namespace CommandRegistUtil {
     export interface FuncProps extends FuncPropsDefault {
         funcKey: string;
     }
-
+    export const createDefaultProps = (sector: string): FuncPropsDefault => ({
+        sector,
+        usage: '',
+        args: [],
+        callback: () => [],
+    });
 
     export const useCommandRegister = (lastStore: StoreProps) => {
-        const { commit } = createStoreUtil(lastStore);
 
         const reducer = useReducerTermianl(lastStore);
         const terminal = reducer.getTerminal();
 
-        const fileUtil = FileUtil.getUtil(lastStore);
+        const builderCommon = useBuilderCommon(lastStore);
+        const builderSection = useBuilderSection(lastStore);
+        const builderChord = useBuilderChord(lastStore);
+        const builderMelody = useBuilderMelody(lastStore);
 
         const getFuncs = () => {
             const items: FuncProps[] = [];
@@ -40,127 +51,23 @@ namespace CommandRegistUtil {
 
             const sectors = terminal.target.split('\\');
 
-            add(getFuncsCommon({ items }));
+            add(builderCommon.get({ items }));
 
             switch (sectors[0]) {
                 case 'harmonize': {
                     switch (sectors[1] as StoreOutline.ElementType) {
                         // case 'init': add(getFuncsHarmonizeInit()); break;
-                        // case 'section': add(getFuncsHarmonizeSection()); break;
-                        // case 'chord': add(getFuncsHarmonizeChord()); break;
+                        case 'section': add(builderSection.get()); break;
+                        case 'chord': add(builderChord.get()); break;
                         // case 'modulate': add(getFuncsHarmonizeModulate()); break;
                     }
                 } break;
-                // case 'melody': add(getFuncsMelody());
+                case 'melody': add(builderMelody.get());
             }
 
             return items;
         }
 
-        const getFuncsCommon = (props: {
-            items: FuncProps[];
-        }): FuncProps[] => {
-            const { loadSFPlayer } = useReducerMelody(lastStore);
-
-            const defaultProps = createDefaultProps('common');
-            return [
-                {
-                    ...defaultProps,
-                    funcKey: 'clear',
-                    args: [],
-                    callback: () => {
-                        terminal.outputs.length = 0;
-                    }
-                },
-                {
-                    ...defaultProps,
-                    funcKey: 'ls',
-                    args: [],
-                    callback: () => {
-                        props.items.forEach(item => {
-                            terminal.outputs.push({
-                                type: 'record',
-                                record: {
-                                    attr: 'info',
-                                    texts: [
-                                        { str: item.funcKey, highlight: 'func' }
-                                    ]
-                                }
-                            });
-                        });
-                    }
-                },
-                {
-                    ...defaultProps,
-                    funcKey: 'save',
-                    args: [],
-                    callback: () => {
-                        fileUtil.saveScoreFile({
-                            success: (handle) => {
-                                terminal.outputs.push({
-                                    type: 'record',
-                                    record: {
-                                        attr: 'info',
-                                        texts: [
-                                            { str: `File saved successfully. [${handle.name}]` }
-                                        ]
-                                    }
-                                });
-                                commit();
-                            },
-                            cancel() {
-                                terminal.outputs.push({
-                                    type: 'record',
-                                    record: {
-                                        attr: 'info',
-                                        texts: [
-                                            { str: 'File saveing was canceled.' }
-                                        ]
-                                    }
-                                });
-                                commit();
-                            },
-                        });
-                    }
-                },
-                {
-                    ...defaultProps,
-                    funcKey: 'load',
-                    args: [],
-                    callback: () => {
-                        fileUtil.loadScoreFile(() => {
-                            lastStore.data.scoreTracks.forEach(t => {
-                                const scoreTrack = t as StoreMelody.ScoreTrack;
-                                if (scoreTrack.soundFont !== '') {
-                                    const sfName = StorePreview.validateSFName(scoreTrack.soundFont);
-                                    console.log(sfName);
-                                    loadSFPlayer(sfName);
-                                }
-                            });
-                            commit();
-                        }, () => {
-                            terminal.outputs.push({
-                                type: 'record',
-                                record: {
-                                    attr: 'info',
-                                    texts: [
-                                        { str: 'File loading was canceled.' }
-                                    ]
-                                }
-                            });
-                            commit();
-                        });
-                    }
-                }
-            ];
-        };
-
-        const createDefaultProps = (sector: string): FuncPropsDefault => ({
-            sector,
-            usage: '',
-            args: [],
-            callback: () => [],
-        });
 
         const execute = (target: string, funcKey: string, args: string[]) => {
 
