@@ -5,16 +5,30 @@ namespace StoreTerminal {
         command: string;
         target: string;
         focus: number;
+        helper: HelperProps | null;
     }
-    export const createInitial = (): Props => {
-
+    export type HelperProps = {
+        list: string[];
+        keyword: string;
+        focus: number;
+    }
+    export const createHelperInitial = (): HelperProps => {
         return {
-            outputs: [],
-            command: '',
-            target: '',
+            list: [],
+            keyword: '',
             focus: 0
         }
     };
+    // export const createInitial = (): Props => {
+
+    //     return {
+    //         outputs: [],
+    //         command: '',
+    //         target: '',
+    //         focus: 0,
+    //         helper: null,
+    //     }
+    // };
 
     export type BlockType = 'record' | 'table';
 
@@ -37,7 +51,7 @@ namespace StoreTerminal {
     }
 
 
-    export type ColAttr = 'id' | 'item' | 'sentence' | 'def';
+    export type ColAttr = 'item' | 'sentence' | 'def' | 'category';
     export type ColInfo = {
         headerName: string;
         width: number;

@@ -3,11 +3,14 @@ import { createStoreUtil, type StoreProps } from "../../../store";
 import useReducerMelody from "../../reducerMelody";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
+import useTerminalLogger from "../terminalLogger";
 
 const useBuilderMelody = (lastStore: StoreProps) => {
     const reducer = useReducerTermianl(lastStore);
     const terminal = reducer.getTerminal();
     const { changeScoreTrack, setSFCurTrack } = useReducerMelody(lastStore);
+
+    const logger = useTerminalLogger(terminal);
 
     const get = (): CommandRegistUtil.FuncProps[] => {
 
@@ -62,15 +65,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                         soundFont: '',
                         notes: []
                     });
-                    terminal.outputs.push({
-                        type: 'record',
-                        record: {
-                            attr: 'info',
-                            texts: [
-                                { str: `Created a new track [${name}].` }
-                            ]
-                        }
-                    });
+                    logger.outputInfo(`Created a new track. [${name}]`);
                 }
             },
             {
@@ -82,46 +77,20 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     const tracks = lastStore.data.scoreTracks;
                     const melody = lastStore.control.melody;
                     let delIndex = melody.trackIndex;
-                    if (args[0] != undefined) {
-                        delIndex = Number(args[0]);
-                        if (Number.isNaN(delIndex)) {
-                            terminal.outputs.push({
-                                type: 'record',
-                                record: {
-                                    attr: 'error',
-                                    texts: [
-                                        { str: `The first argument must be a number. [${args[0]}]` }
-                                    ]
-                                }
-                            });
-                            return;
-                        }
-                    }
+                    const arg0 = logger.validateRequired(args[0], 1);
+                    if (arg0 == null) return;
+                    const arg0Number = logger.validateNumber(arg0, 1);
+                    if (arg0Number == null) return;
+                    delIndex = arg0Number;
                     if (tracks.length === 1) {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `You cannot delete all tracks.` }
-                                ]
-                            }
-                        });
+                        logger.outputError('You cannot delete all tracks.')
                         return;
                     }
                     const name = tracks[delIndex].name;
                     tracks.splice(delIndex, 1);
                     // 先頭以外が選択されている場合かつ、アクティブより上が削除され場合
                     if (delIndex > 0 && delIndex <= melody.trackIndex) melody.trackIndex--;
-                    terminal.outputs.push({
-                        type: 'record',
-                        record: {
-                            attr: 'info',
-                            texts: [
-                                { str: `Track deleted. [${name}].` }
-                            ]
-                        }
-                    });
+                    logger.outputInfo(`Track deleted. [${name}].`);
                 }
             },
             {
@@ -131,42 +100,17 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                 args: [],
                 callback: (args) => {
                     const melody = lastStore.control.melody;
-                    if (args[0] == undefined) {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `The first argument is not specified.` }
-                                ]
-                            }
-                        });
-                        return;
-                    }
-                    const nextIndex = Number(args[0]);
-                    if (Number.isNaN(nextIndex)) {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `The first argument must be a number. [${args[0]}]` }
-                                ]
-                            }
-                        });
-                        return;
-                    }
+                    const arg0 = logger.validateRequired(args[0], 1);
+                    if (arg0 == null) return;
+                    const nextIndex = logger.validateNumber(arg0, 1);
+                    if (nextIndex == null) return;
                     const prev = melody.trackIndex;
-                    melody.trackIndex = nextIndex;
-                    terminal.outputs.push({
-                        type: 'record',
-                        record: {
-                            attr: 'info',
-                            texts: [
-                                { str: `Active track changed. [${prev} → ${nextIndex}].` }
-                            ]
-                        }
-                    });
+                    try {
+                        changeScoreTrack(nextIndex);
+                        logger.outputInfo(`Active track changed. [${prev} → ${nextIndex}]`);
+                    } catch {
+                        logger.outputError(`The destination track does not exist. [${nextIndex}]`);
+                    }
                 }
             },
             {
@@ -176,64 +120,28 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                 args: [],
                 callback: (args) => {
 
-                    if (args[0] == undefined) {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `The first argument is not specified.` }
-                                ]
-                            }
-                        });
-                        return;
-                    }
+                    const arg0 = logger.validateRequired(args[0], 1);
+                    if (arg0 == null) return;
                     try {
-                        const sfName = StorePreview.validateSFName(args[0]);
+                        const sfName = StorePreview.validateSFName(arg0);
                         setSFCurTrack(sfName);
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'info',
-                                texts: [
-                                    { str: `Set a soundfont as the active track. [${sfName}].` }
-                                ]
-                            }
-                        });
+                        logger.outputInfo(`Set a soundfont as the active track. [${sfName}]`);
                     } catch {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `The specified soundfont does not exist. [${args[0]}]` }
-                                ]
-                            }
-                        });
+                        logger.outputError(`The specified soundfont does not exist. [${arg0}]`);
                     }
                 }
             },
             {
                 ...defaultProps,
-                funcKey: 'lsf',
-                usage: 'Lists available soundfonts.',
+                funcKey: 'shf',
+                usage: 'Search available soundfonts.',
                 args: [],
                 callback: (args) => {
-                    if (args[0] == undefined) {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'error',
-                                texts: [
-                                    { str: `The first argument is not specified.` }
-                                ]
-                            }
-                        });
-                        return;
-                    }
+                    const arg0 = logger.validateRequired(args[0], 1);
+                    if (arg0 == null) return;
                     const items = StorePreview.InstrumentNames
                         .filter(n => {
-                            const v = args[0];
+                            const v = arg0;
                             if (v == undefined) return true;
                             else return n.indexOf(v) !== -1;
                         })

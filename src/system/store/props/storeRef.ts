@@ -6,6 +6,8 @@ namespace StoreRef {
         pitch?: HTMLElement;
         outline?: HTMLElement;
         terminal?: HTMLElement;
+        cursor?: HTMLElement;
+        helper?: HTMLElement;
 
         elementRefs: { seq: number, ref: HTMLElement }[];
     }

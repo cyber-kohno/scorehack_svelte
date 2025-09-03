@@ -14,6 +14,7 @@ export type StoreProps = {
     terminal: null | StoreTerminal.Props;
     data: StoreData.Props;
     input: StoreInput.Props;
+    holdCallbacks: StoreInput.Callbacks;
     preview: StorePreview.Props;
     cache: StoreCache.Props;
     env: {
@@ -28,6 +29,7 @@ const store = writable<StoreProps>({
     terminal: null,
     data: StoreData.INITIAL,
     input: StoreInput.INITIAL,
+    holdCallbacks: {},
     preview: StorePreview.INITIAL,
     cache: StoreCache.INITIAL,
     env: {

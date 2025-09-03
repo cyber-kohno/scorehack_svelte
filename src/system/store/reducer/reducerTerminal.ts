@@ -34,7 +34,8 @@ const useReducerTermianl = (lastStore: StoreProps) => {
                 return ret;
             })(),
             command: '',
-            focus: 0
+            focus: 0,
+            helper: null
         };
     };
     const close = () => {
@@ -70,6 +71,8 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
     const insertCommand = (key: string) => {
         const [left, right] = splitCommand();
+        // スペース（区切り文字）が連続することは許さない
+        if(left.slice(-1) === ' ' && key === ' ') return;
         setCommand(() => left + key + right);
         getTerminal().focus += key.length;
     }

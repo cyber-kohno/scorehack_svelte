@@ -5,10 +5,13 @@
   import CommandCursor from "./CommandCursor.svelte";
   import TerminalOutput from "./TerminalOutput.svelte";
   import useReducerRef from "../../store/reducer/reducerRef";
+  import HelperFrame from "./HelperFrame.svelte";
 
   $: reducer = useReducerTermianl($store);
   // $: {getTerminal} = useReducerTermianl($store);
   $: terminal = reducer.getTerminal();
+
+  $: helper = terminal.helper;
 
   $: [commandLeft, commandRight] = reducer.splitCommand();
 
@@ -46,12 +49,15 @@
     <div class="lastmargin"></div>
   </div>
 </div>
+{#if helper != null}
+  <HelperFrame {helper} />
+{/if}
 
 <style>
   .frame {
     display: inline-block;
     position: absolute;
-    z-index: 4;
+    z-index: 3;
     top: 10px;
     left: 10px;
     width: 700px;

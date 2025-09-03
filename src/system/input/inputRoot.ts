@@ -15,7 +15,6 @@ const useInputRoot = (storeUtil: StoreUtil) => {
 
     const inputOutline = useInputOutline(storeUtil);
     const inputMelody = useInputMelody(storeUtil);
-    const inputTerminal = useInputTerminal(storeUtil);
 
     const control = lastStore.control;
 
@@ -57,6 +56,7 @@ const useInputRoot = (storeUtil: StoreUtil) => {
 
         if (!reducerRoot.hasHold()) {
             if (reducerTerminal.isUse()) {
+                const inputTerminal = useInputTerminal(storeUtil);
                 inputTerminal.control(eventKey);
                 commit();
                 return;

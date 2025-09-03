@@ -104,7 +104,9 @@ const useReducerMelody = (lastStore: StoreProps) => {
         const prevTrack = tracks[prevIndex];
 
         const notes = prevTrack.notes;
-        focusOutNoteSide(notes[melody.focus], -1);
+        // focusOutNoteSide(notes[melody.focus], -1);
+
+        melody.trackIndex = nextIndex;
     }
     const setSFCurTrack = (sfName: InstrumentName) => {
         const track = getCurrScoreTrack();

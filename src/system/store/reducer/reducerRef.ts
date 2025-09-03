@@ -76,6 +76,17 @@ const useReducerRef = (lastStore: StoreProps) => {
             }
         }
     }
+    const adjustHelperScroll = () => {
+
+        const ref = lastStore.ref.helper;
+        const helper = lastStore.terminal?.helper;
+        if (ref && helper != null) {
+            const { height: frameHeight } = ref.getBoundingClientRect();
+            const itemTop = helper.focus * 26;
+            const top = itemTop - frameHeight / 2;
+            ref.scrollTo({ top, behavior: "smooth" });
+        }
+    }
     const adjustTerminalScroll = () => {
         const ref = lastStore.ref.terminal;
         if (ref) {
@@ -89,7 +100,8 @@ const useReducerRef = (lastStore: StoreProps) => {
         adjustOutlineScroll,
         adjustGridScrollXFromNote,
         adjustGridScrollYFromCursor,
-        adjustTerminalScroll
+        adjustTerminalScroll,
+        adjustHelperScroll
     };
 };
 

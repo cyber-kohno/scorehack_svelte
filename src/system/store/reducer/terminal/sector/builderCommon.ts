@@ -40,8 +40,8 @@ const useBuilderCommon = (lastStore: StoreProps) => {
                         type: 'table',
                         table: {
                             cols: [
-                                { headerName: 'Sector', width: 110, attr: 'item' },
-                                { headerName: 'Command', width: 150, attr: 'item' },
+                                { headerName: 'Sector', width: 110, attr: 'category' },
+                                { headerName: 'Command', width: 150, attr: 'def' },
                                 { headerName: 'Usage', width: 400, attr: 'sentence' }
                             ],
                             table: (() => props.items.map(item => {

@@ -45,7 +45,7 @@
   });
 </script>
 
-<div class="cursor" data-isDisp={$isDisp}></div>
+<div class="cursor" data-isDisp={$isDisp} bind:this={$store.ref.cursor}></div>
 
 <style>
   .cursor {
