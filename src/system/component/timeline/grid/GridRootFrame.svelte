@@ -21,7 +21,7 @@
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
 </script>
 
-<div class="wrap" bind:this={$store.ref.grid}>
+<div class="wrap" data-isPreview={isPreview} bind:this={$store.ref.grid}>
   {#if scrollLimitProps != null}
     {#each cache.baseCaches as baseCache}
       <BaseBlock {baseCache} {scrollLimitProps} />
@@ -52,11 +52,13 @@
   .wrap {
     display: inline-block;
     position: relative;
-    /* background-color: #fb5800; */
     width: calc(100% - var(--pitch-width));
     height: 100%;
     overflow: hidden;
     vertical-align: top;
+  }
+  .wrap[data-isPreview="true"] {
+    background-color: rgba(0, 0, 0, 0.712);
   }
 
   .noteswrap {

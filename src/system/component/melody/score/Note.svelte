@@ -11,6 +11,19 @@
   export let index: number;
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
+  let ref: HTMLElement | null = null;
+  $: {
+    if (ref != null) {
+      const refs = $store.ref.noteRefs;
+
+      let instance = refs.find((r) => r.seq === index);
+      if (instance == undefined) {
+        instance = { seq: index, ref };
+        refs.push(instance);
+      } else instance.ref = ref;
+    }
+  }
+
   $: tonality = (() => {
     const { getBaseFromBeat } = useReducerCache($store);
     return getBaseFromBeat(StoreMelody.calcBeat(note.norm, note.pos)).scoreBase
@@ -60,6 +73,11 @@
     style:background-color={getOperationHighlight()}
   >
     <div
+      class="effect"
+      style:top="{Layout.getPitchTop(note.pitch) - 2 + 30}px"
+      bind:this={ref}
+    ></div>
+    <div
       class="frame"
       style:top="{Layout.getPitchTop(note.pitch) - 2}px"
       data-isScale={isScale}
@@ -82,6 +100,17 @@
     background-color: rgba(240, 248, 255, 0.201);
   }
 
+  .effect {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0;
+    z-index: 2;
+    background: linear-gradient(to bottom, #ff3429d5, #f129ff00);
+
+    transition: height 0.1s;
+  }
   .frame {
     display: inline-block;
     position: absolute;

@@ -42,6 +42,8 @@ namespace StoreOutline {
     export const ModulateMedhods = ['domm', 'parallel', 'relative', 'key'] as const;
     export type ModulateMedhod = typeof ModulateMedhods[number];
 
+    export const DommVals = ['-3', -'2', '-1', '0', '1', '2', '3'];
+
     export type TempoRelation = 'diff' | 'rate' | 'abs';
     export type DataTempo = {
         method: TempoMedhod;

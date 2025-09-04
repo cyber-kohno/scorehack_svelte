@@ -54,7 +54,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                 ...defaultProps,
                 funcKey: 'mks',
                 usage: 'Create a new music score track.',
-                args: [],
+                args: [{name: 'trackName?: string'}],
                 callback: (args) => {
                     const tracks = lastStore.data.scoreTracks;
                     const name = args[0] ?? `track${tracks.length}`;
@@ -95,9 +95,12 @@ const useBuilderMelody = (lastStore: StoreProps) => {
             },
             {
                 ...defaultProps,
-                funcKey: 'chs',
-                usage: 'Change the active track.',
-                args: [],
+                funcKey: 'chi',
+                usage: 'Change the active track by index.',
+                args: [{
+                    name: 'trackIndex: number',
+                    getCandidate: () => lastStore.data.scoreTracks.map((_, i) => i.toString())
+                }],
                 callback: (args) => {
                     const melody = lastStore.control.melody;
                     const arg0 = logger.validateRequired(args[0], 1);
@@ -115,9 +118,36 @@ const useBuilderMelody = (lastStore: StoreProps) => {
             },
             {
                 ...defaultProps,
+                funcKey: 'chs',
+                usage: 'Change the active track by name.',
+                args: [{
+                    name: 'trackName: string',
+                    getCandidate: () => lastStore.data.scoreTracks.map(st => st.name)
+                }],
+                callback: (args) => {
+                    const melody = lastStore.control.melody;
+                    const tracks = lastStore.data.scoreTracks;
+                    const arg0 = logger.validateRequired(args[0], 1);
+                    if (arg0 == null) return;
+                    const nextIndex = lastStore.data.scoreTracks.findIndex(st => st.name === arg0);
+                    if (nextIndex === -1) {
+                        logger.outputError(``);
+                        return;
+                    }
+                    const prev = tracks[melody.focus];
+                    try {
+                        changeScoreTrack(nextIndex);
+                        logger.outputInfo(`Active track changed. [${prev} → ${arg0}]`);
+                    } catch {
+                        logger.outputError(`The destination track does not exist. [${nextIndex}]`);
+                    }
+                }
+            },
+            {
+                ...defaultProps,
                 funcKey: 'sf',
                 usage: 'Sets the SoundFont for the active track.',
-                args: [],
+                args: [{ name: 'soundfontName: string', getCandidate: () => StorePreview.InstrumentNames }],
                 callback: (args) => {
 
                     const arg0 = logger.validateRequired(args[0], 1);
@@ -135,7 +165,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                 ...defaultProps,
                 funcKey: 'shf',
                 usage: 'Search available soundfonts.',
-                args: [],
+                args: [{ name: 'soundfontName: string', getCandidate: () => StorePreview.InstrumentNames }],
                 callback: (args) => {
                     const arg0 = logger.validateRequired(args[0], 1);
                     if (arg0 == null) return;

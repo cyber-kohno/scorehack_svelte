@@ -10,10 +10,12 @@ namespace StoreRef {
         helper?: HTMLElement;
 
         elementRefs: { seq: number, ref: HTMLElement }[];
+        noteRefs: { seq: number, ref: HTMLElement }[];
     }
 
     export const INITIAL: Props = {
-        elementRefs: []
+        elementRefs: [],
+        noteRefs: [],
     };
 
     export type ScrollLimitProps = {

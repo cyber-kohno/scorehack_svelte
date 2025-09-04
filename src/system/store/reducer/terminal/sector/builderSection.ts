@@ -1,14 +1,10 @@
-import type StoreMelody from "../../../props/storeMelody";
-import StorePreview from "../../../props/storePreview";
-import { createStoreUtil, type StoreProps } from "../../../store";
+import { type StoreProps } from "../../../store";
 import useReducerCache from "../../reducerCache";
-import useReducerMelody from "../../reducerMelody";
 import useReducerOutline from "../../reducerOutline";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
 
 const useBuilderSection = (lastStore: StoreProps) => {
-    // const { commit } = createStoreUtil(lastStore);
     const reducer = useReducerTermianl(lastStore);
     const terminal = reducer.getTerminal();
 

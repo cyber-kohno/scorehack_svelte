@@ -15,6 +15,7 @@ namespace PreviewUtil {
         gain: number;
         startMs: number;
         sustainMs: number;
+        ref?: HTMLElement;
     };
     export type TrackPlayer = {
         sf: SoundFont.Player;
@@ -28,7 +29,7 @@ namespace PreviewUtil {
 
     export const useUpdater = (storeUtil: StoreUtil) => {
 
-        const {lastStore, commit} = storeUtil;
+        const { lastStore, commit } = storeUtil;
 
         const startTest = (option: Option) => {
             const { outline, melody } = lastStore.control;
@@ -87,6 +88,8 @@ namespace PreviewUtil {
 
                     const trackScore = track as StoreMelody.ScoreTrack;
 
+                    const isFocusTrack = i === melody.trackIndex;
+
                     // 音源未設定の場合コンティニュー
                     const sfName = trackScore.soundFont;
 
@@ -101,9 +104,10 @@ namespace PreviewUtil {
                         sf: sf.player, notes
                     });
                     // ノート情報の追加
-                    trackScore.notes.forEach(note => {
+                    trackScore.notes.forEach((note, j) => {
                         const playInfo = buildNotePlayer(baseCaches, timelineStart, note, track.volume);
                         if (playInfo == null) return 1;
+                        if (isFocusTrack) playInfo.ref = lastStore.ref.noteRefs.find(r => r.seq === j)?.ref;
                         notes.push(playInfo);
                     });
 
@@ -159,6 +163,14 @@ namespace PreviewUtil {
                         // ミリ秒をサウンドフォントの時間基準（秒）に合わせる
                         const susSec = np.sustainMs / 1000;
                         tp.sf.play(np.pitchName, 0, { gain: np.gain, duration: susSec });
+
+                        if (np.ref != undefined) {
+                            const ref = np.ref;
+                            ref.style.height = '200px';
+                            setTimeout(() => {
+                                ref.style.height = '0';
+                            }, 200);
+                        }
                     }, startMs);
                     getTimerKeys().push(key);
 

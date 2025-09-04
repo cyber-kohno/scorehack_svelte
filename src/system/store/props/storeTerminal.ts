@@ -1,3 +1,5 @@
+import type CommandRegistUtil from "../reducer/terminal/commandRegistUtil";
+
 namespace StoreTerminal {
 
     export type Props = {
@@ -5,6 +7,7 @@ namespace StoreTerminal {
         command: string;
         target: string;
         focus: number;
+        availableFuncs: CommandRegistUtil.FuncProps[];
         helper: HelperProps | null;
     }
     export type HelperProps = {
@@ -19,16 +22,6 @@ namespace StoreTerminal {
             focus: 0
         }
     };
-    // export const createInitial = (): Props => {
-
-    //     return {
-    //         outputs: [],
-    //         command: '',
-    //         target: '',
-    //         focus: 0,
-    //         helper: null,
-    //     }
-    // };
 
     export type BlockType = 'record' | 'table';
 

@@ -23,10 +23,12 @@ const useInputTerminal = (storeUtil: StoreUtil) => {
             } break;
             case 'ArrowLeft': {
                 reducerTerminal.moveFocus(-1);
+                buildHelper();
                 commit();
             } break;
             case 'ArrowRight': {
                 reducerTerminal.moveFocus(1);
+                buildHelper();
                 commit();
             } break;
         }

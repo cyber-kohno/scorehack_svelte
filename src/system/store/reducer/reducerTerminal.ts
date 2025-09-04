@@ -35,8 +35,10 @@ const useReducerTermianl = (lastStore: StoreProps) => {
             })(),
             command: '',
             focus: 0,
+            availableFuncs: [],
             helper: null
         };
+        CommandRegistUtil.useCommandRegister(lastStore).buildAvailableFunctions()
     };
     const close = () => {
         lastStore.terminal = null;
@@ -71,8 +73,12 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
     const insertCommand = (key: string) => {
         const [left, right] = splitCommand();
-        // スペース（区切り文字）が連続することは許さない
-        if(left.slice(-1) === ' ' && key === ' ') return;
+
+        // 先頭がスペース（区切り文字）と、スペースが連続することを許さない
+        const isLastStrSpace = left.slice(-1) === ' ';
+        const isEmpty = left.length === 0;
+        if ((isLastStrSpace || isEmpty) && key === ' ') return;
+
         setCommand(() => left + key + right);
         getTerminal().focus += key.length;
     }
@@ -100,10 +106,7 @@ const useReducerTermianl = (lastStore: StoreProps) => {
             const funcKey = orderItems[0];
             const args = orderItems.slice(1);
 
-            const register = CommandRegistUtil.useCommandRegister(lastStore);
-            const funcs = register.getFuncs();
-
-            const func = funcs.find(f => f.funcKey === funcKey);
+            const func = terminal.availableFuncs.find(f => f.funcKey === funcKey);
             if (func == undefined) {
                 undefinedFunction(funcKey);
             } else {
