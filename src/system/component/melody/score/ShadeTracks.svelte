@@ -3,27 +3,21 @@
   import store from "../../../store/store";
   import ShadeNote from "./ShadeNote.svelte";
 
-  $: tracks = (() => {
-    const trackIndex = $store.control.melody.trackIndex;
-    // 自身以外のスコアトラックでフィルター
-    return $store.data.scoreTracks.filter(
-      (_, i) => i !== trackIndex || $store.control.mode === "harmonize"
-    );
-  })();
+  $: scoreTracks = $store.data.scoreTracks;
+
+  const isDisp = (i: number) =>
+    i !== $store.control.melody.trackIndex ||
+    $store.control.mode === "harmonize";
 
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
-
-  const colorArr = ["#faa", "#aabeff", "#ffa", "#afa", "#aff", "#ced"];
 </script>
 
 {#if scrollLimitProps != null}
-  {#each tracks as track, i}
-    {#each track.notes as note}
-      <ShadeNote
-        {note}
-        noteColor={colorArr[i % colorArr.length]}
-        {scrollLimitProps}
-      />
-    {/each}
+  {#each scoreTracks as track, trackIndex}
+    {#if isDisp(trackIndex)}
+      {#each track.notes as _, noteIndex}
+        <ShadeNote {trackIndex} {noteIndex} {scrollLimitProps} />
+      {/each}
+    {/if}
   {/each}
 {/if}

@@ -65,6 +65,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                         soundFont: '',
                         notes: []
                     });
+                    lastStore.ref.trackArr.push([]);
                     logger.outputInfo(`Created a new track. [${name}]`);
                 }
             },
@@ -88,6 +89,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     }
                     const name = tracks[delIndex].name;
                     tracks.splice(delIndex, 1);
+                    lastStore.ref.trackArr.splice(delIndex, 1);
                     // 先頭以外が選択されている場合かつ、アクティブより上が削除され場合
                     if (delIndex > 0 && delIndex <= melody.trackIndex) melody.trackIndex--;
                     logger.outputInfo(`Track deleted. [${name}].`);

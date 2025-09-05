@@ -14,7 +14,8 @@
   let ref: HTMLElement | null = null;
   $: {
     if (ref != null) {
-      const refs = $store.ref.noteRefs;
+      const trackIndex = $store.control.melody.trackIndex;
+      const refs = $store.ref.trackArr[trackIndex];
 
       let instance = refs.find((r) => r.seq === index);
       if (instance == undefined) {

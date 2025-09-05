@@ -88,7 +88,7 @@ namespace PreviewUtil {
 
                     const trackScore = track as StoreMelody.ScoreTrack;
 
-                    const isFocusTrack = i === melody.trackIndex;
+                    // const isFocusTrack = i === melody.trackIndex;
 
                     // 音源未設定の場合コンティニュー
                     const sfName = trackScore.soundFont;
@@ -107,7 +107,7 @@ namespace PreviewUtil {
                     trackScore.notes.forEach((note, j) => {
                         const playInfo = buildNotePlayer(baseCaches, timelineStart, note, track.volume);
                         if (playInfo == null) return 1;
-                        if (isFocusTrack) playInfo.ref = lastStore.ref.noteRefs.find(r => r.seq === j)?.ref;
+                        playInfo.ref = lastStore.ref.trackArr[i].find(r => r.seq === j)?.ref;
                         notes.push(playInfo);
                     });
 
@@ -169,7 +169,7 @@ namespace PreviewUtil {
                             ref.style.height = '200px';
                             setTimeout(() => {
                                 ref.style.height = '0';
-                            }, 200);
+                            }, np.sustainMs);
                         }
                     }, startMs);
                     getTimerKeys().push(key);

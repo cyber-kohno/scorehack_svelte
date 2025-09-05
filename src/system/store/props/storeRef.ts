@@ -9,13 +9,15 @@ namespace StoreRef {
         cursor?: HTMLElement;
         helper?: HTMLElement;
 
-        elementRefs: { seq: number, ref: HTMLElement }[];
-        noteRefs: { seq: number, ref: HTMLElement }[];
+        elementRefs: RefIndex[];
+        trackArr: RefIndex[][];
     }
+
+    type RefIndex = { seq: number, ref: HTMLElement };
 
     export const INITIAL: Props = {
         elementRefs: [],
-        noteRefs: [],
+        trackArr: [[]],
     };
 
     export type ScrollLimitProps = {

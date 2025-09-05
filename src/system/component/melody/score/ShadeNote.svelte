@@ -4,10 +4,29 @@
   import type StoreRef from "../../../store/props/storeRef";
   import store from "../../../store/store";
 
-  export let note: StoreMelody.Note;
-  export let noteColor: string;
+  export let trackIndex: number;
+  export let noteIndex: number;
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
+  const COLOR_ARR = ["#faa", "#aabeff", "#ffa", "#afa", "#aff", "#ced"];
+
+  $: noteColor = COLOR_ARR[trackIndex % COLOR_ARR.length];
+
+  let ref: HTMLElement | null = null;
+  $: {
+    if (ref != null) {
+      const refs = $store.ref.trackArr[trackIndex];
+
+      let instance = refs.find((r) => r.seq === noteIndex);
+      if (instance == undefined) {
+        instance = { seq: noteIndex, ref };
+        refs.push(instance);
+      } else instance.ref = ref;
+    }
+  }
+
+  $: scoreTrack = $store.data.scoreTracks[trackIndex];
+  $: note = scoreTrack.notes[noteIndex];
   $: [isDisp, left, width] = (() => {
     const beatSide = StoreMelody.calcBeatSide(note);
     const [left, width] = [beatSide.pos, beatSide.len].map(
@@ -24,7 +43,16 @@
 </script>
 
 {#if isDisp}
-  <div class="itemwrap" style:left="{left}px" style:width="{width}px">
+  <div
+    class="itemwrap"
+    style:left="{left}px"
+    style:width="{width}px"
+  >
+    <div
+      class="effect"
+      style:top="{Layout.getPitchTop(note.pitch) - MARGIN + 10}px"
+      bind:this={ref}
+    ></div>
     <div
       class="note"
       style:top="{Layout.getPitchTop(note.pitch) - MARGIN}px"
@@ -45,6 +73,17 @@
     /* background-color: rgba(240, 248, 255, 0.201); */
   }
 
+  .effect {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0;
+    z-index: 2;
+    background: linear-gradient(to bottom, #ffeb0ed5, #f129ff00);
+
+    transition: height 0.1s;
+  }
   .note {
     display: inline-block;
     position: absolute;
