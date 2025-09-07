@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ContextUtil from "../../../store/contextUtil";
   import StoreMelody from "../../../store/props/storeMelody";
   import useReducerCache from "../../../store/reducer/reducerCache";
   import useReducerMelody from "../../../store/reducer/reducerMelody";
@@ -17,6 +18,7 @@
     return [side.pos, side.len].map((v) => v * $store.env.beatWidth);
   })();
   $: isMelodyMode = $store.control.mode === "melody";
+  const {isPreview} = ContextUtil.use();
 </script>
 
 {#if focusInfo.isChord}
@@ -27,7 +29,7 @@
     data-isChord={focusInfo.isChord}
   ></div>
 {/if}
-{#if isMelodyMode}
+{#if isMelodyMode && !$isPreview}
   <div class="note" style:left="{noteLeft}px" style:width="{noteWidth}px"></div>
 {/if}
 

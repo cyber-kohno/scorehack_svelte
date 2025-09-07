@@ -11,6 +11,8 @@ namespace StoreRef {
 
         elementRefs: RefIndex[];
         trackArr: RefIndex[][];
+        
+        timerKeys: number[];
     }
 
     type RefIndex = { seq: number, ref: HTMLElement };
@@ -18,6 +20,7 @@ namespace StoreRef {
     export const INITIAL: Props = {
         elementRefs: [],
         trackArr: [[]],
+        timerKeys: [],
     };
 
     export type ScrollLimitProps = {

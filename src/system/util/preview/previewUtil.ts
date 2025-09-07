@@ -15,7 +15,7 @@ namespace PreviewUtil {
         gain: number;
         startMs: number;
         sustainMs: number;
-        ref?: HTMLElement;
+        target: string;
     };
     export type TrackPlayer = {
         sf: SoundFont.Player;
@@ -107,7 +107,7 @@ namespace PreviewUtil {
                     trackScore.notes.forEach((note, j) => {
                         const playInfo = buildNotePlayer(baseCaches, timelineStart, note, track.volume);
                         if (playInfo == null) return 1;
-                        playInfo.ref = lastStore.ref.trackArr[i].find(r => r.seq === j)?.ref;
+                        playInfo.target = `${i}.${j}`;
                         notes.push(playInfo);
                     });
 
@@ -164,8 +164,9 @@ namespace PreviewUtil {
                         const susSec = np.sustainMs / 1000;
                         tp.sf.play(np.pitchName, 0, { gain: np.gain, duration: susSec });
 
-                        if (np.ref != undefined) {
-                            const ref = np.ref;
+                        const is = np.target.split('.').map(t => Number(t));
+                        const ref = lastStore.ref.trackArr[is[0]].find(r => r.seq === is[1])?.ref;
+                        if (ref != undefined) {
                             ref.style.height = '200px';
                             setTimeout(() => {
                                 ref.style.height = '0';

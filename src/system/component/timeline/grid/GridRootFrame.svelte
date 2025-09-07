@@ -9,19 +9,20 @@
   import ShadeTracks from "../../melody/score/ShadeTracks.svelte";
   import ActiveTrack from "../../melody/score/ActiveTrack.svelte";
   import PreviewPosLine from "./PreviewPosLine.svelte";
+  import ContextUtil from "../../../store/contextUtil";
 
   $: cache = $store.cache;
 
   $: isMelodyMode = (() => $store.control.mode === "melody")();
 
-  $: isPreview = $store.preview.timerKeys != null;
+  const {isPreview} = ContextUtil.use();
   $: isDispCursor =
-    isMelodyMode && !isPreview && $store.control.melody.focus === -1;
+    isMelodyMode && !$isPreview && $store.control.melody.focus === -1;
 
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
 </script>
 
-<div class="wrap" data-isPreview={isPreview} bind:this={$store.ref.grid}>
+<div class="wrap" data-isPreview={$isPreview} bind:this={$store.ref.grid}>
   {#if scrollLimitProps != null}
     {#each cache.baseCaches as baseCache}
       <BaseBlock {baseCache} {scrollLimitProps} />
@@ -43,7 +44,7 @@
     <ShadeTracks />
   </div>
 
-  {#if isPreview}
+  {#if $isPreview}
     <PreviewPosLine />
   {/if}
 </div>

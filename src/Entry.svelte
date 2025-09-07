@@ -5,6 +5,7 @@
   import store, { createStoreUtil } from "./system/store/store";
   import DesignInitializer from "./system/util/disignInitializer";
   import useReducerCache from "./system/store/reducer/reducerCache";
+  import ContextUtil from "./system/store/contextUtil";
 
   onMount(() => {
     const {lastStore, commit} = createStoreUtil($store);
@@ -25,6 +26,8 @@
 
     DesignInitializer.initVariableProps($store);
   }
+
+  ContextUtil.build();
 </script>
 
 <main>

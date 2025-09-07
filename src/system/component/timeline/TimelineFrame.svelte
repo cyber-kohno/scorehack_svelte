@@ -33,6 +33,7 @@
       uses = compiledChord.structs.map((s) => s.key12);
     }
 
+
     return {
       scaleList,
       uses,

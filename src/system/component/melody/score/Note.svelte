@@ -6,6 +6,7 @@
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
   import Factors from "./Factors.svelte";
+  import ContextUtil from "../../../store/contextUtil";
 
   export let note: StoreMelody.Note;
   export let index: number;
@@ -54,6 +55,7 @@
   })();
 
   $: getOperationHighlight = () => {
+    if ($isPreview) return "transparent";
     if (!isFocus) return "#ffffff45";
 
     const input = $store.input;
@@ -64,6 +66,8 @@
     else if (input.holdShift) return "#ff0000aa";
     return "#ffffff88";
   };
+
+  const { isPreview } = ContextUtil.use();
 </script>
 
 {#if isDisp}
@@ -72,6 +76,7 @@
     style:left="{left}px"
     style:width="{width}px"
     style:background-color={getOperationHighlight()}
+    data-disable={true}
   >
     <div
       class="effect"
@@ -83,9 +88,11 @@
       style:top="{Layout.getPitchTop(note.pitch) - 2}px"
       data-isScale={isScale}
     >
-      <div class="protrusion"></div>
-      <div class="info">{scaleIndex}</div>
-      <Factors {note} />
+      {#if !$isPreview}
+        <div class="protrusion"></div>
+        <div class="info">{scaleIndex}</div>
+        <Factors {note} />
+      {/if}
     </div>
   </div>
 {/if}

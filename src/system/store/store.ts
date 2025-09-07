@@ -7,6 +7,7 @@ import StoreCache from "./props/storeCache";
 import StoreRef from "./props/storeRef";
 import type StoreTerminal from "./props/storeTerminal";
 import StoreFile from "./props/storeFile";
+import { getContext } from "svelte";
 
 export type StoreProps = {
 

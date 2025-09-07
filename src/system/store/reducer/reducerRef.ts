@@ -1,8 +1,42 @@
 import Layout from "../../const/layout";
 import StoreMelody from "../props/storeMelody";
-import type { StoreProps, StoreUtil } from "../store";
+import type { StoreProps } from "../store";
 
 const useReducerRef = (lastStore: StoreProps) => {
+
+    const timerKeys = lastStore.ref.timerKeys;
+
+    const smoothScroll = (
+        refs: HTMLElement[],
+        target: 'scrollLeft' | 'scrollTop',
+        divCnt: number,
+        nextValue: number,
+        isClearTimer?: boolean
+    ) => {
+        if (isClearTimer ?? true) {
+            timerKeys.forEach(key => clearTimeout(key));
+            timerKeys.length = 0;
+        }
+        refs.forEach((ref, i) => {
+            const isCriteria = i === 0;
+            const divVal = (nextValue - ref[target]) / divCnt;
+            for (let j = 0; j < divCnt; j++) {
+                const isTail = j === divCnt - 1;
+                const key = setTimeout(() => {
+                    if (!isCriteria && isTail) ref[target] = refs[0][target];
+                    else ref[target] += divVal;
+
+                }, 10 * j);
+                timerKeys.push(key);
+            }
+        });
+    }
+    const smoothScrollLeft = (refs: HTMLElement[], nextValue: number, isClearTimer?: boolean) => {
+        smoothScroll(refs, 'scrollLeft', 15, nextValue, isClearTimer);
+    }
+    const smoothScrollTop = (refs: HTMLElement[], nextValue: number, isClearTimer?: boolean) => {
+        smoothScroll(refs, 'scrollTop', 15, nextValue, isClearTimer);
+    }
 
     const adjustGridScrollX = (getLeft: ((width: number) => number)) => {
 
@@ -12,8 +46,9 @@ const useReducerRef = (lastStore: StoreProps) => {
             const width = gridRef.getBoundingClientRect().width;
 
             const left = getLeft(width);
-            gridRef.scrollTo({ left, behavior: "smooth" });
-            headerRef.scrollTo({ left, behavior: "smooth" });
+            // gridRef.scrollTo({ left, behavior: "smooth" });
+            // headerRef.scrollTo({ left, behavior: "smooth" });
+            smoothScrollLeft([gridRef, headerRef], left);
         }
     }
 
@@ -24,8 +59,9 @@ const useReducerRef = (lastStore: StoreProps) => {
             const height = gridRef.getBoundingClientRect().height;
 
             const top = getTop(height);
-            gridRef.scrollTo({ top, behavior: "smooth" });
-            pitchRef.scrollTo({ top, behavior: "smooth" });
+            // gridRef.scrollTo({ top, behavior: "smooth" });
+            // pitchRef.scrollTo({ top, behavior: "smooth" });
+            smoothScrollTop([gridRef, pitchRef], top);
         }
     }
 
@@ -72,7 +108,8 @@ const useReducerRef = (lastStore: StoreProps) => {
             if (elementRef != undefined) {
                 const height = elementRef.ref.getBoundingClientRect().height;
                 const top = element.outlineTop - outlineHeight / 2 + height / 2;
-                ref.scrollTo({ top, behavior: "smooth" });
+                // ref.scrollTo({ top, behavior: "smooth" });
+                smoothScrollTop([ref], top, false);
             }
         }
     }
@@ -84,14 +121,17 @@ const useReducerRef = (lastStore: StoreProps) => {
             const { height: frameHeight } = ref.getBoundingClientRect();
             const itemTop = helper.focus * 26;
             const top = itemTop - frameHeight / 2;
-            ref.scrollTo({ top, behavior: "smooth" });
+            // ref.scrollTo({ top, behavior: "smooth" });
+            smoothScrollTop([ref], top);
         }
     }
     const adjustTerminalScroll = () => {
         const ref = lastStore.ref.terminal;
         if (ref) {
             const top = ref.scrollHeight;
-            ref.scrollTo({ top, behavior: "smooth" });
+            // ref.scrollTo({ top, behavior: "smooth" });
+            smoothScrollTop([ref], top);
+
         }
     }
 
