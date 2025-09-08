@@ -56,6 +56,19 @@ namespace StoreMelody {
 
     }
 
+
+    export const normalize = (note: Note) => {
+        while (true) {
+            if (note.len % 2 === 0 && note.pos % 2 === 0) {
+                note.norm.div /= 2;
+                note.len /= 2;
+                note.pos /= 2;
+            } else break;
+
+            if (note.norm.div === 1) break;
+        }
+    }
+
     export interface Note {
         norm: Norm;
         pos: number;

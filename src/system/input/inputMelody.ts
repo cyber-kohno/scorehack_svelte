@@ -19,7 +19,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
     const reducerMelody = useReducerMelody(lastStore);
     // const { isPreview } = useAccessorPreview(lastStore);
 
-    const {startTest, stopTest} = PreviewUtil.useUpdater(storeUtil);
+    const { startTest, stopTest } = PreviewUtil.useUpdater(storeUtil);
 
     const melody = lastStore.control.melody;
     const playSF = (pitchIndex: number) => {
@@ -245,7 +245,6 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         callbacks.holdD = () => {
 
             if (!isCursor()) {
-                const notes = reducerMelody.getCurrScoreTrack().notes;
 
                 const moveNote = (note: StoreMelody.Note, dir: -1 | 1) => {
                     const temp: StoreMelody.Note = JSON.parse(JSON.stringify(note));
@@ -259,9 +258,47 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     adjustGridScrollXFromNote(note);
                     commit();
                 }
+                // const notes = reducerMelody.getCurrScoreTrack().notes;
                 switch (eventKey) {
                     case 'ArrowLeft': moveNote(getFocusNote(), -1); break;
                     case 'ArrowRight': moveNote(getFocusNote(), 1); break;
+                }
+            } else {
+
+                const moveSpace = (dir: 1 | -1) => {
+                    /** カーソルよりも右にあるノーツのインデックスを取得 */
+                    const startIndex = notes.findIndex(n => {
+                        const cur = StoreMelody.calcBeatSide(cursor).pos;
+                        const t = StoreMelody.calcBeatSide(n).pos;
+                        return cur <= t;
+                    });
+
+                    if (startIndex === -1) return;
+
+                    // チェック用ノート（参照を変えないようにディープコピー）
+                    const startNote: StoreMelody.Note = JSON.parse(JSON.stringify(notes[startIndex]));
+                    const move = (n: StoreMelody.Note) => {
+                        n.pos += dir;
+                    }
+
+                    // 空間を縮める場合は、カーソルより左に超えないかチェックする
+                    if (dir === -1) {
+                        move(startNote);
+                        const cur = StoreMelody.calcBeatSide(cursor).pos;
+                        const t = StoreMelody.calcBeatSide(startNote).pos;
+                        if (cur > t) return;
+                    }
+
+                    // 全てのノートを移動する
+                    notes.slice(startIndex).forEach(n => {
+                        move(n);
+                        StoreMelody.normalize(n);
+                    });
+                    commit();
+                }
+                switch (eventKey) {
+                    case 'ArrowLeft': moveSpace(-1); break;
+                    case 'ArrowRight': moveSpace(1); break;
                 }
             }
         }

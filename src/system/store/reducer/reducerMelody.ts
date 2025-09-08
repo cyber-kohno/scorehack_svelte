@@ -100,11 +100,10 @@ const useReducerMelody = (lastStore: StoreProps) => {
         const melody = lastStore.control.melody;
         const tracks = lastStore.data.scoreTracks;
         if (tracks[nextIndex] == undefined) throw new Error();
-        const prevIndex = melody.trackIndex;
-        const prevTrack = tracks[prevIndex];
+        // const prevIndex = melody.trackIndex;
+        // const prevTrack = tracks[prevIndex];
 
-        const notes = prevTrack.notes;
-        // focusOutNoteSide(notes[melody.focus], -1);
+        syncCursorFromElementSeq();
 
         melody.trackIndex = nextIndex;
     }
