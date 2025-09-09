@@ -18,6 +18,7 @@
   .wrap {
     display: inline-block;
     position: absolute;
+    top: var(--pitch-top-margin);
     height: var(--pitch-frame-height);
     z-index: 2;
     background-color: rgba(0, 255, 255, 0.334);

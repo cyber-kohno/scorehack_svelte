@@ -4,7 +4,7 @@
   import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
-  import TimelineLastMargin from "../TimelineLastMargin.svelte";
+  import TimelineLastMargin from "../TimelineTailMargin.svelte";
 
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
 

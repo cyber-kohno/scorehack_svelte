@@ -5,11 +5,14 @@
 
   $: reducer = useReducerMelody($store);
 
+  const LP = Layout.pitch;
+
   $: top = (() => {
     const notes = reducer.getCurrScoreTrack().notes;
     const melody = $store.control.melody;
-    const { pitch } = melody.focus === -1 ? melody.cursor : notes[melody.focus];
-    return (Layout.pitch.NUM - 1 - pitch) * Layout.pitch.ITEM_HEIGHT;
+    const { pitch: pitchIndex } =
+      melody.focus === -1 ? melody.cursor : notes[melody.focus];
+    return LP.TOP_MARGIN + (LP.NUM - 1 - pitchIndex) * LP.ITEM_HEIGHT;
   })();
 </script>
 

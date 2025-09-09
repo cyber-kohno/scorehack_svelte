@@ -91,6 +91,7 @@ const useReducerMelody = (lastStore: StoreProps) => {
             cursor.pos += note.len;
         }
         melody.focus = -1;
+        StoreMelody.normalize(note);
         judgeOverlap();
         syncChordSeqFromNote(cursor);
         adjustGridScrollXFromNote(cursor);
@@ -143,6 +144,14 @@ const useReducerMelody = (lastStore: StoreProps) => {
         }
     }
 
+    const getFocusRange = () => {
+        const melody = lastStore.control.melody;
+        if (melody.focusLock === -1) return [melody.focus, melody.focus];
+        return melody.focus < melody.focusLock
+            ? [melody.focus, melody.focusLock]
+            : [melody.focusLock, melody.focus];
+    };
+
     return {
         syncCursorFromElementSeq,
         addNote,
@@ -153,7 +162,8 @@ const useReducerMelody = (lastStore: StoreProps) => {
         getCurrScoreTrack,
         changeScoreTrack,
         setSFCurTrack,
-        loadSFPlayer
+        loadSFPlayer,
+        getFocusRange
     };
 };
 export default useReducerMelody;

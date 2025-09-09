@@ -7,6 +7,8 @@
   import MusicTheory from "../../../util/musicTheory";
   import Factors from "./Factors.svelte";
   import ContextUtil from "../../../store/contextUtil";
+  import UnitDisplay from "../UnitDisplay.svelte";
+  import useReducerMelody from "../../../store/reducer/reducerMelody";
 
   export let note: StoreMelody.Note;
   export let index: number;
@@ -48,10 +50,15 @@
     return MusicTheory.isScale(note.pitch, tonality);
   })();
 
+  $: melody = $store.control.melody;
+
   $: isFocus = (() => {
-    return (
-      $store.control.mode === "melody" && $store.control.melody.focus === index
-    );
+    const { getFocusRange } = useReducerMelody($store);
+    const istRange = () => {
+      const [start, end] = getFocusRange();
+      return start <= index && end >= index;
+    };
+    return $store.control.mode === "melody" && istRange();
   })();
 
   $: getOperationHighlight = () => {
@@ -63,7 +70,7 @@
     else if (input.holdF) return "#232affaa";
     else if (input.holdC) return "#ffd53faa";
     else if (input.holdX) return "#ffa03baa";
-    else if (input.holdShift) return "#ff0000aa";
+    else if (input.holdShift || melody.focusLock !== -1) return "#ff0000aa";
     return "#ffffff88";
   };
 
@@ -89,7 +96,11 @@
       data-isScale={isScale}
     >
       {#if !$isPreview}
-        <div class="protrusion"></div>
+        {#if !isFocus}
+          <div class="protrusion" style:height="{28 / note.norm.div}px"></div>
+        {:else}
+          <UnitDisplay {note} />
+        {/if}
         <div class="info">{scaleIndex}</div>
         <Factors {note} />
       {/if}
@@ -101,9 +112,9 @@
   .column {
     display: inline-block;
     position: absolute;
-    top: 0;
+    top: var(--pitch-top-margin);
     height: var(--pitch-frame-height);
-    z-index: 2;
+    z-index: 4;
     box-sizing: border-box;
     background-color: rgba(240, 248, 255, 0.201);
   }
@@ -139,8 +150,9 @@
     display: inline-block;
     position: absolute;
     left: 0;
-    top: -10px;
-    height: 10px;
+    /* top: -10px; */
+    bottom: 100%;
+    /* height: 10px; */
     width: 8px;
     background-color: #ff00007a;
     /* background-color: ${props => props.isScale ? '#1ccf49d5' : '#eacb1dd5'}; */

@@ -17,6 +17,7 @@
 </script>
 
 <div class="wrap" bind:this={$store.ref.pitch}>
+  <div class="top-margin"></div>
   {#each pitchNames as pitch}
     <div class="item">{pitch}</div>
   {/each}
@@ -34,6 +35,13 @@
     height: 100%;
     overflow: hidden;
     vertical-align: top;
+  }
+  .top-margin {
+    display: inline-block;
+    position: relative;
+    background-color: #a6d2d8;
+    width: 100%;
+    height: var(--pitch-top-margin);
   }
   .item {
     display: inline-block;

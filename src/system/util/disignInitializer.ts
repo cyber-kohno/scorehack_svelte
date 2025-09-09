@@ -10,6 +10,7 @@ namespace DesignInitializer {
         setCustomProps([
             { key: '--root-header-height', value: `${Layout.root.HEADER_HEIGHT}px` },
             { key: '--outline-width', value: `${Layout.root.OUTLINE_WIDTH}px` },
+            { key: '--pitch-top-margin', value: `${PL.TOP_MARGIN}px` },
             { key: '--pitch-width', value: `${PL.FRAME_WIDTH}px` },
             { key: '--pitch-item-height', value: `${PL.ITEM_HEIGHT}px` },
             { key: '--pitch-frame-height', value: `${PL.ITEM_HEIGHT * PL.NUM}px` },

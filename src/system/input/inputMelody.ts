@@ -50,11 +50,22 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         commit();
     }
 
+    const notes = reducerMelody.getCurrScoreTrack().notes;
+    const moveFocus = (dir: -1 | 1) => {
+        const prev = getFocusNote();
+        const temp = melody.focus + dir;
+        if (temp < 0 || temp > notes.length - 1) return;
+        melody.focus = temp;
+        const note = getFocusNote();
+        StoreMelody.normalize(prev);
+        reducerOutline.syncChordSeqFromNote(note);
+        adjustGridScrollXFromNote(note);
+    }
+
     const isPreview = lastStore.preview.timerKeys != null;
 
     const control = (eventKey: string) => {
         const cursor = melody.cursor;
-        const notes = reducerMelody.getCurrScoreTrack().notes;
         // const getFocusNote = () => notes[melody.focus];
 
         const changeCursorDiv = (div: number) => {
@@ -112,15 +123,6 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 } break;
             }
         } else {
-            const moveFocus = (dir: -1 | 1) => {
-                const temp = melody.focus + dir;
-                if (temp < 0 || temp > notes.length - 1) return;
-                melody.focus = temp;
-                const note = getFocusNote();
-                reducerOutline.syncChordSeqFromNote(note);
-                adjustGridScrollXFromNote(note);
-                commit();
-            }
             const changeFocusNoteDiv = (div: number) => {
                 const note = getFocusNote();
                 const prev = note.norm.div;
@@ -133,16 +135,34 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 note.len = tempLen;
                 commit();
             }
+
+            const moveFocusNormal = (dir: -1 | 1) => {
+                moveFocus(dir);
+                melody.focusLock = -1;
+                commit();
+            }
+
+            const movePitchFocusNotes = (dir: -1 | 1) => {
+                if (melody.focusLock === -1) movePitch(getFocusNote(), dir);
+                else {
+                    const [start, end] = reducerMelody.getFocusRange();
+                    notes.slice(start, end + 1).forEach(n => {
+                        n.pitch += dir;
+                    });
+                    commit();
+                }
+            }
             switch (eventKey) {
-                case 'ArrowLeft': moveFocus(-1); break;
-                case 'ArrowRight': moveFocus(1); break;
-                case 'ArrowUp': movePitch(getFocusNote(), 1); break;
-                case 'ArrowDown': movePitch(getFocusNote(), -1); break;
+                case 'ArrowLeft': moveFocusNormal(-1); break;
+                case 'ArrowRight': moveFocusNormal(1); break;
+                case 'ArrowUp': movePitchFocusNotes(1); break;
+                case 'ArrowDown': movePitchFocusNotes(-1); break;
                 case 'Delete': {
-                    const focus = melody.focus;
-                    reducerMelody.focusOutNoteSide(getFocusNote(), -1);
-                    notes.splice(focus, 1);
+                    const [start, end] = reducerMelody.getFocusRange();
+                    reducerMelody.focusOutNoteSide(notes[start], -1);
+                    notes.splice(start, end - start + 1);
                     melody.isOverlap = false;
+                    melody.focusLock = -1;
                     commit();
                 } break;
                 case 'a': {
@@ -266,6 +286,10 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             } else {
 
                 const moveSpace = (dir: 1 | -1) => {
+
+                    // カーソルが連符である場合、移動できない。
+                    if (cursor.norm.tuplets != undefined) return;
+
                     /** カーソルよりも右にあるノーツのインデックスを取得 */
                     const startIndex = notes.findIndex(n => {
                         const cur = StoreMelody.calcBeatSide(cursor).pos;
@@ -276,18 +300,36 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     if (startIndex === -1) return;
 
                     // チェック用ノート（参照を変えないようにディープコピー）
-                    const startNote: StoreMelody.Note = JSON.parse(JSON.stringify(notes[startIndex]));
+                    const tempStartNote: StoreMelody.Note = JSON.parse(JSON.stringify(notes[startIndex]));
                     const move = (n: StoreMelody.Note) => {
-                        n.pos += dir;
+                        if (n.norm.div >= cursor.norm.div) {
+                            const tuplets = n.norm.tuplets ?? 1;
+                            const rate = (n.norm.div * tuplets) / cursor.norm.div;
+                            n.pos += (dir * rate);
+                        } else {
+                            const rate = cursor.norm.div / n.norm.div;
+                            n.norm.div = cursor.norm.div;
+                            n.pos *= rate;
+                            n.len *= rate;
+                            n.pos += dir;
+                        }
                     }
 
                     // 空間を縮める場合は、カーソルより左に超えないかチェックする
                     if (dir === -1) {
-                        move(startNote);
+                        move(tempStartNote);
                         const cur = StoreMelody.calcBeatSide(cursor).pos;
-                        const t = StoreMelody.calcBeatSide(startNote).pos;
+                        const t = StoreMelody.calcBeatSide(tempStartNote).pos;
                         if (cur > t) return;
                     }
+                    // カーソルの単位と違う連符がある場合、移動できない
+                    if (notes.slice(startIndex).find(n => {
+                        const tuplets = n.norm.tuplets;
+                        if (n.norm.div !== cursor.norm.div && tuplets != undefined) {
+                            if (n.pos % tuplets !== 0) return true;
+                        }
+                        return false;
+                    }) != undefined) return;
 
                     // 全てのノートを移動する
                     notes.slice(startIndex).forEach(n => {
@@ -351,6 +393,16 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             if (isCursor()) {
                 switch (eventKey) {
                     case '#': changeCursorTuplets(3); break;
+                }
+            } else {
+                const moveFocusRange = (dir: -1 | 1) => {
+                    if (melody.focusLock === -1) melody.focusLock = melody.focus;
+                    moveFocus(dir);
+                    commit();
+                }
+                switch (eventKey) {
+                    case 'ArrowLeft': moveFocusRange(-1); break;
+                    case 'ArrowRight': moveFocusRange(1); break;
                 }
             }
         }

@@ -5,11 +5,11 @@
   import GridFocus from "./GridFocus.svelte";
   import Cursor from "../../melody/Cursor.svelte";
   import StoreRef from "../../../store/props/storeRef";
-  import TimelineLastMargin from "../TimelineLastMargin.svelte";
   import ShadeTracks from "../../melody/score/ShadeTracks.svelte";
   import ActiveTrack from "../../melody/score/ActiveTrack.svelte";
   import PreviewPosLine from "./PreviewPosLine.svelte";
   import ContextUtil from "../../../store/contextUtil";
+  import TimelineTailMargin from "../TimelineTailMargin.svelte";
 
   $: cache = $store.cache;
 
@@ -30,7 +30,7 @@
     {#each cache.chordCaches as chordCache, index}
       <ChordBlock {chordCache} {index} />
     {/each}
-    <TimelineLastMargin />
+    <TimelineTailMargin />
   {/if}
   <GridFocus />
   {#if isDispCursor}

@@ -18,7 +18,7 @@
     z-index: 1;
 
     background-color: #ffffff20;
-    top: 0;
-    height: var(--pitch-frame-height);
+    top: var(--pitch-top-margin);
+    height: calc(100% - var(--pitch-top-margin));
   }
 </style>

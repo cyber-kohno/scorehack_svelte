@@ -56,7 +56,6 @@ namespace StoreMelody {
 
     }
 
-
     export const normalize = (note: Note) => {
         while (true) {
             if (note.len % 2 === 0 && note.pos % 2 === 0) {
@@ -67,6 +66,11 @@ namespace StoreMelody {
 
             if (note.norm.div === 1) break;
         }
+    }
+
+    export const getUnitText = (note: Note) => {
+        const tuplets = note.norm.tuplets;
+        return `1/${note.norm.div * 4} ${!tuplets ? "" : ` ${tuplets}t`}`;
     }
 
     export interface Note {

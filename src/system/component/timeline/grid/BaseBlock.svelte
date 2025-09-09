@@ -54,7 +54,7 @@
       type: PitchType;
     }[] = [];
     for (let i = 0; i < pitchNum; i++) {
-      const top = i * Layout.pitch.ITEM_HEIGHT;
+      const top = Layout.pitch.TOP_MARGIN + i * Layout.pitch.ITEM_HEIGHT;
       if (
         Math.abs(scrollLimitProps.scrollMiddleY - top) >
         scrollLimitProps.rectHeight
@@ -117,7 +117,7 @@
 
     background-color: #3ec9ce70;
     top: 0;
-    height: var(--pitch-frame-height);
+    height: calc(var(--pitch-top-margin) + var(--pitch-frame-height));
   }
   .wrap[data-even="false"] {
     background-color: #3ecea370;
@@ -127,7 +127,8 @@
     display: inline-block;
     position: absolute;
     z-index: 2;
-    height: 100%;
+    top: var(--pitch-top-margin);
+    height: calc(100% - var(--pitch-top-margin));
     background-color: rgba(0, 0, 0, 0.303);
   }
 

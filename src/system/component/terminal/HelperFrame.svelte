@@ -48,7 +48,7 @@
     /* height: 500px; */
     min-height: 150px;
     max-height: 300px;
-    z-index: 4;
+    z-index: 5;
     background-color: rgba(3, 8, 46, 0.889);
     border: 1px solid #ffffff92;
     border-radius: 2px;

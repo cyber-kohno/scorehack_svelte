@@ -2,6 +2,7 @@
   import Layout from "../../const/layout";
   import StoreMelody from "../../store/props/storeMelody";
   import store from "../../store/store";
+  import UnitDisplay from "./UnitDisplay.svelte";
 
   $: noteInfo = (() => {
     const melody = $store.control.melody;
@@ -19,13 +20,6 @@
     const beatSize = StoreMelody.calcBeat(cursor.norm, cursor.len);
     return $store.env.beatWidth * beatSize;
   })();
-
-  $: unit = (() => {
-    const melody = $store.control.melody;
-    const cursor = melody.cursor;
-    const tuplets = cursor.norm.tuplets;
-    return `1/${cursor.norm.div * 4} ${!tuplets ? "" : ` ${tuplets}t`}`;
-  })();
 </script>
 
 <div
@@ -38,7 +32,7 @@
     style:top="{Layout.getPitchTop(noteInfo.pitch)}px"
     style:width="{width - 10}px"
   >
-    <div class="info">{unit}</div>
+    <UnitDisplay note={$store.control.melody.cursor} />
   </div>
 </div>
 
@@ -46,12 +40,13 @@
   .line {
     display: inline-block;
     position: absolute;
-    top: 0;
-    z-index: 2;
+    top: var(--pitch-top-margin);
+    z-index: 3;
     width: 10px;
+    /* height: calc(var(--pitch-top-margin) + var(--pitch-frame-height)); */
     height: var(--pitch-frame-height);
     background-color: #4bd137;
-    opacity: 0.7;
+    opacity: 0.8;
   }
   .flag {
     display: inline-block;
@@ -63,23 +58,8 @@
     border-radius: 0 2px 2px 0;
   }
 
-  .info {
-    display: inline-block;
-    position: absolute;
-    left: 4px;
-    top: -28px;
-    z-index: 2;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 24px;
-    white-space: nowrap;
-    color: #4bd137;
-  }
   .line[data-isOverlap="true"],
   .line[data-isOverlap="true"] .flag {
     background-color: #d13333; /* lineとflagの背景色 */
-  }
-  .line[data-isOverlap="true"] .flag .info {
-    color: #d13333; /* info要素の文字色の条件付きスタイル */
   }
 </style>

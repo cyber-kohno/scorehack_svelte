@@ -43,11 +43,7 @@
 </script>
 
 {#if isDisp}
-  <div
-    class="itemwrap"
-    style:left="{left}px"
-    style:width="{width}px"
-  >
+  <div class="itemwrap" style:left="{left}px" style:width="{width}px">
     <div
       class="effect"
       style:top="{Layout.getPitchTop(note.pitch) - MARGIN + 10}px"
@@ -66,7 +62,7 @@
   .itemwrap {
     display: inline-block;
     position: absolute;
-    top: 0;
+    top: var(--pitch-top-margin);
     height: var(--pitch-frame-height);
     z-index: 1;
     box-sizing: border-box;

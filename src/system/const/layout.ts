@@ -20,6 +20,7 @@ namespace Layout {
     }
 
     export const pitch = {
+        TOP_MARGIN: 60,
         FRAME_WIDTH: 80,
         NUM: 94,
         ITEM_HEIGHT: 30
