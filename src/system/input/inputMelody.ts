@@ -118,6 +118,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                         reducerMelody.addNoteFromCursor();
                         // reducerMelody.judgeOverlap();
                         reducerMelody.focusInNearNote(1);
+                        playSF(getFocusNote().pitch);
                         commit();
                     }
                 } break;
@@ -139,6 +140,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             const moveFocusNormal = (dir: -1 | 1) => {
                 moveFocus(dir);
                 melody.focusLock = -1;
+                playSF(getFocusNote().pitch);
                 commit();
             }
 
@@ -171,11 +173,13 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     tempNote.len = 1;
                     if (!notes.find(n => StoreMelody.judgeOverlapNotes(n, tempNote))) {
                         reducerMelody.addNote(tempNote);
+                        StoreMelody.normalize(getFocusNote());
                         melody.focus++;
 
                         const note = getFocusNote();
                         reducerOutline.syncChordSeqFromNote(note);
                         adjustGridScrollXFromNote(note);
+                        playSF(note.pitch);
                         commit();
                     }
                 } break;
@@ -202,9 +206,25 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     case 'ArrowDown': movePitch(cursor, -12); break;
                 }
             } else {
-                switch (eventKey) {
-                    case 'ArrowUp': movePitch(getFocusNote(), 12); break;
-                    case 'ArrowDown': movePitch(getFocusNote(), -12); break;
+                if (melody.focusLock === -1) {
+                    switch (eventKey) {
+                        case 'ArrowUp': movePitch(getFocusNote(), 12); break;
+                        case 'ArrowDown': movePitch(getFocusNote(), -12); break;
+                    }
+                } else {
+                    const movePitchRange = (dir: number) => {
+                        const [start, end] = reducerMelody.getFocusRange();
+                        const targets = notes.slice(start, end + 1);
+                        if (targets.find(n => !StoreMelody.validatePitch(n.pitch)) != undefined) return;
+
+                        targets.forEach(n => n.pitch += dir);
+                        adjustGridScrollYFromCursor(getFocusNote());
+                        commit();
+                    }
+                    switch (eventKey) {
+                        case 'ArrowUp': movePitchRange(12); break;
+                        case 'ArrowDown': movePitchRange(-12); break;
+                    }
                 }
             }
         }
@@ -212,10 +232,12 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
             const focusInNearNote = (dir: -1 | 1) => {
                 reducerMelody.focusInNearNote(dir);
+                adjustGridScrollYFromCursor(getFocusNote());
                 commit();
             }
             const focusOutNoteSide = (dir: -1 | 1) => {
                 reducerMelody.focusOutNoteSide(getFocusNote(), dir);
+                melody.focusLock = -1;
                 commit();
             }
 
@@ -244,7 +266,11 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             if (!isCursor()) {
                 const notes = reducerMelody.getCurrScoreTrack().notes;
 
+                /**
+                 * ノーツの長さを変更する
+                 */
                 const scaleNote = (note: StoreMelody.Note, dir: -1 | 1) => {
+                    if (melody.focusLock !== -1) return;
                     const temp: StoreMelody.Note = JSON.parse(JSON.stringify(note));
                     temp.len += dir;
                     if (temp.len === 0) return;
@@ -266,22 +292,102 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
             if (!isCursor()) {
 
-                const moveNote = (note: StoreMelody.Note, dir: -1 | 1) => {
-                    const temp: StoreMelody.Note = JSON.parse(JSON.stringify(note));
-                    temp.pos += dir;
-                    const vNotes = notes.slice();
-                    vNotes.splice(melody.focus, 1);
-                    const matchNode = vNotes.find(n => StoreMelody.judgeOverlapNotes(n, temp));
-                    if (matchNode != undefined) return;
-                    note.pos = temp.pos;
-                    reducerOutline.syncChordSeqFromNote(note);
-                    adjustGridScrollXFromNote(note);
-                    commit();
-                }
-                // const notes = reducerMelody.getCurrScoreTrack().notes;
-                switch (eventKey) {
-                    case 'ArrowLeft': moveNote(getFocusNote(), -1); break;
-                    case 'ArrowRight': moveNote(getFocusNote(), 1); break;
+                if (melody.focusLock === -1) {
+                    const moveNote = (dir: -1 | 1) => {
+                        const note = getFocusNote();
+                        const temp: StoreMelody.Note = JSON.parse(JSON.stringify(note));
+                        temp.pos += dir;
+                        const vNotes = notes.slice();
+                        vNotes.splice(melody.focus, 1);
+                        const matchNode = vNotes.find(n => StoreMelody.judgeOverlapNotes(n, temp));
+                        if (matchNode != undefined) return;
+                        note.pos = temp.pos;
+                        reducerOutline.syncChordSeqFromNote(note);
+                        adjustGridScrollXFromNote(note);
+                        commit();
+                    }
+                    switch (eventKey) {
+                        case 'ArrowLeft': moveNote(-1); break;
+                        case 'ArrowRight': moveNote(1); break;
+                    }
+                } else {
+                    const moveRangeNotes = (dir: 1 | -1) => {
+
+                        const range = reducerMelody.getFocusRange();
+                        const [start, end] = range;
+
+                        const criteria = getFocusNote();
+
+                        // 基準が連符の場合移動しない
+                        if (criteria.norm.tuplets != undefined) return;
+
+                        const move = (n: StoreMelody.Note) => {
+                            const criteria = getFocusNote();
+                            if (n.norm.div >= criteria.norm.div) {
+                                const tuplets = n.norm.tuplets ?? 1;
+                                const rate = (n.norm.div * tuplets) / criteria.norm.div;
+                                n.pos += (dir * rate);
+                            } else {
+                                const rate = criteria.norm.div / n.norm.div;
+                                n.norm.div = criteria.norm.div;
+                                n.pos *= rate;
+                                n.len *= rate;
+                                n.pos += dir;
+                            }
+                        }
+
+                        const clone = (index: number) => JSON.parse(JSON.stringify(notes[index])) as StoreMelody.Note;
+                        const temp = clone(dir === -1 ? start : end);
+                        move(temp);
+
+                        // 移動可否チェック
+                        if (dir === -1) {
+                            if (temp.pos < 0) return;
+                            if (start > 0) {
+                                const leftNoteSide = StoreMelody.calcBeatSide(notes[start - 1]);
+                                const leftNoteRight = leftNoteSide.pos + leftNoteSide.len;
+                                const tempNoteLeft = StoreMelody.calcBeatSide(temp).pos;
+                                // console.log(temp.pos);
+                                if (tempNoteLeft < leftNoteRight) return;
+                            }
+                        } else if (dir === 1) {
+                            const side = StoreMelody.calcBeatSide(temp);
+                            const tempRight = side.pos + side.len;
+                            const baseTail = reducerCache.getBeatNoteTail();
+                            if (tempRight > baseTail) return;
+
+                            if (end < notes.length - 1) {
+                                // console.log(`tempRight:${tempRight}, baseTail:${baseTail}`);
+                                const rightNoteLeft = StoreMelody.calcBeatSide(notes[end + 1]).pos;
+                                const tempNoteSide = StoreMelody.calcBeatSide(temp);
+                                const tempNoteRight = tempNoteSide.pos + tempNoteSide.len;
+                                if (tempNoteRight > rightNoteLeft) return;
+                            }
+                        }
+
+                        // カーソルの単位と違う連符がある場合、移動できない
+                        if (notes.slice(start, end + 1).find(n => {
+                            const tuplets = n.norm.tuplets;
+                            if (n.norm.div !== criteria.norm.div && tuplets != undefined) {
+                                if (n.pos % tuplets !== 0) return true;
+                            }
+                            return false;
+                        }) != undefined) return;
+
+
+                        // 全てのノートを移動する
+                        notes.slice(start, end + 1).forEach((n, i) => {
+                            move(n);
+                            // フォーカスノート以外はノーマライズする
+                            if (melody.focus !== start + i) StoreMelody.normalize(n);
+                        });
+                        adjustGridScrollXFromNote(criteria);
+                        commit();
+                    }
+                    switch (eventKey) {
+                        case 'ArrowLeft': moveRangeNotes(-1); break;
+                        case 'ArrowRight': moveRangeNotes(1); break;
+                    }
                 }
             } else {
 
@@ -299,8 +405,9 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
                     if (startIndex === -1) return;
 
-                    // チェック用ノート（参照を変えないようにディープコピー）
-                    const tempStartNote: StoreMelody.Note = JSON.parse(JSON.stringify(notes[startIndex]));
+                    const clone = (index: number) => JSON.parse(JSON.stringify(notes[index])) as StoreMelody.Note;
+                    const temp = clone(dir === -1 ? startIndex : notes.length - 1);
+
                     const move = (n: StoreMelody.Note) => {
                         if (n.norm.div >= cursor.norm.div) {
                             const tuplets = n.norm.tuplets ?? 1;
@@ -314,13 +421,20 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                             n.pos += dir;
                         }
                     }
+                    move(temp);
 
                     // 空間を縮める場合は、カーソルより左に超えないかチェックする
                     if (dir === -1) {
-                        move(tempStartNote);
                         const cur = StoreMelody.calcBeatSide(cursor).pos;
-                        const t = StoreMelody.calcBeatSide(tempStartNote).pos;
+                        const t = StoreMelody.calcBeatSide(temp).pos;
                         if (cur > t) return;
+                    } else {
+                        const baseTail = reducerCache.getBeatNoteTail();
+                        // const notes = reducerMelody.getCurrScoreTrack().notes;
+                        const tailNoteSide = StoreMelody.calcBeatSide(temp);
+                        const tailNoteRight = tailNoteSide.pos + tailNoteSide.len;
+                        console.log(`tailNoteRight:${tailNoteRight}, baseTail:${baseTail}`);
+                        if (tailNoteRight > baseTail) return;
                     }
                     // カーソルの単位と違う連符がある場合、移動できない
                     if (notes.slice(startIndex).find(n => {
@@ -348,7 +462,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             const { getCurBase } = reducerCache;
             const tonality = getCurBase().scoreBase.tonality;
 
-            const movePitchLockScale = (note: StoreMelody.Note, dir: number) => {
+            const movePitchLockScale = (note: StoreMelody.Note, dir: -1 | 1) => {
                 const max = Layout.pitch.NUM - 1;
                 let temp = note.pitch;
                 while (true) {
@@ -370,9 +484,34 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     case 'ArrowDown': movePitchLockScale(cursor, -1); break;
                 }
             } else {
-                switch (eventKey) {
-                    case 'ArrowUp': movePitchLockScale(getFocusNote(), 1); break;
-                    case 'ArrowDown': movePitchLockScale(getFocusNote(), -1); break;
+                if (melody.focusLock === -1) {
+                    switch (eventKey) {
+                        case 'ArrowUp': movePitchLockScale(getFocusNote(), 1); break;
+                        case 'ArrowDown': movePitchLockScale(getFocusNote(), -1); break;
+                    }
+                } else {
+                    const movePitchLockScaleRange = (dir: -1 | 1) => {
+                        const [start, end] = reducerMelody.getFocusRange();
+                        const targets = notes.slice(start, end + 1);
+
+                        const getMovedPitch = (pitchIndex: number) => {
+                            while (true) {
+                                pitchIndex += dir;
+                                const isScale = MusicTheory.isScale(pitchIndex, tonality);
+                                if (isScale) break;
+                            }
+                            return pitchIndex;
+                        }
+                        if (targets.find(n => !StoreMelody.validatePitch(getMovedPitch(n.pitch))) != undefined) return;
+
+                        targets.forEach(n => n.pitch = getMovedPitch(n.pitch));
+                        adjustGridScrollYFromCursor(getFocusNote());
+                        commit();
+                    }
+                    switch (eventKey) {
+                        case 'ArrowUp': movePitchLockScaleRange(1); break;
+                        case 'ArrowDown': movePitchLockScaleRange(-1); break;
+                    }
                 }
             }
         }

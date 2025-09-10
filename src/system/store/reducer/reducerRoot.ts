@@ -9,6 +9,7 @@ const useReducerRoot = (lastStore: StoreProps) => {
         const mode = lastStore.control.mode;
         if (mode === 'harmonize') reducerMelody.syncCursorFromElementSeq();
         lastStore.control.mode = mode === 'harmonize' ? 'melody' : 'harmonize';
+        lastStore.ref.trackArr.forEach(t => t.length = 0);
     };
 
     type InputKey = keyof StoreProps['input'];

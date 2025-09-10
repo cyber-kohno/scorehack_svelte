@@ -52,6 +52,9 @@
 
   $: melody = $store.control.melody;
 
+  $: isCriteria = (() => {
+    return $store.control.mode === "melody" && melody.focus === index;
+  })();
   $: isFocus = (() => {
     const { getFocusRange } = useReducerMelody($store);
     const istRange = () => {
@@ -67,7 +70,7 @@
 
     const input = $store.input;
     if (input.holdD) return "#7cffc4aa";
-    else if (input.holdF) return "#232affaa";
+    else if (input.holdF && melody.focusLock === -1) return "#232affaa";
     else if (input.holdC) return "#ffd53faa";
     else if (input.holdX) return "#ffa03baa";
     else if (input.holdShift || melody.focusLock !== -1) return "#ff0000aa";
@@ -96,7 +99,7 @@
       data-isScale={isScale}
     >
       {#if !$isPreview}
-        {#if !isFocus}
+        {#if !isCriteria}
           <div class="protrusion" style:height="{28 / note.norm.div}px"></div>
         {:else}
           <UnitDisplay {note} />

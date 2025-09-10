@@ -1,3 +1,5 @@
+import Layout from "../../const/layout";
+
 namespace StoreMelody {
 
     export type Props = {
@@ -58,14 +60,16 @@ namespace StoreMelody {
 
     export const normalize = (note: Note) => {
         while (true) {
-            if (note.len % 2 === 0 && note.pos % 2 === 0) {
+            if (note.norm.div > 1 && note.len % 2 === 0 && note.pos % 2 === 0) {
                 note.norm.div /= 2;
                 note.len /= 2;
                 note.pos /= 2;
             } else break;
-
-            if (note.norm.div === 1) break;
         }
+    }
+
+    export const validatePitch = (pitchIndex: number) => {
+        return pitchIndex >= 0 && pitchIndex <= Layout.pitch.NUM;
     }
 
     export const getUnitText = (note: Note) => {
