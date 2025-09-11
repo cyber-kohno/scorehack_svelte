@@ -1,5 +1,6 @@
 import Layout from "../../const/layout";
 import StoreMelody from "../props/storeMelody";
+import type StoreRef from "../props/storeRef";
 import type { StoreProps } from "../store";
 
 const useReducerRef = (lastStore: StoreProps) => {
@@ -10,32 +11,40 @@ const useReducerRef = (lastStore: StoreProps) => {
         refs: HTMLElement[],
         target: 'scrollLeft' | 'scrollTop',
         divCnt: number,
-        nextValue: number,
-        isClearTimer?: boolean
+        nextValue: number
     ) => {
-        if (isClearTimer ?? true) {
-            timerKeys.forEach(key => clearTimeout(key));
-            timerKeys.length = 0;
-        }
+        const getTargetKey = (ref: HTMLElement) => ref.className + target;
+
+        const include = (key: StoreRef.RefTimerKey) => refs
+            .map(r => getTargetKey(r)).includes(key.target);
+
+        timerKeys.forEach(key => {
+            if (include(key)) clearTimeout(key.id);
+        });
+        const next = timerKeys.filter(key => !include(key));
+        // console.log(`next${next.length}, timerKeys${timerKeys.length}`);
+        timerKeys.length = 0;
+        timerKeys.push(...next);
+
         refs.forEach((ref, i) => {
             const isCriteria = i === 0;
             const divVal = (nextValue - ref[target]) / divCnt;
             for (let j = 0; j < divCnt; j++) {
                 const isTail = j === divCnt - 1;
-                const key = setTimeout(() => {
+                const id = setTimeout(() => {
                     if (!isCriteria && isTail) ref[target] = refs[0][target];
                     else ref[target] += divVal;
 
                 }, 10 * j);
-                timerKeys.push(key);
+                timerKeys.push({ target: getTargetKey(ref), id });
             }
         });
     }
-    const smoothScrollLeft = (refs: HTMLElement[], nextValue: number, isClearTimer?: boolean) => {
-        smoothScroll(refs, 'scrollLeft', 15, nextValue, isClearTimer);
+    const smoothScrollLeft = (refs: HTMLElement[], nextValue: number) => {
+        smoothScroll(refs, 'scrollLeft', 15, nextValue);
     }
-    const smoothScrollTop = (refs: HTMLElement[], nextValue: number, isClearTimer?: boolean) => {
-        smoothScroll(refs, 'scrollTop', 15, nextValue, isClearTimer);
+    const smoothScrollTop = (refs: HTMLElement[], nextValue: number) => {
+        smoothScroll(refs, 'scrollTop', 15, nextValue);
     }
 
     const adjustGridScrollX = (getLeft: ((width: number) => number)) => {
@@ -109,7 +118,7 @@ const useReducerRef = (lastStore: StoreProps) => {
                 const height = elementRef.ref.getBoundingClientRect().height;
                 const top = element.outlineTop - outlineHeight / 2 + height / 2;
                 // ref.scrollTo({ top, behavior: "smooth" });
-                smoothScrollTop([ref], top, false);
+                smoothScrollTop([ref], top);
             }
         }
     }

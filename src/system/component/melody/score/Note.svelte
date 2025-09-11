@@ -13,6 +13,17 @@
   export let note: StoreMelody.Note;
   export let index: number;
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
+  export let cursorMiddle: number;
+
+  type OperationStatus =
+    | "move" // 移動
+    | "len" // 長さ
+    | "scale" // スケール縛り音程移動
+    | "range" // 範囲選択
+    | "octave" // オクターブ音程移動
+    | "preview" // プレビュー中
+    | "focus" // フォーカスの基準
+    | "none"; // なし
 
   let ref: HTMLElement | null = null;
   $: {
@@ -39,9 +50,11 @@
     const [left, width] = [beatSide.pos, beatSide.len].map(
       (v) => v * $store.env.beatWidth
     );
+    const middle = left + width / 2;
     const isDisp =
-      Math.abs(scrollLimitProps.scrollMiddleX - (left + width / 2)) <=
-      scrollLimitProps.rectWidth;
+      Math.abs(scrollLimitProps.scrollMiddleX - middle) <=
+        scrollLimitProps.rectWidth ||
+      Math.abs(cursorMiddle - middle) <= scrollLimitProps.rectWidth;
     const scaleIndex = (note.pitch - tonality.key12) % 12;
     return [isDisp, left, scaleIndex, width];
   })();
@@ -64,17 +77,17 @@
     return $store.control.mode === "melody" && istRange();
   })();
 
-  $: getOperationHighlight = () => {
-    if ($isPreview) return "transparent";
-    if (!isFocus) return "#ffffff45";
+  $: getOperationHighlight = (): OperationStatus => {
+    if ($isPreview) return "preview";
+    if (!isFocus) return "focus";
 
     const input = $store.input;
-    if (input.holdD) return "#7cffc4aa";
-    else if (input.holdF && melody.focusLock === -1) return "#232affaa";
-    else if (input.holdC) return "#ffd53faa";
-    else if (input.holdX) return "#ffa03baa";
-    else if (input.holdShift || melody.focusLock !== -1) return "#ff0000aa";
-    return "#ffffff88";
+    if (input.holdD) return "move";
+    else if (input.holdF && melody.focusLock === -1) return "len";
+    else if (input.holdC) return "scale";
+    else if (input.holdX) return "octave";
+    else if (input.holdShift || melody.focusLock !== -1) return "range";
+    return "none";
   };
 
   const { isPreview } = ContextUtil.use();
@@ -85,7 +98,7 @@
     class="column"
     style:left="{left}px"
     style:width="{width}px"
-    style:background-color={getOperationHighlight()}
+    data-operation={getOperationHighlight()}
     data-disable={true}
   >
     <div
@@ -119,7 +132,28 @@
     height: var(--pitch-frame-height);
     z-index: 4;
     box-sizing: border-box;
-    background-color: rgba(240, 248, 255, 0.201);
+    background-color: #ffffff88;
+  }
+  .column[data-operation="preview"] {
+    background-color: transparent;
+  }
+  .column[data-operation="focus"] {
+    background-color: #ffffff45;
+  }
+  .column[data-operation="move"] {
+    background-color: #7cffc4aa;
+  }
+  .column[data-operation="len"] {
+    background-color: #232affaa;
+  }
+  .column[data-operation="scale"] {
+    background-color: #ffd53faa;
+  }
+  .column[data-operation="octave"] {
+    background-color: #ffa03baa;
+  }
+  .column[data-operation="range"] {
+    background-color: #ff5050aa;
   }
 
   .effect {

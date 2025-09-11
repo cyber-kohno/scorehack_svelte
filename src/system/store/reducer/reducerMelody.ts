@@ -7,7 +7,7 @@ import useReducerRef from "./reducerRef";
 const useReducerMelody = (lastStore: StoreProps) => {
 
     const { syncChordSeqFromNote } = useReducerOutline(lastStore);
-    const { adjustGridScrollXFromNote } = useReducerRef(lastStore);
+    const { adjustGridScrollXFromNote, adjustGridScrollYFromCursor } = useReducerRef(lastStore);
 
     const syncCursorFromElementSeq = () => {
         const focus = lastStore.control.outline.focus;
@@ -72,11 +72,13 @@ const useReducerMelody = (lastStore: StoreProps) => {
             const [left, right] = [side.pos, side.pos + side.len];
             return dir === -1 ? cursorPos > left : cursorPos < right;
         });
+        // console.log(matchIndex);
         if (matchIndex !== -1) {
             melody.focus = (dir === -1 ? notes.length - 1 - matchIndex : matchIndex);
             const note = notes[melody.focus];
             syncChordSeqFromNote(note);
             adjustGridScrollXFromNote(note);
+            adjustGridScrollYFromCursor(note);
         }
     }
 

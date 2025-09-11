@@ -11,8 +11,12 @@ namespace StoreRef {
 
         elementRefs: RefIndex[];
         trackArr: RefIndex[][];
-        
-        timerKeys: number[];
+
+        timerKeys: RefTimerKey[];
+    }
+    export type RefTimerKey = {
+        id: number;
+        target: string;
     }
 
     type RefIndex = { seq: number, ref: HTMLElement };

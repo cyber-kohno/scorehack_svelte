@@ -2,6 +2,7 @@
   import Layout from "../../../const/layout";
   import type StoreCache from "../../../store/props/storeCache";
   import StoreRef from "../../../store/props/storeRef";
+  import useReducerMelody from "../../../store/reducer/reducerMelody";
   import useReducerRoot from "../../../store/reducer/reducerRoot";
   import store from "../../../store/store";
   import MusicTheory from "../../../util/musicTheory";
@@ -12,6 +13,7 @@
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
 
   $: reducerRoot = useReducerRoot($store);
+  $: reducerMelody = useReducerMelody($store);
 
   $: beatDiv16Count = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
 
@@ -42,8 +44,9 @@
     return list;
   })();
 
+  const LP = Layout.pitch;
+
   $: pitchItems = (() => {
-    const pitchNum = Layout.pitch.NUM;
     const tonality = baseCache.scoreBase.tonality;
     const scaleList =
       tonality.scale === "major"
@@ -53,16 +56,24 @@
       top: number;
       type: PitchType;
     }[] = [];
-    for (let i = 0; i < pitchNum; i++) {
-      const top = Layout.pitch.TOP_MARGIN + i * Layout.pitch.ITEM_HEIGHT;
+    const melody = $store.control.melody;
+    const focusPitchIndex =
+      melody.focus === -1
+        ? melody.cursor.pitch
+        : reducerMelody.getCurrScoreTrack().notes[melody.focus].pitch;
+    const focusTop =
+      LP.TOP_MARGIN + (LP.NUM - focusPitchIndex) * LP.ITEM_HEIGHT;
+    for (let i = 0; i < LP.NUM; i++) {
+      const top = LP.TOP_MARGIN + i * LP.ITEM_HEIGHT;
       if (
         Math.abs(scrollLimitProps.scrollMiddleY - top) >
-        scrollLimitProps.rectHeight
+          scrollLimitProps.rectHeight &&
+        Math.abs(focusTop - top) > scrollLimitProps.rectHeight
       )
         continue;
       let type: PitchType = "other";
 
-      const pitchIndex = pitchNum - 1 - i;
+      const pitchIndex = LP.NUM - 1 - i;
 
       const keyIndex = MusicTheory.getKeyIndex(pitchIndex, tonality.key12);
       if (keyIndex === 0) type = "tonic";

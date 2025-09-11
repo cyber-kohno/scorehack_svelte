@@ -60,6 +60,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         StoreMelody.normalize(prev);
         reducerOutline.syncChordSeqFromNote(note);
         adjustGridScrollXFromNote(note);
+        adjustGridScrollYFromCursor(note);
     }
 
     const isPreview = lastStore.preview.timerKeys != null;
@@ -140,7 +141,8 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             const moveFocusNormal = (dir: -1 | 1) => {
                 moveFocus(dir);
                 melody.focusLock = -1;
-                playSF(getFocusNote().pitch);
+                const note = getFocusNote();
+                playSF(note.pitch);
                 commit();
             }
 
@@ -232,7 +234,6 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
             const focusInNearNote = (dir: -1 | 1) => {
                 reducerMelody.focusInNearNote(dir);
-                adjustGridScrollYFromCursor(getFocusNote());
                 commit();
             }
             const focusOutNoteSide = (dir: -1 | 1) => {
@@ -304,6 +305,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                         note.pos = temp.pos;
                         reducerOutline.syncChordSeqFromNote(note);
                         adjustGridScrollXFromNote(note);
+                        adjustOutlineScroll();
                         commit();
                     }
                     switch (eventKey) {
@@ -381,7 +383,9 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                             // フォーカスノート以外はノーマライズする
                             if (melody.focus !== start + i) StoreMelody.normalize(n);
                         });
+                        reducerOutline.syncChordSeqFromNote(criteria);
                         adjustGridScrollXFromNote(criteria);
+                        adjustOutlineScroll();
                         commit();
                     }
                     switch (eventKey) {
@@ -433,7 +437,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                         // const notes = reducerMelody.getCurrScoreTrack().notes;
                         const tailNoteSide = StoreMelody.calcBeatSide(temp);
                         const tailNoteRight = tailNoteSide.pos + tailNoteSide.len;
-                        console.log(`tailNoteRight:${tailNoteRight}, baseTail:${baseTail}`);
+                        // console.log(`tailNoteRight:${tailNoteRight}, baseTail:${baseTail}`);
                         if (tailNoteRight > baseTail) return;
                     }
                     // カーソルの単位と違う連符がある場合、移動できない
