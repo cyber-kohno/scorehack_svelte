@@ -153,6 +153,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                     notes.slice(start, end + 1).forEach(n => {
                         n.pitch += dir;
                     });
+                    adjustGridScrollYFromCursor(getFocusNote());
                     commit();
                 }
             }
