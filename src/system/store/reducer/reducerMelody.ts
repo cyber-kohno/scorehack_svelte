@@ -3,6 +3,7 @@ import StoreMelody from "../props/storeMelody";
 import useReducerOutline from "./reducerOutline";
 import type { StoreProps, StoreUtil } from "../store";
 import useReducerRef from "./reducerRef";
+import PreviewUtil from "../../util/preview/previewUtil";
 
 const useReducerMelody = (lastStore: StoreProps) => {
 
@@ -110,24 +111,14 @@ const useReducerMelody = (lastStore: StoreProps) => {
 
         melody.trackIndex = nextIndex;
     }
-    const setSFCurTrack = (sfName: InstrumentName) => {
+    const setSFCurTrack = (sfName: InstrumentName, endProc: () => void) => {
         const track = getCurrScoreTrack();
         track.soundFont = sfName;
 
-        const items = lastStore.preview.sfItems;
-
-        const isLoadAlready = items.find(c => c.instrumentName === sfName) != undefined;
-        if (!isLoadAlready) {
-            items.push({ instrumentName: sfName });
-
-            // lastStore.info = `Loading soundfont[${sfName}].`;
-            SoundFont.instrument(new AudioContext(), sfName).then(player => {
-                const item = items.find(sf => sf.instrumentName === sfName);
-                if (item == undefined) throw new Error();
-                item.player = player;
-                // lastStore.info = '';
-            });
-        }
+        const { loadSoundFont } = PreviewUtil.useReducer(lastStore);
+        loadSoundFont(sfName).then(() => {
+            endProc();
+        });
     }
     const loadSFPlayer = (sfName: SoundFont.InstrumentName) => {
         const items = lastStore.preview.sfItems;

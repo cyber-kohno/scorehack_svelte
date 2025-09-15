@@ -54,7 +54,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                 ...defaultProps,
                 funcKey: 'mks',
                 usage: 'Create a new music score track.',
-                args: [{name: 'trackName?: string'}],
+                args: [{ name: 'trackName?: string' }],
                 callback: (args) => {
                     const tracks = lastStore.data.scoreTracks;
                     const name = args[0] ?? `track${tracks.length}`;
@@ -156,8 +156,9 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     if (arg0 == null) return;
                     try {
                         const sfName = StorePreview.validateSFName(arg0);
-                        setSFCurTrack(sfName);
-                        logger.outputInfo(`Set a soundfont as the active track. [${sfName}]`);
+                        setSFCurTrack(sfName, () => {
+                            logger.outputInfo(`Set a soundfont as the active track. [${sfName}]`);
+                        });
                     } catch {
                         logger.outputError(`The specified soundfont does not exist. [${arg0}]`);
                     }

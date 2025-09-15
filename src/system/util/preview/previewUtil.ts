@@ -27,9 +27,31 @@ namespace PreviewUtil {
         target: LayerTargetMode;
     }
 
+    export const useReducer = (lastStore: StoreProps) => {
+
+        const loadSoundFont = async (sfName: InstrumentName) => {
+            const items = lastStore.preview.sfItems;
+            const isLoadAlready = items.find(c => c.instrumentName === sfName) != undefined;
+            if (!isLoadAlready) {
+                items.push({ instrumentName: sfName });
+
+                // lastStore.info = `Loading soundfont[${sfName}].`;
+                const player = await SoundFont.instrument(new AudioContext(), sfName);
+                const item = items.find(sf => sf.instrumentName === sfName);
+                if (item == undefined) throw new Error();
+                item.player = player;
+                // lastStore.info = '';
+            }
+        }
+        return {
+            loadSoundFont
+        }
+    }
+
     export const useUpdater = (storeUtil: StoreUtil) => {
 
         const { lastStore, commit } = storeUtil;
+
 
         const startTest = (option: Option) => {
             const { outline, melody } = lastStore.control;
@@ -164,8 +186,8 @@ namespace PreviewUtil {
                         const susSec = np.sustainMs / 1000;
                         tp.sf.play(np.pitchName, 0, { gain: np.gain, duration: susSec });
 
-                        const is = np.target.split('.').map(t => Number(t));
-                        const ref = lastStore.ref.trackArr[is[0]].find(r => r.seq === is[1])?.ref;
+                        const [refTrIdx, refNtIndx] = np.target.split('.').map(t => Number(t));
+                        const ref = lastStore.ref.trackArr[refTrIdx].find(r => r.seq === refNtIndx)?.ref;
                         if (ref != undefined) {
                             ref.style.height = '200px';
                             setTimeout(() => {
@@ -355,7 +377,8 @@ namespace PreviewUtil {
                 startMs,
                 gain,
                 sustainMs,
-                pitchName
+                pitchName,
+                target: ''
             }
         }
 
