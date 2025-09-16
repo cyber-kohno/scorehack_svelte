@@ -1,22 +1,26 @@
 import FileUtil from "../../../../util/fileUtil";
+import PreviewUtil from "../../../../util/preview/previewUtil";
 import type StoreMelody from "../../../props/storeMelody";
 import StorePreview from "../../../props/storePreview";
 import { createStoreUtil, type StoreProps } from "../../../store";
 import useReducerMelody from "../../reducerMelody";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
+import useTerminalLogger from "../terminalLogger";
 
 const useBuilderCommon = (lastStore: StoreProps) => {
     const { commit } = createStoreUtil(lastStore);
     const reducer = useReducerTermianl(lastStore);
     const terminal = reducer.getTerminal();
+    const { loadSoundFont } = PreviewUtil.useReducer(lastStore);
 
     const fileUtil = FileUtil.getUtil(lastStore);
+    const logger = useTerminalLogger(terminal);
 
     const get = (props: {
         items: CommandRegistUtil.FuncProps[];
     }): CommandRegistUtil.FuncProps[] => {
-        const { loadSFPlayer } = useReducerMelody(lastStore);
+        // const { loadSFPlayer } = useReducerMelody(lastStore);
 
         const defaultProps = CommandRegistUtil.createDefaultProps('common');
         return [
@@ -57,29 +61,17 @@ const useBuilderCommon = (lastStore: StoreProps) => {
                 usage: 'Save the music score data.',
                 args: [],
                 callback: () => {
+                    logger.outputInfo('Select the file to save.');
+                    terminal.wait = true;
                     fileUtil.saveScoreFile({
                         success: (handle) => {
-                            terminal.outputs.push({
-                                type: 'record',
-                                record: {
-                                    attr: 'info',
-                                    texts: [
-                                        { str: `File saved successfully. [${handle.name}]` }
-                                    ]
-                                }
-                            });
+                            logger.outputInfo(`File saved successfully. [${handle.name}]`);
+                            terminal.wait = false;
                             commit();
                         },
                         cancel() {
-                            terminal.outputs.push({
-                                type: 'record',
-                                record: {
-                                    attr: 'info',
-                                    texts: [
-                                        { str: 'File saveing was canceled.' }
-                                    ]
-                                }
-                            });
+                            logger.outputInfo('File saveing was canceled.');
+                            terminal.wait = false;
                             commit();
                         },
                     });
@@ -91,26 +83,29 @@ const useBuilderCommon = (lastStore: StoreProps) => {
                 usage: 'Loads music score data.',
                 args: [],
                 callback: () => {
-                    fileUtil.loadScoreFile(() => {
-                        lastStore.data.scoreTracks.forEach(t => {
-                            const scoreTrack = t as StoreMelody.ScoreTrack;
-                            if (scoreTrack.soundFont !== '') {
-                                const sfName = StorePreview.validateSFName(scoreTrack.soundFont);
-                                console.log(sfName);
-                                loadSFPlayer(sfName);
+                    terminal.wait = true;
+                    fileUtil.loadScoreFile((handle) => {
+                        logger.outputInfo(`File load successfully. [${handle.name}]`);
+                        const tracks = lastStore.data.scoreTracks;
+                        (async () => {
+                            for (const track of tracks) {
+                                if (track.soundFont !== '') {
+                                    const sfName = StorePreview.validateSFName(track.soundFont);
+                                    logger.outputInfo(`Loading... [${sfName}]`);
+                                    commit();
+                                    await loadSoundFont(sfName);
+                                }
                             }
+                            return;
+                        })().then(() => {
+                            logger.outputInfo(`Soundfont load successfully`);
+                            terminal.wait = false;
+                            commit();
                         });
                         commit();
                     }, () => {
-                        terminal.outputs.push({
-                            type: 'record',
-                            record: {
-                                attr: 'info',
-                                texts: [
-                                    { str: 'File loading was canceled.' }
-                                ]
-                            }
-                        });
+                        logger.outputInfo('File loading was canceled.');
+                        terminal.wait = false;
                         commit();
                     });
                 }

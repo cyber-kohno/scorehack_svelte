@@ -111,31 +111,22 @@ const useReducerMelody = (lastStore: StoreProps) => {
 
         melody.trackIndex = nextIndex;
     }
-    const setSFCurTrack = (sfName: InstrumentName, endProc: () => void) => {
-        const track = getCurrScoreTrack();
-        track.soundFont = sfName;
+    // const loadSFPlayer = (sfName: SoundFont.InstrumentName) => {
+    //     const items = lastStore.preview.sfItems;
 
-        const { loadSoundFont } = PreviewUtil.useReducer(lastStore);
-        loadSoundFont(sfName).then(() => {
-            endProc();
-        });
-    }
-    const loadSFPlayer = (sfName: SoundFont.InstrumentName) => {
-        const items = lastStore.preview.sfItems;
+    //     const isLoadAlready = items.find(c => c.instrumentName === sfName) != undefined;
+    //     if (!isLoadAlready) {
+    //         items.push({ instrumentName: sfName });
 
-        const isLoadAlready = items.find(c => c.instrumentName === sfName) != undefined;
-        if (!isLoadAlready) {
-            items.push({ instrumentName: sfName });
-
-            // lastStore.info = `Loading soundfont[${sfName}].`;
-            SoundFont.instrument(new AudioContext(), sfName).then(player => {
-                const item = items.find(sf => sf.instrumentName === sfName);
-                if (item == undefined) throw new Error();
-                item.player = player;
-                // lastStore.info = '';
-            });
-        }
-    }
+    //         // lastStore.info = `Loading soundfont[${sfName}].`;
+    //         SoundFont.instrument(new AudioContext(), sfName).then(player => {
+    //             const item = items.find(sf => sf.instrumentName === sfName);
+    //             if (item == undefined) throw new Error();
+    //             item.player = player;
+    //             // lastStore.info = '';
+    //         });
+    //     }
+    // }
 
     const getFocusRange = () => {
         const melody = lastStore.control.melody;
@@ -154,8 +145,7 @@ const useReducerMelody = (lastStore: StoreProps) => {
         focusOutNoteSide,
         getCurrScoreTrack,
         changeScoreTrack,
-        setSFCurTrack,
-        loadSFPlayer,
+        // loadSFPlayer,
         getFocusRange
     };
 };

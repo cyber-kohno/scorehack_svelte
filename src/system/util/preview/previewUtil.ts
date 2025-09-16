@@ -29,21 +29,20 @@ namespace PreviewUtil {
 
     export const useReducer = (lastStore: StoreProps) => {
 
+        const isLoadSoundFont = (sfName: InstrumentName) => {
+            const items = lastStore.preview.sfItems;
+            return items.find(c => c.instrumentName === sfName) != undefined;
+        }
         const loadSoundFont = async (sfName: InstrumentName) => {
             const items = lastStore.preview.sfItems;
-            const isLoadAlready = items.find(c => c.instrumentName === sfName) != undefined;
-            if (!isLoadAlready) {
-                items.push({ instrumentName: sfName });
-
-                // lastStore.info = `Loading soundfont[${sfName}].`;
-                const player = await SoundFont.instrument(new AudioContext(), sfName);
-                const item = items.find(sf => sf.instrumentName === sfName);
-                if (item == undefined) throw new Error();
-                item.player = player;
-                // lastStore.info = '';
-            }
+            items.push({ instrumentName: sfName });
+            const player = await SoundFont.instrument(new AudioContext(), sfName);
+            const item = items.find(sf => sf.instrumentName === sfName);
+            if (item == undefined) throw new Error();
+            item.player = player;
         }
         return {
+            isLoadSoundFont,
             loadSoundFont
         }
     }

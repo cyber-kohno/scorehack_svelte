@@ -12,11 +12,14 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const reducerOutline = useReducerOutline(lastStore);
     const reducerCache = useReducerCache(lastStore);
     const reducerRef = useReducerRef(lastStore);
+    const element = reducerOutline.getCurrentElement();
 
     const control = (eventKey: string) => {
+        const isInit = element.type === 'init';
 
         switch (eventKey) {
             case 'a': {
+                if (isInit) break;
                 const data: StoreOutline.DataChord = {
                     beat: 4,
                     eat: 0
@@ -40,6 +43,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 commit();
             } break;
             case 'm': {
+                if (isInit) break;
                 const data: StoreOutline.DataModulate = {
                     method: 'domm',
                     val: 1
@@ -52,6 +56,10 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 commit();
             } break;
             case 'Delete': {
+                const sectionCnt = lastStore.data.elements.filter(e => e.type === 'init').length;
+                const isLastSection = element.type === 'section' && sectionCnt === 1;
+                // 初期値ブロックと、最後の1つのセクションは消せない
+                if (element.type === 'init' || isLastSection) break;
                 reducerOutline.removeCurElement();
                 reducerCache.calculate();
                 commit();

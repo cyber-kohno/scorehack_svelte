@@ -103,7 +103,6 @@ namespace StoreMelody {
         }
     }
     export interface AudioTrack extends Track {
-        fileName: string;
         source: string;
         adjust: number;
     }

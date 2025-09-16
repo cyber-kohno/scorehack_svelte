@@ -7,6 +7,7 @@ namespace StoreTerminal {
         command: string;
         target: string;
         focus: number;
+        wait: boolean;
         availableFuncs: CommandRegistUtil.FuncProps[];
         helper: HelperProps | null;
     }

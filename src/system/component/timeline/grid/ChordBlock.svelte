@@ -17,8 +17,9 @@
     position: absolute;
     z-index: 1;
 
-    background-color: #ffffff20;
+    /* background-color: #d70f0fa2; */
     top: var(--pitch-top-margin);
-    height: calc(100% - var(--pitch-top-margin));
+    /* height: calc(100% - var(--pitch-top-margin)); */
+    height: var(--pitch-frame-height);
   }
 </style>

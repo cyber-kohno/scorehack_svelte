@@ -1,4 +1,5 @@
 import type { StoreProps } from "../store";
+import useReducerMelody from "./reducerMelody";
 import useReducerRef from "./reducerRef";
 import CommandRegistUtil from "./terminal/commandRegistUtil";
 import useTerminalLogger from "./terminal/terminalLogger";
@@ -7,38 +8,46 @@ const useReducerTermianl = (lastStore: StoreProps) => {
 
     const isUse = () => lastStore.terminal != null;
 
+    const { getCurrScoreTrack } = useReducerMelody(lastStore);
+
+    const updateTarget = () => {
+        const terminal = getTerminal();
+        const control = lastStore.control;
+        const data = lastStore.data;
+        let ret = 'unknown';
+        const set = (v: string) => { ret = v };
+        const add = (v: string) => { ret += '\\' + v };
+        switch (control.mode) {
+            case 'harmonize': {
+                const element = data.elements[control.outline.focus];
+                set('harmonize');
+                add(element.type);
+                switch (element.type) {
+                    case 'init': {
+
+                    } break;
+                }
+            } break;
+            case 'melody': {
+                set('melody');
+                add(getCurrScoreTrack().name);
+            }
+        }
+        terminal.target = ret;
+    }
+
     const open = () => {
         lastStore.terminal = {
             outputs: [],
-            target: (() => {
-                const control = lastStore.control;
-                const data = lastStore.data;
-                let ret = 'unknown';
-                const set = (v: string) => { ret = v };
-                const add = (v: string) => { ret += '\\' + v };
-                switch (control.mode) {
-                    case 'harmonize': {
-                        const element = data.elements[control.outline.focus];
-                        set('harmonize');
-                        add(element.type);
-                        switch (element.type) {
-                            case 'init': {
-
-                            } break;
-                        }
-                    } break;
-                    case 'melody': {
-                        set('melody');
-                    }
-                }
-                return ret;
-            })(),
+            target: '',
             command: '',
+            wait: false,
             focus: 0,
             availableFuncs: [],
             helper: null
         };
-        CommandRegistUtil.useCommandRegister(lastStore).buildAvailableFunctions()
+        updateTarget();
+        CommandRegistUtil.useCommandRegister(lastStore).buildAvailableFunctions();
     };
     const close = () => {
         lastStore.terminal = null;
@@ -122,6 +131,7 @@ const useReducerTermianl = (lastStore: StoreProps) => {
     return {
         isUse,
         open,
+        updateTarget,
         close,
         getTerminal,
         splitCommand,

@@ -42,10 +42,17 @@
         <TerminalOutput {output} />
       {/each}
     </div>
-    <div class="command">
-      <span class="target">{"$" + terminal.target + ">"}</span>
-      <span>{commandLeft}</span><CommandCursor /><span>{commandRight}</span>
-    </div>
+    {#if !terminal.wait}
+      <div class="command">
+        <span class="target">{"$" + terminal.target + ">"}</span>
+        <span>{commandLeft}</span><CommandCursor /><span>{commandRight}</span>
+      </div>
+    {:else}
+      <!-- 待機中はカーソルの点滅のみ表示 -->
+      <div class="command">
+        <span><CommandCursor /></span>
+      </div>
+    {/if}
     <div class="lastmargin"></div>
   </div>
 </div>

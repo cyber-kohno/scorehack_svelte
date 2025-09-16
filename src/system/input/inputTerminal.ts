@@ -13,6 +13,9 @@ const useInputTerminal = (storeUtil: StoreUtil) => {
     const control = (eventKey: string) => {
 
         const terminal = reducerTerminal.getTerminal();
+
+        // 待機中は操作できない
+        if (terminal.wait) return;
         const { adjustHelperScroll } = useReducerRef(lastStore);
 
         switch (eventKey) {

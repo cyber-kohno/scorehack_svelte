@@ -2,7 +2,7 @@ import MidiWriter from 'midi-writer-js';
 import pako from 'pako';
 import useReducerCache from '../store/reducer/reducerCache';
 import type StoreOutline from '../store/props/storeOutline';
-import type StoreMelody from '../store/props/storeMelody';
+import StoreMelody from '../store/props/storeMelody';
 import type StoreData from '../store/props/storeData';
 import type StoreFile from '../store/props/storeFile';
 import type { StoreProps } from '../store/store';
@@ -55,7 +55,11 @@ namespace FileUtil {
     }
 
 
-    export const loadMp3 = (track: StoreMelody.AudioTrack) => {
+    export const loadMp3 = (
+        track: StoreMelody.AudioTrack,
+        success: (handle: FileSystemFileHandle) => void,
+        cancel: () => void
+    ) => {
         (async () => {
             // ファイルピッカーでMP3ファイルを選択
             const options: OpenFilePickerOptions = {
@@ -74,7 +78,7 @@ namespace FileUtil {
             try {
                 const [fileHandle] = await window.showOpenFilePicker(options);
                 const file = await fileHandle.getFile();
-                track.fileName = file.name;
+                track.name = file.name;
                 // ファイルをArrayBufferとして読み込む
                 const arrayBuffer = await file.arrayBuffer();
 
@@ -82,8 +86,11 @@ namespace FileUtil {
                 const base64String = arrayBufferToBase64(arrayBuffer);
                 track.source = base64String;
 
+                success(fileHandle);
+
             } catch (error) {
                 console.error('ファイルの読み込みエラー:', error);
+                cancel();
             }
         })();
     }
@@ -208,7 +215,7 @@ namespace FileUtil {
                         props.success(handle);
                     })();
                 }).catch(() => {
-                        props.cancel();
+                    props.cancel();
                 });
             }
         }
@@ -218,7 +225,7 @@ namespace FileUtil {
             return JSON.stringify(data);
         }
 
-        const loadScoreFile = (success: () => void, cancel: () => void) => {
+        const loadScoreFile = (success: (handle: FileSystemFileHandle) => void, cancel: () => void) => {
             const fileHandle = lastStore.fileHandle;
 
             const { calculate } = useReducerCache(lastStore);
@@ -228,7 +235,7 @@ namespace FileUtil {
                     {
                         accept: {
                             // 'text/plain': [`.${props.extension}`],
-                            'text/plain': [`.rcv1`],
+                            'text/plain': [`.sch`],
                         },
                     },
                 ],
@@ -241,9 +248,11 @@ namespace FileUtil {
                     fileHandle.score = newFileHandle;
                     const text = unZip(fileContents);
                     lastStore.data = JSON.parse(text);
-
+                    for (let i = 0; i < lastStore.data.scoreTracks.length; i++) {
+                        lastStore.ref.trackArr.push([]);
+                    }
                     calculate();
-                    success();
+                    success(newFileHandle);
                 } catch {
                     cancel();
                 }
@@ -253,6 +262,7 @@ namespace FileUtil {
         return {
             saveScoreFile,
             loadScoreFile,
+            loadMp3
         }
     }
 };
