@@ -200,6 +200,24 @@ namespace PreviewUtil {
                     // if (endTime < tail) endTime = tail;
                 });
             });
+
+            // オーディオファイルを再生
+            audioTracks.forEach((track,i) => {
+                const audio = preview.audios[i];
+                let lateTime = 0;
+                const adjustTime = track.adjust + preview.progressTime;
+                if (adjustTime < 0) {
+                    lateTime = -adjustTime;
+                } else if (adjustTime > 0) {
+                    const fastTime = adjustTime;
+                    // ミリ秒（ms）→秒単位（s）に変換する
+                    audio.element.currentTime = fastTime / 1000;
+                }
+                const key = setTimeout(() => {
+                    audio.element.play();
+                }, lateTime);
+                getTimerKeys().push(key);
+            });
             // console.log(getTimerKeys());
 
             // プレビューを自動停止する終端の時間（ミリ秒）

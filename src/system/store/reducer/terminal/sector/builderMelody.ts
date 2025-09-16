@@ -80,7 +80,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                             cols: [
                                 { headerName: 'Index', width: 80, attr: 'item', isNumber: true },
                                 { headerName: 'Name', width: 120, attr: 'item' },
-                                { headerName: 'Source', width: 220, attr: 'item' },
+                                { headerName: 'File', width: 220, attr: 'item' },
                                 { headerName: 'Vol', width: 80, attr: 'sentence', isNumber: true },
                                 { headerName: 'Mute', width: 80, attr: 'sentence' },
                                 { headerName: 'Adjust', width: 80, attr: 'sentence', isNumber: true },
@@ -89,7 +89,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                                 return [
                                     i.toString(),
                                     item.name,
-                                    item.source.slice(0, 30),
+                                    item.fileName,
                                     item.volume.toString(),
                                     item.isMute ? '●' : '',
                                     item.adjust.toString()
@@ -129,6 +129,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     const name = args[0] ?? `audio${audios.length}`;
                     audios.push({
                         name,
+                        fileName: '',
                         isMute: false,
                         volume: 10,
                         adjust: 0,

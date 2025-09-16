@@ -11,9 +11,9 @@ namespace ArrangeData {
             method: 'piano',
             soundFont: 'acoustic_grand_piano',
             isMute: false,
-            relations: []
+            relations: [],
+            pianoLib: { backingPatterns: [], soundsPatterns: [], presets: [] }
         }],
-        pianoLib: { backingPatterns: [], soundsPatterns: [], presets: [] }
     }
 
     export type Track = {
@@ -23,6 +23,7 @@ namespace ArrangeData {
         isMute: boolean;
 
         relations: Relation[];
+        pianoLib?: PianoEditor.Lib;
     }
 
     /**
@@ -40,7 +41,6 @@ namespace ArrangeData {
     export type Props = {
         tracks: Track[];
 
-        pianoLib: PianoEditor.Lib;
     }
 
     export const getPianoBackingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {

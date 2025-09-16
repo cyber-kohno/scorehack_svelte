@@ -78,7 +78,7 @@ namespace FileUtil {
             try {
                 const [fileHandle] = await window.showOpenFilePicker(options);
                 const file = await fileHandle.getFile();
-                track.name = file.name;
+                track.fileName = file.name;
                 // ファイルをArrayBufferとして読み込む
                 const arrayBuffer = await file.arrayBuffer();
 
