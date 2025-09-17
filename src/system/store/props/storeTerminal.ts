@@ -45,7 +45,7 @@ namespace StoreTerminal {
     }
 
 
-    export type ColAttr = 'item' | 'sentence' | 'def' | 'category';
+    export type ColAttr = 'item' | 'sentence' | 'def' | 'category' | 'resource';
     export type ColInfo = {
         headerName: string;
         width: number;

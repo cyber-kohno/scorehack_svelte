@@ -80,7 +80,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                             cols: [
                                 { headerName: 'Index', width: 80, attr: 'item', isNumber: true },
                                 { headerName: 'Name', width: 120, attr: 'item' },
-                                { headerName: 'File', width: 220, attr: 'item' },
+                                { headerName: 'File', width: 220, attr: 'resource' },
                                 { headerName: 'Vol', width: 80, attr: 'sentence', isNumber: true },
                                 { headerName: 'Mute', width: 80, attr: 'sentence' },
                                 { headerName: 'Adjust', width: 80, attr: 'sentence', isNumber: true },
@@ -160,6 +160,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                         (handle) => {
                             logger.outputInfo(`The audio file was successfully uploaded. [${handle.name}]`);
                             terminal.wait = false;
+                            lsa();
                             commit();
                         }, () => {
                             logger.outputInfo('File upload canceled.');

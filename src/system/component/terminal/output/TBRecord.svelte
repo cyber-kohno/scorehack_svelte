@@ -46,6 +46,6 @@
     color: rgb(2, 254, 233);
   }
   [data-highlight="word"] {
-    color: rgba(255, 255, 255, 0.717);
+    color: rgb(255, 255, 255);
   }
 </style>

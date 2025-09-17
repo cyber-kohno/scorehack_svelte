@@ -1,6 +1,6 @@
 import type MusicTheory from "../../../util/musicTheory";
 import type ArrangeData from "./arrangeData";
-import type PianoEditor from "./pianoEditor";
+import type PianoEditor from "./piano/pianoEditor";
 
 
 namespace ArrangeLibrary {
@@ -40,8 +40,20 @@ namespace ArrangeLibrary {
         soundsNos: number[];
     }
 
-    export const searchPianoPatterns = (req: SearchRequest, arrange: ArrangeData.Props) => {
-        const lib = arrange.pianoLib;
+
+    export const getPianoBackingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
+        const patt = lib.backingPatterns.find(p => p.no === no);
+        if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
+        return patt.backing;
+    }
+    export const getPianoVoicingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
+        const patt = lib.soundsPatterns.find(p => p.no === no);
+        if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
+        return patt.sounds;
+    }
+
+    export const searchPianoPatterns = (req: SearchRequest, track: ArrangeData.Track) => {
+        const lib = track.pianoLib as PianoEditor.Lib;
 
         // console.log(req);
         // 条件に一致するパターンを抽出
@@ -61,26 +73,24 @@ namespace ArrangeLibrary {
 
             // プリセットから探す             
             const presetBkgPatt = lib.presets.find(p => p.bkgPatt === bkgPatt.no);
-            if(presetBkgPatt != undefined) {
+            if (presetBkgPatt != undefined) {
                 presetBkgPatt.voics.forEach(vNo => {
                     const sndsPatt = lib.soundsPatterns.find(p => p.no === vNo);
                     if (sndsPatt == undefined) throw new Error('sndsPattがundefiendであってはならない。');
-                    if(req.structCnt === sndsPatt.category.structCnt) {
+                    if (req.structCnt === sndsPatt.category.structCnt) {
                         voics.push(vNo);
                     }
                 });
             }
 
             // リレーションから探す
-            arrange.tracks.filter(l => l.method === 'piano').forEach(l => {
-                l.relations.forEach(r => {
-                    const sndsPatt = lib.soundsPatterns.find(p => p.no === r.sndsPatt);
-                    if (sndsPatt == undefined) throw new Error('sndsPattがundefiendであってはならない。');
-                    if (req.structCnt === sndsPatt.category.structCnt &&
-                        r.bkgPatt === bkgPatt.no && !voics.includes(sndsPatt.no)) {
-                        voics.push(r.sndsPatt);
-                    }
-                });
+            track.relations.forEach(r => {
+                const sndsPatt = lib.soundsPatterns.find(p => p.no === r.sndsPatt);
+                if (sndsPatt == undefined) throw new Error('sndsPattがundefiendであってはならない。');
+                if (req.structCnt === sndsPatt.category.structCnt &&
+                    r.bkgPatt === bkgPatt.no && !voics.includes(sndsPatt.no)) {
+                    voics.push(r.sndsPatt);
+                }
             });
 
             // // バッキングパターンのレコード数と一致するボイシングの管理連番を取得

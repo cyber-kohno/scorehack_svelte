@@ -1,6 +1,6 @@
-import type StoreMelody from "../storeMelody";
-import ArrangeData from "./arrangeData";
-import type ArrangeLibrary from "./arrangeLibrary";
+import type StoreMelody from "../../storeMelody";
+import ArrangeData from "../arrangeData";
+import type ArrangeLibrary from "../arrangeLibrary";
 
 
 namespace PianoEditor {
@@ -157,15 +157,14 @@ namespace PianoEditor {
     }
 
     export const searchPianoLibUnit = (
-        layerIndex: number,
         chordSeq: number,
-        arrange: ArrangeData.Props
+        track: ArrangeData.Track
     ): Unit | undefined => {
-        const relations = arrange.tracks[layerIndex].relations;
+        const relations = track.relations;
         const relation = relations.find(r => r.chordSeq === chordSeq);
 
         if (relation != undefined) {
-            const pianoLib = arrange.pianoLib;
+            const pianoLib = track.pianoLib as PianoEditor.Lib;
             const backingPatt = pianoLib.backingPatterns.find(patt => patt.no === relation.bkgPatt);
             if (backingPatt == null) throw new Error('backingPattがundefinedであってはならない。');
             const soundsPatt = pianoLib.soundsPatterns.find(patt => patt.no === relation.sndsPatt);
@@ -179,13 +178,13 @@ namespace PianoEditor {
         return undefined;
     }
 
-    export const deleteUnreferUnit = (arrange: ArrangeData.Props) => {
-        const pianoLib = arrange.pianoLib;
+    export const deleteUnreferUnit = (track: ArrangeData.Track) => {
+        const pianoLib = track.pianoLib as PianoEditor.Lib;
         ArrangeData.deleteUnreferPattern('bkgPatt', pianoLib.backingPatterns,
             (patt: ArrangeData.Pattern) => {
                 return pianoLib.presets.find(p => p.bkgPatt === patt.no) != undefined;
             },
-            arrange.tracks);
+            track);
         ArrangeData.deleteUnreferPattern('sndsPatt', pianoLib.soundsPatterns,
             (patt: ArrangeData.Pattern) => {
                 const result = pianoLib.presets.find(p => {
@@ -194,7 +193,7 @@ namespace PianoEditor {
                 }) != undefined;
                 // console.log(`result: ${result}`);
                 return result;
-            }, arrange.tracks);
+            }, track);
     }
 };
 

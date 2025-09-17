@@ -1,4 +1,4 @@
-import type PianoEditor from "./pianoEditor";
+import type PianoEditor from "./piano/pianoEditor";
 
 namespace ArrangeData {
 
@@ -40,29 +40,24 @@ namespace ArrangeData {
 
     export type Props = {
         tracks: Track[];
-
-    }
-
-    export const getPianoBackingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
-        const patt = lib.backingPatterns.find(p => p.no === no);
-        if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
-        return patt.backing;
-    }
-    export const getPianoVoicingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
-        const patt = lib.soundsPatterns.find(p => p.no === no);
-        if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
-        return patt.sounds;
     }
 
     export interface Pattern {
         no: number;
     }
 
+    /**
+     * 利用していないパターンの削除
+     * @param target 
+     * @param patts 
+     * @param isUsePreset 
+     * @param layers 
+     */
     export const deleteUnreferPattern = (
         target: 'bkgPatt' | 'sndsPatt',
         patts: Pattern[],
         isUsePreset: (patt: Pattern) => boolean,
-        layers: Track[]
+        layer: Track
     ) => {
 
         for (let i = patts.length - 1; i >= 0; i--) {
@@ -70,15 +65,10 @@ namespace ArrangeData {
             // プリセット登録されているパターンは削除しない
             if (isUsePreset(patt)) continue;
             let isRefer = false;
-            // 全てのピアノレイヤーをチェック
-            layers.some(l => {
-                if (l.method === 'piano' &&
-                    l.relations.map(r => r[target]).includes(patt.no)
-                ) {
-                    isRefer = true;
-                    return 1;
-                }
-            });
+
+            if (layer.relations.map(r => r[target]).includes(patt.no)) {
+                isRefer = true;
+            }
             // 参照が見つからない場合削除
             console.log(`削除します。${target}- no:[${patts[i].no}]`)
             if (!isRefer) patts.splice(i, 1);

@@ -97,6 +97,9 @@
   [data-attr="def"] {
     color: rgba(139, 255, 77, 0.818);
   }
+  [data-attr="resource"] {
+    color: rgba(255, 255, 255, 0.371);
+  }
   [data-attr="category"] {
     color: rgba(255, 133, 77, 0.818);
   }
