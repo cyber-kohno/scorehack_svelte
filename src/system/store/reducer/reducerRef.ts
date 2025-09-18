@@ -144,13 +144,20 @@ const useReducerRef = (lastStore: StoreProps) => {
         }
     }
 
+    const resetScoreTrackRef = () => {
+        lastStore.ref.trackArr.forEach(arr => {
+            arr.length = 0;
+        })
+    }
+
     return {
         adjustGridScrollXFromOutline,
         adjustOutlineScroll,
         adjustGridScrollXFromNote,
         adjustGridScrollYFromCursor,
         adjustTerminalScroll,
-        adjustHelperScroll
+        adjustHelperScroll,
+        resetScoreTrackRef
     };
 };
 

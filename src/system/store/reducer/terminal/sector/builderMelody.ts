@@ -3,6 +3,7 @@ import PreviewUtil from "../../../../util/preview/previewUtil";
 import StorePreview from "../../../props/storePreview";
 import { createStoreUtil, type StoreProps } from "../../../store";
 import useReducerMelody from "../../reducerMelody";
+import useReducerRef from "../../reducerRef";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
 import useTerminalLogger from "../terminalLogger";
@@ -20,6 +21,8 @@ const useBuilderMelody = (lastStore: StoreProps) => {
 
         const defaultProps = CommandRegistUtil.createDefaultProps('melody');
         const fileUtil = FileUtil.getUtil(lastStore);
+
+        const {resetScoreTrackRef} = useReducerRef(lastStore);
 
         const lss = () => {
             const func = terminal.availableFuncs.find(f => f.funcKey === 'lss');
@@ -243,6 +246,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                         changeScoreTrack(nextIndex);
                         logger.outputInfo(`Active track changed. [${prev} → ${arg0}]`);
                         reducer.updateTarget();
+                        resetScoreTrackRef();
                         lss();
                     } catch {
                         logger.outputError(`The destination track does not exist. [${nextIndex}]`);
@@ -281,41 +285,41 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     }
                 }
             },
-            {
-                ...defaultProps,
-                funcKey: 'shf',
-                usage: 'Search available soundfonts.',
-                args: [{ name: 'soundfontName: string', getCandidate: () => StorePreview.InstrumentNames }],
-                callback: (args) => {
-                    const arg0 = logger.validateRequired(args[0], 1);
-                    if (arg0 == null) return;
-                    const items = StorePreview.InstrumentNames
-                        .filter(n => {
-                            const v = arg0;
-                            if (v == undefined) return true;
-                            else return n.indexOf(v) !== -1;
-                        })
-                        .map(def => {
-                            const isLoad = lastStore.preview.sfItems.find(sf => sf.instrumentName === def);
-                            return {
-                                def, isLoad
-                            }
-                        });
-                    terminal.outputs.push({
-                        type: 'table',
-                        table: {
-                            cols: [
-                                { headerName: 'Def', width: 500, attr: 'def' },
-                                { headerName: 'Load', width: 80, attr: 'sentence' },
-                            ],
-                            table: (() => items.map(item => [
-                                item.def,
-                                item.isLoad ? '*' : ''
-                            ]))()
-                        }
-                    });
-                }
-            },
+            // {
+            //     ...defaultProps,
+            //     funcKey: 'shf',
+            //     usage: 'Search available soundfonts.',
+            //     args: [{ name: 'soundfontName: string', getCandidate: () => StorePreview.InstrumentNames }],
+            //     callback: (args) => {
+            //         const arg0 = logger.validateRequired(args[0], 1);
+            //         if (arg0 == null) return;
+            //         const items = StorePreview.InstrumentNames
+            //             .filter(n => {
+            //                 const v = arg0;
+            //                 if (v == undefined) return true;
+            //                 else return n.indexOf(v) !== -1;
+            //             })
+            //             .map(def => {
+            //                 const isLoad = lastStore.preview.sfItems.find(sf => sf.instrumentName === def);
+            //                 return {
+            //                     def, isLoad
+            //                 }
+            //             });
+            //         terminal.outputs.push({
+            //             type: 'table',
+            //             table: {
+            //                 cols: [
+            //                     { headerName: 'Def', width: 500, attr: 'def' },
+            //                     { headerName: 'Load', width: 80, attr: 'sentence' },
+            //                 ],
+            //                 table: (() => items.map(item => [
+            //                     item.def,
+            //                     item.isLoad ? '*' : ''
+            //                 ]))()
+            //             }
+            //         });
+            //     }
+            // },
         ];
     };
     return {

@@ -5,10 +5,12 @@ namespace StoreOutline {
 
     export type Props = {
         focus: number;
+        trackIndex: number;
     }
 
-    export const INITIAL = {
-        focus: 1
+    export const INITIAL: Props = {
+        focus: 1,
+        trackIndex: -1
     };
 
     export type ElementType = 'init' | 'section' | 'chord' | 'change' | 'modulate' | 'tempo' | 'ts';

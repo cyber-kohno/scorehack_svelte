@@ -3,6 +3,7 @@ import { createStoreUtil, type StoreProps } from "../../store";
 import useReducerTermianl from "../reducerTerminal";
 import useBuilderChord from "./sector/builderChord";
 import useBuilderCommon from "./sector/builderCommon";
+import useBuilderHarmonize from "./sector/builderHarmonize";
 import useBuilderInit from "./sector/builderInit";
 import useBuilderMelody from "./sector/builderMelody";
 import useBuilderModulate from "./sector/builderModulate";
@@ -39,6 +40,7 @@ namespace CommandRegistUtil {
         const terminal = reducer.getTerminal();
 
         const builderCommon = useBuilderCommon(lastStore);
+        const builderHarmonize = useBuilderHarmonize(lastStore);
         const builderInit = useBuilderInit(lastStore);
         const builderSection = useBuilderSection(lastStore);
         const builderChord = useBuilderChord(lastStore);
@@ -57,6 +59,7 @@ namespace CommandRegistUtil {
 
             switch (sectors[0]) {
                 case 'harmonize': {
+                    add(builderHarmonize.get());
                     switch (sectors[1] as StoreOutline.ElementType) {
                         case 'init': add(builderInit.get()); break;
                         case 'section': add(builderSection.get()); break;

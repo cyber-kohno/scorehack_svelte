@@ -7,9 +7,10 @@ namespace ArrangeData {
 
     export const INITIAL: Props = {
         tracks: [{
-            name: 'piano',
+            name: 'arrange0',
             method: 'piano',
-            soundFont: 'acoustic_grand_piano',
+            soundFont: '',
+            volume: 10,
             isMute: false,
             relations: [],
             pianoLib: { backingPatterns: [], soundsPatterns: [], presets: [] }
@@ -20,6 +21,7 @@ namespace ArrangeData {
         name: string;
         method: ArrangeMedhod;
         soundFont: string;
+        volume: number;
         isMute: boolean;
 
         relations: Relation[];

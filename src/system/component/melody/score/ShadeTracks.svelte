@@ -3,23 +3,21 @@
   import store from "../../../store/store";
   import ShadeNote from "./ShadeNote.svelte";
 
-  const isDisp = (i: number) =>
+  $: isDisp = (i: number) =>
     i !== $store.control.melody.trackIndex ||
     $store.control.mode === "harmonize";
 
-  $: scoreTracks = $store.data.scoreTracks.filter((_, i) => isDisp(i));
-
-  $: {
-    console.log(scoreTracks.length);
-  }
+  $: scoreTracks = $store.data.scoreTracks;
 
   $: scrollLimitProps = StoreRef.getScrollLimitProps($store.ref.grid);
 </script>
 
 {#if scrollLimitProps != null}
   {#each scoreTracks as track, trackIndex}
-    {#each track.notes as _, noteIndex}
-      <ShadeNote {trackIndex} {noteIndex} {scrollLimitProps} />
-    {/each}
+    {#if isDisp(trackIndex)}
+      {#each track.notes as _, noteIndex}
+        <ShadeNote {trackIndex} {noteIndex} {scrollLimitProps} />
+      {/each}
+    {/if}
   {/each}
 {/if}
