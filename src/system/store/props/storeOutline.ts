@@ -1,16 +1,19 @@
 import Layout from "../../const/layout";
 import type MusicTheory from "../../util/musicTheory";
+import type PianoEditor from "./arrange/piano/pianoEditor";
 
 namespace StoreOutline {
 
     export type Props = {
         focus: number;
         trackIndex: number;
+        pianoEditor: null | PianoEditor.Props;
     }
 
     export const INITIAL: Props = {
         focus: 1,
-        trackIndex: -1
+        trackIndex: -1,
+        pianoEditor: null
     };
 
     export type ElementType = 'init' | 'section' | 'chord' | 'change' | 'modulate' | 'tempo' | 'ts';

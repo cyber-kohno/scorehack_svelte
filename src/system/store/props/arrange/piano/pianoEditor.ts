@@ -5,20 +5,48 @@ import type ArrangeLibrary from "../arrangeLibrary";
 
 namespace PianoEditor {
 
-    export type Control = 'voicing' | 'col' | 'record' | 'notes';
+    export type Control = 'voicing' | 'backing';
     export interface Props {
         control: Control;
 
         preset: PresetBak;
         voicing: Voicing;
-        record: Record;
-        colIndex: number;
-        notes: Notes;
+        backing: null | Backing;
 
         /** エディタ起動時のソースを保持 */
         lastSource: string;
 
         finder: ArrangeLibrary.PianoArrangeFinder | null;
+    }
+
+    type Backing = {
+        recordNum: number;
+        layers: Layer[];
+        layerIndex: number;
+        cursorX: number;
+        cursorY: number;
+    }
+
+
+    export type Layer = {
+        cols: Col[];
+        items: string[];
+    }
+
+    export const createInitialProps = (): Props => {
+
+        return {
+            backing: null,
+            control: 'voicing',
+            lastSource: '',
+            voicing: {
+                cursorX: 0,
+                cursorY: 0,
+                items: []
+            },
+            preset: { index: -1, list: [] },
+            finder: null
+        };
     }
 
     type PresetBak = {
@@ -27,7 +55,7 @@ namespace PianoEditor {
     }
 
     type Voicing = {
-        sounds: string[];
+        items: string[];
         cursorX: number;
         cursorY: number;
     }
@@ -37,33 +65,8 @@ namespace PianoEditor {
         dot?: number;
         pedal: PedalState;
     }
-
-    type Record = {
-        cursorIndex: number;
-        num: number;
-    }
-
-    export type Layer = {
-        cols: Col[];
-        items: string[];
-    }
     export const getInitialLayers = (): Layer[] => {
         return [{ cols: [], items: [] }, { cols: [], items: [] }]
-    }
-    type Notes = {
-        layers: Layer[];
-        layerIndex: number;
-        cursorX: number;
-        cursorY: number;
-    }
-
-    export const initCursor = (editor: Props) => {
-        editor.colIndex = -1;
-        editor.voicing.cursorX = -1;
-        editor.voicing.cursorY = -1;
-        editor.record.cursorIndex = -1;
-        editor.notes.cursorX = -1;
-        editor.notes.cursorY = -1;
     }
 
     export interface Unit {// extends ArrangeEditor.Unit {
@@ -97,12 +100,12 @@ namespace PianoEditor {
         recordNum: number;
     }
 
-    export const getUnitFromEditor = (editor: Props): Unit => {
-        return {
-            layers: editor.notes.layers,
-            voicingSounds: editor.voicing.sounds
-        }
-    }
+    // export const getUnitFromEditor = (editor: Props): Unit => {
+    //     return {
+    //         layers: editor.backing.layers,
+    //         voicingSounds: editor.voicing.sounds
+    //     }
+    // }
 
     /**
      * アレンジ（バッキング・ボイシング）パターンを検索（なければ登録）し、識別連番を返す
