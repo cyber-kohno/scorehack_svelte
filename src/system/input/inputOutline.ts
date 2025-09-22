@@ -1,4 +1,4 @@
-import PianoEditor from "../store/props/arrange/piano/pianoEditor";
+import StorePianoEditor from "../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../store/props/storeInput";
 import type StoreOutline from "../store/props/storeOutline";
 import useReducerCache from "../store/reducer/reducerCache";
@@ -6,6 +6,7 @@ import useReducerOutline from "../store/reducer/reducerOutline";
 import useReducerRef from "../store/reducer/reducerRef";
 import type { StoreUtil } from "../store/store";
 import MusicTheory from "../util/musicTheory";
+import useInputArrange from "./arrange/inputArrange";
 
 const useInputOutline = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
@@ -14,11 +15,18 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const reducerCache = useReducerCache(lastStore);
     const reducerRef = useReducerRef(lastStore);
     const element = reducerOutline.getCurrentElement();
+    const inputArrange = useInputArrange(storeUtil);
 
     const outline = lastStore.control.outline;
+    const arrange = outline.arrange;
 
     const control = (eventKey: string) => {
         const isInit = element.type === 'init';
+
+        if (arrange != null) {
+            inputArrange.control(eventKey);
+            return;
+        }
 
         switch (eventKey) {
             case 'a': {
@@ -113,14 +121,8 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             } break;
 
             case 'b': {
-                const editor = outline.pianoEditor;
-                if (editor == null) {
-                    outline.pianoEditor = PianoEditor.createInitialProps();
-                    commit();
-                } else {
-                    outline.pianoEditor = null;
-                    commit();
-                }
+                reducerOutline.openArrangeEditor();
+                commit();
             }
         }
     }

@@ -19,13 +19,17 @@ const useReducerTermianl = (lastStore: StoreProps) => {
         const add = (v: string) => { ret += '\\' + v };
         switch (control.mode) {
             case 'harmonize': {
+                const outline = control.outline;
                 const element = data.elements[control.outline.focus];
                 set('harmonize');
-                add(element.type);
-                switch (element.type) {
-                    case 'init': {
-
-                    } break;
+                if (outline.arrange == null) {
+                    add(element.type);
+                    switch (element.type) {
+                        case 'chord': {
+                        } break;
+                    }
+                } else {
+                    add('arrange');
                 }
             } break;
             case 'melody': {

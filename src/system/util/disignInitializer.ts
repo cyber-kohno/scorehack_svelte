@@ -7,6 +7,9 @@ namespace DesignInitializer {
         const PL = Layout.pitch;
         const OL = Layout.outline;
         const EL = Layout.element;
+        const AP = Layout.arrange.piano;
+
+        const VOICIONT_TABLE_WIDTH = AP.VOICING_ITEM_WIDTH * AP.VOICING_STRUCT_MAX;
         setCustomProps([
             { key: '--root-header-height', value: `${Layout.root.HEADER_HEIGHT}px` },
             { key: '--outline-width', value: `${Layout.root.OUTLINE_WIDTH}px` },
@@ -35,6 +38,25 @@ namespace DesignInitializer {
             { key: '--chord-degree-height', value: `${EL.CHORD_DEGREE_HEIGHT}px` },
             { key: '--chord-name-height', value: `${EL.CHORD_NAME_HEIGHT}px` },
             { key: '--modulate-record-height', value: `${EL.MODULATE_RECRORD_HEIGHT}px` },
+
+
+            { key: '--arrange-frame-x', value: `${Layout.root.OUTLINE_WIDTH + 10}px` },
+            { key: '--arrange-frame-y', value: `${Layout.root.HEADER_HEIGHT + 10}px` },
+
+            { key: '--ap-voicing-item-width', value: `${AP.VOICING_ITEM_WIDTH}px` },
+            { key: '--ap-voicing-item-height', value: `${AP.VOICING_ITEM_HEIGHT}px` },
+            { key: '--ap-voicing-struct-width', value: `${AP.VOICING_STRUCT_WIDTH}px` },
+            { key: '--ap-voicing-table-width', value: `${VOICIONT_TABLE_WIDTH}px` },
+            { key: '--ap-voicing-frame-width', value: `${AP.VOICING_STRUCT_WIDTH + VOICIONT_TABLE_WIDTH}px` },
+            { key: '--ap-voicing-frame-height', value: `${AP.VOICING_ITEM_HEIGHT * AP.VOICING_STRUCT_MAX}px` },
+
+            { key: '--ap-backing-len-height', value: `${AP.BACKING_LEN_HEIGHT}px` },
+            { key: '--ap-backing-measure-height', value: `${AP.BACKING_MEASURE_HEIGHT}px` },
+            { key: '--ap-backing-header-height', value: `${AP.BACKING_LEN_HEIGHT + AP.BACKING_MEASURE_HEIGHT}px` },
+            { key: '--ap-backing-record-width', value: `${AP.BACKING_RECORD_WIDTH}px` },
+            { key: '--ap-backing-table-height', value: `${AP.BACKING_RECORD_HEIGHT * AP.BACKING_RECORD_MAX}px` },
+            { key: '--ap-backing-pedal-height', value: `${AP.BACKING_PEDAL_HEIGHT}px` },
+
         ]);
     }
     export const initVariableProps = (lastStore: StoreProps) => {

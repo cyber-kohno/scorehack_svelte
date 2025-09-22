@@ -1,3 +1,5 @@
+import StorePianoEditor from "../props/arrange/piano/storePianoEditor";
+import type StoreArrange from "../props/arrange/storeArrange";
 import StoreMelody from "../props/storeMelody";
 import type StoreOutline from "../props/storeOutline";
 import type { StoreProps } from "../store";
@@ -93,6 +95,55 @@ const useReducerOutline = (lastStore: StoreProps) => {
         }
     }
 
+    const getCurrArrangeTrack = () => {
+        const outline = lastStore.control.outline;
+        return lastStore.data.arrange.tracks[outline.trackIndex];
+    }
+
+    const openArrangeEditor = () => {
+
+        const track = getCurrArrangeTrack();
+
+        if (track == undefined) return;
+
+        const { baseCaches, elementCaches, chordCaches } = lastStore.cache;
+        const { chordSeq, baseSeq } = elementCaches[outline.focus];
+        if (chordSeq === -1) return;
+        const chord = chordCaches[chordSeq];
+        const scoreBase = baseCaches[baseSeq].scoreBase;
+
+        if (chord.compiledChord == undefined) return;
+
+        const target: StoreArrange.Target = {
+            scoreBase,
+            beat: chord.beat,
+            compiledChord: chord.compiledChord
+        }
+
+        const buildEditor = () => {
+            switch (track.method) {
+                case 'piano': return StorePianoEditor.createInitialProps()
+            }
+        }
+        outline.arrange = {
+            method: track.method,
+            target,
+            editor: buildEditor()
+        };
+    }
+
+    const changeHarmonizeTrack = (nextIndex: number) => {
+        const outline = lastStore.control.outline;
+        const tracks = lastStore.data.arrange.tracks;
+        if (tracks[nextIndex] == undefined) throw new Error();
+
+        outline.trackIndex = nextIndex;
+    }
+    const getCurrHarmonizeTrack = () => {
+        const outline = lastStore.control.outline;
+        return lastStore.data.arrange.tracks[outline.trackIndex];
+    }
+
     return {
         getCurrentElement,
         getCurrentSectionData,
@@ -106,7 +157,10 @@ const useReducerOutline = (lastStore: StoreProps) => {
         renameSectionData,
         setChordData,
         syncChordSeqFromNote,
-        moveSectionFocus
+        moveSectionFocus,
+        openArrangeEditor,
+        changeHarmonizeTrack,
+        getCurrHarmonizeTrack
     }
 };
 

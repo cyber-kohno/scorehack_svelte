@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PianoEditFrame from "./component/arrange/piano/PianoEditFrame.svelte";
+  import ArrangeFrame from "./component/arrange/ArrangeFrame.svelte";
   import RootHeader from "./component/header/RootHeader.svelte";
   import OutlineFrame from "./component/outline/OutlineFrame.svelte";
   import TerminalFrame from "./component/terminal/TerminalFrame.svelte";
@@ -7,7 +7,7 @@
   import store from "./store/store";
 
   $: isDispTerminal = $store.terminal != null;
-  $: isDispPianoEditor = $store.control.outline.pianoEditor != null;
+  $: isDispArrangeEditor = $store.control.outline.arrange != null;
 </script>
 
 <div class="wrap">
@@ -19,8 +19,8 @@
   {#if isDispTerminal}
     <TerminalFrame />
   {/if}
-  {#if isDispPianoEditor}
-    <PianoEditFrame />
+  {#if isDispArrangeEditor}
+    <ArrangeFrame />
   {/if}
 </div>
 

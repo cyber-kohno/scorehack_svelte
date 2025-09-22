@@ -1,20 +1,35 @@
-import type PianoEditor from "./piano/pianoEditor";
+import type StoreCache from "../storeCache";
+import type StoreOutline from "../storeOutline";
+import type StorePianoEditor from "./piano/storePianoEditor";
 
-namespace ArrangeData {
+namespace StoreArrange {
 
     export const ArrangeMedhods = ['piano', 'guitar'] as const;
     export type ArrangeMedhod = typeof ArrangeMedhods[number];
 
-    export const INITIAL: Props = {
-        tracks: [{
-            name: 'arrange0',
-            method: 'piano',
-            soundFont: '',
-            volume: 10,
-            isMute: false,
-            relations: [],
-            pianoLib: { backingPatterns: [], soundsPatterns: [], presets: [] }
-        }],
+    export const INITIAL: DataProps = {
+        // tracks: [{
+        //     name: 'arrange0',
+        //     method: 'piano',
+        //     soundFont: '',
+        //     volume: 10,
+        //     isMute: false,
+        //     relations: [],
+        //     pianoLib: { backingPatterns: [], soundsPatterns: [], presets: [] }
+        // }],
+        tracks: [],
+    }
+
+    export type EditorProps = {
+        method: StoreArrange.ArrangeMedhod;
+        target: Target;
+        editor: any;
+    }
+    
+    export type Target = {
+        scoreBase: StoreOutline.DataInit,
+        beat: StoreCache.BeatCache;
+        compiledChord: StoreCache.CompiledChord;
     }
 
     export type Track = {
@@ -25,7 +40,7 @@ namespace ArrangeData {
         isMute: boolean;
 
         relations: Relation[];
-        pianoLib?: PianoEditor.Lib;
+        pianoLib?: StorePianoEditor.Lib;
     }
 
     /**
@@ -40,7 +55,7 @@ namespace ArrangeData {
         sndsPatt: number;
     }
 
-    export type Props = {
+    export type DataProps = {
         tracks: Track[];
     }
 
@@ -78,4 +93,4 @@ namespace ArrangeData {
     }
 
 }
-export default ArrangeData;
+export default StoreArrange;

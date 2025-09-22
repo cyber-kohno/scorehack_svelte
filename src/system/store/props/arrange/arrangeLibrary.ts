@@ -1,6 +1,6 @@
 import type MusicTheory from "../../../util/musicTheory";
-import type ArrangeData from "./arrangeData";
-import type PianoEditor from "./piano/pianoEditor";
+import type StoreArrange from "./storeArrange";
+import type StorePianoEditor from "./piano/storePianoEditor";
 
 
 namespace ArrangeLibrary {
@@ -30,7 +30,7 @@ namespace ArrangeLibrary {
 
     export type PianoArrangeFinder = {
         info: SearchRequest;
-        list: PianoEditor.Preset[];
+        list: StorePianoEditor.Preset[];
 
         cursorBacking: number;
         cursorSounds: number;
@@ -41,19 +41,19 @@ namespace ArrangeLibrary {
     }
 
 
-    export const getPianoBackingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
+    export const getPianoBackingPatternFromNo = (no: number, lib: StorePianoEditor.Lib) => {
         const patt = lib.backingPatterns.find(p => p.no === no);
         if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
         return patt.backing;
     }
-    export const getPianoVoicingPatternFromNo = (no: number, lib: PianoEditor.Lib) => {
+    export const getPianoVoicingPatternFromNo = (no: number, lib: StorePianoEditor.Lib) => {
         const patt = lib.soundsPatterns.find(p => p.no === no);
         if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
         return patt.sounds;
     }
 
-    export const searchPianoPatterns = (req: SearchRequest, track: ArrangeData.Track) => {
-        const lib = track.pianoLib as PianoEditor.Lib;
+    export const searchPianoPatterns = (req: SearchRequest, track: StoreArrange.Track) => {
+        const lib = track.pianoLib as StorePianoEditor.Lib;
 
         // console.log(req);
         // 条件に一致するパターンを抽出
@@ -68,7 +68,7 @@ namespace ArrangeLibrary {
                 condEatTail === req.eatTail
         });
 
-        const list: PianoEditor.Preset[] = bkgPatts.map(bkgPatt => {
+        const list: StorePianoEditor.Preset[] = bkgPatts.map(bkgPatt => {
             const voics: number[] = [];
 
             // プリセットから探す             

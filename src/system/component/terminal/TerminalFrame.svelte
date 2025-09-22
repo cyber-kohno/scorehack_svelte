@@ -64,7 +64,7 @@
   .frame {
     display: inline-block;
     position: absolute;
-    z-index: 5;
+    z-index: 6;
     top: 10px;
     left: 10px;
     width: 700px;

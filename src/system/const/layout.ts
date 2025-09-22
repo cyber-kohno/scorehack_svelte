@@ -42,6 +42,23 @@ namespace Layout {
         CHORD_NAME_HEIGHT: 30,
         MODULATE_RECRORD_HEIGHT: 30,
     }
+
+    export const arrange = {
+        piano: {
+            VOICING_OCTAVE_MAX: 8,
+            VOICING_STRUCT_MAX: 8,
+            VOICING_ITEM_WIDTH: 70,
+            VOICING_ITEM_HEIGHT: 30,
+            VOICING_STRUCT_WIDTH: 100,
+
+            BACKING_LEN_HEIGHT: 30,
+            BACKING_MEASURE_HEIGHT: 30,
+            BACKING_RECORD_HEIGHT: 30,
+            BACKING_RECORD_WIDTH: 60,
+            BACKING_RECORD_MAX: 12,
+            BACKING_PEDAL_HEIGHT: 34,
+        }
+    }
 };
 
 export default Layout;

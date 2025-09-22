@@ -59,12 +59,15 @@ namespace CommandRegistUtil {
 
             switch (sectors[0]) {
                 case 'harmonize': {
-                    add(builderHarmonize.get());
-                    switch (sectors[1] as StoreOutline.ElementType) {
-                        case 'init': add(builderInit.get()); break;
-                        case 'section': add(builderSection.get()); break;
-                        case 'chord': add(builderChord.get()); break;
-                        case 'modulate': add(builderModulate.get()); break;
+                    const harmonizeSector = sectors[1] as StoreOutline.ElementType | 'arrange';
+                    if (harmonizeSector !== 'arrange') {
+                        add(builderHarmonize.get());
+                        switch (harmonizeSector) {
+                            case 'init': add(builderInit.get()); break;
+                            case 'section': add(builderSection.get()); break;
+                            case 'chord': add(builderChord.get()); break;
+                            case 'modulate': add(builderModulate.get()); break;
+                        }
                     }
                 } break;
                 case 'melody': add(builderMelody.get());

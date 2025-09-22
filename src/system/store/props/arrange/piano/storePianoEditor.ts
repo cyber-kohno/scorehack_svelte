@@ -1,12 +1,14 @@
 import type StoreMelody from "../../storeMelody";
-import ArrangeData from "../arrangeData";
+import StoreArrange from "../storeArrange";
 import type ArrangeLibrary from "../arrangeLibrary";
 
 
-namespace PianoEditor {
+namespace StorePianoEditor {
 
-    export type Control = 'voicing' | 'backing';
+    export type Phase = 'preset' | 'edit' | 'preview';
+    export type Control = 'voicing' | 'col' | 'record' | 'notes';
     export interface Props {
+        phase: Phase;
         control: Control;
 
         preset: PresetBak;
@@ -37,6 +39,7 @@ namespace PianoEditor {
 
         return {
             backing: null,
+            phase: 'edit',
             control: 'voicing',
             lastSource: '',
             voicing: {
@@ -50,7 +53,7 @@ namespace PianoEditor {
     }
 
     type PresetBak = {
-        list: PianoEditor.Unit[];
+        list: StorePianoEditor.Unit[];
         index: number;
     }
 
@@ -74,12 +77,12 @@ namespace PianoEditor {
         layers: Layer[];
     }
 
-    export interface BackingPattern extends ArrangeData.Pattern {
+    export interface BackingPattern extends StoreArrange.Pattern {
         backing: BackingProps;
 
         category: ArrangeLibrary.BackingCategory;
     }
-    export interface SoundsPattern extends ArrangeData.Pattern {
+    export interface SoundsPattern extends StoreArrange.Pattern {
         sounds: string[];
         category: ArrangeLibrary.SoundsCategory;
     }
@@ -94,6 +97,12 @@ namespace PianoEditor {
 
         presets: Preset[];
     }
+
+    export const createInitialLib = (): Lib => ({
+        backingPatterns: [],
+        soundsPatterns: [],
+        presets: []
+    });
 
     export type BackingProps = {
         layers: Layer[];
@@ -161,13 +170,13 @@ namespace PianoEditor {
 
     export const searchPianoLibUnit = (
         chordSeq: number,
-        track: ArrangeData.Track
+        track: StoreArrange.Track
     ): Unit | undefined => {
         const relations = track.relations;
         const relation = relations.find(r => r.chordSeq === chordSeq);
 
         if (relation != undefined) {
-            const pianoLib = track.pianoLib as PianoEditor.Lib;
+            const pianoLib = track.pianoLib as StorePianoEditor.Lib;
             const backingPatt = pianoLib.backingPatterns.find(patt => patt.no === relation.bkgPatt);
             if (backingPatt == null) throw new Error('backingPattがundefinedであってはならない。');
             const soundsPatt = pianoLib.soundsPatterns.find(patt => patt.no === relation.sndsPatt);
@@ -181,15 +190,15 @@ namespace PianoEditor {
         return undefined;
     }
 
-    export const deleteUnreferUnit = (track: ArrangeData.Track) => {
-        const pianoLib = track.pianoLib as PianoEditor.Lib;
-        ArrangeData.deleteUnreferPattern('bkgPatt', pianoLib.backingPatterns,
-            (patt: ArrangeData.Pattern) => {
+    export const deleteUnreferUnit = (track: StoreArrange.Track) => {
+        const pianoLib = track.pianoLib as StorePianoEditor.Lib;
+        StoreArrange.deleteUnreferPattern('bkgPatt', pianoLib.backingPatterns,
+            (patt: StoreArrange.Pattern) => {
                 return pianoLib.presets.find(p => p.bkgPatt === patt.no) != undefined;
             },
             track);
-        ArrangeData.deleteUnreferPattern('sndsPatt', pianoLib.soundsPatterns,
-            (patt: ArrangeData.Pattern) => {
+        StoreArrange.deleteUnreferPattern('sndsPatt', pianoLib.soundsPatterns,
+            (patt: StoreArrange.Pattern) => {
                 const result = pianoLib.presets.find(p => {
                     // console.log(`p.voics:${p.voics}, patt.no:${patt.no}`);
                     return p.voics.includes(patt.no);
@@ -200,4 +209,4 @@ namespace PianoEditor {
     }
 };
 
-export default PianoEditor;
+export default StorePianoEditor;

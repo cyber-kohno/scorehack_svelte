@@ -198,31 +198,31 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     logger.outputInfo(`Track deleted. [${name}].`);
                 }
             },
-            {
-                ...defaultProps,
-                funcKey: 'chi',
-                usage: 'Change the active track by index.',
-                args: [{
-                    name: 'trackIndex: number',
-                    getCandidate: () => lastStore.data.scoreTracks.map((_, i) => i.toString())
-                }],
-                callback: (args) => {
-                    const melody = lastStore.control.melody;
-                    const arg0 = logger.validateRequired(args[0], 1);
-                    if (arg0 == null) return;
-                    const nextIndex = logger.validateNumber(arg0, 1);
-                    if (nextIndex == null) return;
-                    const prev = melody.trackIndex;
-                    try {
-                        changeScoreTrack(nextIndex);
-                        logger.outputInfo(`Active track changed. [${prev} → ${nextIndex}]`);
-                        reducer.updateTarget();
-                        lss();
-                    } catch {
-                        logger.outputError(`The destination track does not exist. [${nextIndex}]`);
-                    }
-                }
-            },
+            // {
+            //     ...defaultProps,
+            //     funcKey: 'chi',
+            //     usage: 'Change the active track by index.',
+            //     args: [{
+            //         name: 'trackIndex: number',
+            //         getCandidate: () => lastStore.data.scoreTracks.map((_, i) => i.toString())
+            //     }],
+            //     callback: (args) => {
+            //         const melody = lastStore.control.melody;
+            //         const arg0 = logger.validateRequired(args[0], 1);
+            //         if (arg0 == null) return;
+            //         const nextIndex = logger.validateNumber(arg0, 1);
+            //         if (nextIndex == null) return;
+            //         const prev = melody.trackIndex;
+            //         try {
+            //             changeScoreTrack(nextIndex);
+            //             logger.outputInfo(`Active track changed. [${prev} → ${nextIndex}]`);
+            //             reducer.updateTarget();
+            //             lss();
+            //         } catch {
+            //             logger.outputError(`The destination track does not exist. [${nextIndex}]`);
+            //         }
+            //     }
+            // },
             {
                 ...defaultProps,
                 funcKey: 'chs',
@@ -236,7 +236,7 @@ const useBuilderMelody = (lastStore: StoreProps) => {
                     const tracks = lastStore.data.scoreTracks;
                     const arg0 = logger.validateRequired(args[0], 1);
                     if (arg0 == null) return;
-                    const nextIndex = lastStore.data.scoreTracks.findIndex(st => st.name === arg0);
+                    const nextIndex = tracks.findIndex(st => st.name === arg0);
                     if (nextIndex === -1) {
                         logger.outputError(``);
                         return;

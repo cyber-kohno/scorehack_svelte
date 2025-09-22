@@ -7,7 +7,7 @@ import StoreCache from "./props/storeCache";
 import StoreRef from "./props/storeRef";
 import type StoreTerminal from "./props/storeTerminal";
 import StoreFile from "./props/storeFile";
-import type PianoEditor from "./props/arrange/piano/pianoEditor";
+import type StorePianoEditor from "./props/arrange/piano/storePianoEditor";
 
 export type StoreProps = {
 
