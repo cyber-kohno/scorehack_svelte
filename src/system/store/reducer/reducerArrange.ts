@@ -5,8 +5,8 @@ const useReducerArrange = (lastStore: StoreProps) => {
 
     const getArrange = () => {
         const arrange = lastStore.control.outline.arrange;
-        if (arrange === null) throw new Error();
-        return arrange
+        if (arrange == null) throw new Error();
+        return arrange;
     }
     const getPianoEditor = () => {
         const arrange = getArrange();

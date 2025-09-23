@@ -47,7 +47,7 @@
     background-color: rgba(240, 248, 255, 0.101);
     overflow: hidden;
 
-    min-height: 500px;
+    /* min-height: 500px; */
 
     * {
       vertical-align: top;
@@ -58,7 +58,7 @@
     position: relative;
     width: 90px;
     /* height: 100%; */
-    min-height: 500px;
+    /* min-height: 500px; */
     background-color: rgba(178, 178, 178, 0.601);
     padding: 2px;
   }

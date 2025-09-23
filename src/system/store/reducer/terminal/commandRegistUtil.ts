@@ -1,3 +1,4 @@
+import type StoreArrange from "../../props/arrange/storeArrange";
 import type StoreOutline from "../../props/storeOutline";
 import { createStoreUtil, type StoreProps } from "../../store";
 import useReducerTermianl from "../reducerTerminal";
@@ -7,6 +8,7 @@ import useBuilderHarmonize from "./sector/builderHarmonize";
 import useBuilderInit from "./sector/builderInit";
 import useBuilderMelody from "./sector/builderMelody";
 import useBuilderModulate from "./sector/builderModulate";
+import useBuilderPianoEditor from "./sector/builderPianoEditor";
 import useBuilderSection from "./sector/builderSection";
 
 namespace CommandRegistUtil {
@@ -46,6 +48,7 @@ namespace CommandRegistUtil {
         const builderChord = useBuilderChord(lastStore);
         const builderMelody = useBuilderMelody(lastStore);
         const builderModulate = useBuilderModulate(lastStore);
+        const builderPianoEditor = useBuilderPianoEditor(lastStore);
 
         const buildAvailableFunctions = () => {
             const items: FuncProps[] = [];
@@ -67,6 +70,11 @@ namespace CommandRegistUtil {
                             case 'section': add(builderSection.get()); break;
                             case 'chord': add(builderChord.get()); break;
                             case 'modulate': add(builderModulate.get()); break;
+                        }
+                    } else {
+                        const arrangeSector = sectors[2] as StoreArrange.ArrangeMedhod;
+                        switch(arrangeSector) {
+                            case 'piano': add(builderPianoEditor.get()); break;
                         }
                     }
                 } break;

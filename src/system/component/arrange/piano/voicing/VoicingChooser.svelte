@@ -1,7 +1,6 @@
 <script lang="ts">
   import useReducerArrange from "../../../../store/reducer/reducerArrange";
   import store from "../../../../store/store";
-  import MusicTheory from "../../../../util/musicTheory";
   import VoicingCell from "./VoicingCell.svelte";
 
   $: reducer = useReducerArrange($store);

@@ -1,4 +1,6 @@
 import Layout from "../../const/layout";
+import type StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
+import type StoreInput from "../../store/props/storeInput";
 import useReducerArrange from "../../store/reducer/reducerArrange";
 import type { StoreUtil } from "../../store/store";
 import MusicTheory from "../../util/musicTheory";
@@ -90,15 +92,119 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                     }
                 }
 
+                const recordControl = () => {
+                    if(editor.backing == null) throw new Error();
+                    const backing = editor.backing;
+                    const layers = editor.backing.layers;
+
+                    switch (eventKey) {
+                        case 'ArrowDown': {
+                            if (backing.cursorY > 0) {
+                                backing.cursorY--;
+                                commit();
+                            }
+                        } break;
+                        case 'ArrowUp': {
+                            if (backing.cursorY < backing.recordNum - 1) {
+                                backing.cursorY++;
+                                commit();
+                            }
+                        } break;
+                        case 'a': {
+                            if (backing.recordNum < Layout.arrange.piano.BACKING_RECORD_MAX) {
+                                backing.recordNum++;
+                                if (backing.recordNum === 1) backing.cursorY = 0;
+                                else {
+                                    layers.forEach(l => {
+                                        l.items.forEach((item, i) => {
+                                            const [c, r] = item.split('.').map(v => Number(v));
+                                            // console.log(`r, c = ${r}, ${c}`);
+                                            if (backing.cursorY < r) {
+                                                l.items[i] = `${c}.${r + 1}`;
+                                            }
+                                        });
+                                    });
+                                }
+                                commit();
+                            }
+                        } break;
+                        case 'Delete': {
+                            if (backing.recordNum >= 1) {
+
+                                layers.forEach(l => {
+                                    for (let i = l.items.length - 1; i >= 0; i--) {
+                                        const item = l.items[i];
+                                        const [c, r] = item.split('.').map(v => Number(v));
+                                        // console.log(`r, c = ${r}, ${c}`);
+                                        if (backing.cursorY === r) {
+                                            l.items.splice(i, 1);
+                                        }
+                                    }
+                                    l.items.forEach((item, i) => {
+                                        const [c, r] = item.split('.').map(v => Number(v));
+                                        if (backing.cursorY < r) {
+                                            l.items[i] = `${c}.${r - 1}`;
+                                        }
+                                    });
+                                });
+
+                                backing.recordNum--;
+                                if (backing.recordNum === 0) backing.cursorY = -1;
+                                if (backing.cursorY > 0) backing.cursorY--;
+                                commit();
+                            }
+                        } break;
+                    }
+                }
+
                 switch (editor.control) {
                     case 'voicing': voicingControl(); break;
+                    case 'record': recordControl(); break;
                 }
             } break;
         }
     }
 
+    const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
+        if (arrange == null) throw new Error();
+
+        const editor = reducerArrange.getPianoEditor();
+        const callbacks: StoreInput.Callbacks = {};
+
+        callbacks.holdShift = () => {
+            if (editor.backing == null) return;
+
+            const shiftControl = (next: StorePianoEditor.Control) => {
+                editor.control = next;
+                // editor.phase = 'target';
+                // PBEditor.initCursor(editor);
+                commit();
+            }
+            switch (editor.control) {
+                case 'voicing': {
+                    if (eventKey === 'ArrowDown') shiftControl('col');
+                } break;
+                case 'col': {
+                    if (eventKey === 'ArrowUp') shiftControl('voicing');
+                    if (eventKey === 'ArrowDown') shiftControl('notes');
+                    if (eventKey === 'ArrowLeft') shiftControl('record');
+                } break;
+                case 'record': {
+                    if (eventKey === 'ArrowUp') shiftControl('col');
+                    if (eventKey === 'ArrowRight') shiftControl('notes');
+                } break;
+                case 'notes': {
+                    if (eventKey === 'ArrowUp') shiftControl('col');
+                    if (eventKey === 'ArrowLeft') shiftControl('record');
+                } break;
+            }
+        }
+        return callbacks;
+    }
+
     return {
-        control
+        control,
+        getHoldCallbacks
     };
 }
 export default useInputPianoEditor;

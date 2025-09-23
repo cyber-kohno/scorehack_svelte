@@ -63,6 +63,14 @@ namespace StoreCache {
         eatTail: number;
     }
 
+    export const getBeatInfo = ((beatCache: BeatCache) => {
+        let ret = beatCache.num.toString();
+        if (beatCache.eatHead !== 0 || beatCache.eatTail !== 0) {
+            ret += ` (${beatCache.eatHead}, ${beatCache.eatTail})`;
+        }
+        return ret;
+    })
+
     export type CompiledChord = {
         chord: MusicTheory.KeyChordProps;
         structs: MusicTheory.ChordStruct[];

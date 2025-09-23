@@ -30,6 +30,7 @@ const useReducerTermianl = (lastStore: StoreProps) => {
                     }
                 } else {
                     add('arrange');
+                    add(outline.arrange.method);
                 }
             } break;
             case 'melody': {

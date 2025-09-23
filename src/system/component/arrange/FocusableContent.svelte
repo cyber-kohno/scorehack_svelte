@@ -13,8 +13,10 @@
   .wrap {
     display: block;
     position: relative;
-    background-color: rgba(255, 255, 255, 0.195);
-    padding: 4px;
+    /* background-color: rgba(255, 255, 255, 0.195); */
+    /* padding: 4px; */
+    border: 4px solid rgba(255, 255, 255, 0.463);
+    box-sizing: border-box;
   }
   .blind {
     display: inline-block;
@@ -24,9 +26,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 12, 83, 0.125);
+    background-color: rgba(0, 12, 83, 0.299);
   }
   .wrap[data-focus="true"] {
-    background-color: rgba(255, 0, 0, 0.56);
+    border: 4px solid rgb(255, 0, 0);
   }
 </style>

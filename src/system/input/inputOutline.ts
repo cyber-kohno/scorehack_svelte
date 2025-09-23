@@ -129,6 +129,11 @@ const useInputOutline = (storeUtil: StoreUtil) => {
 
     const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
 
+        if (arrange != null) {
+            // console.log('arrange != null');
+            return inputArrange.getHoldCallbacks(eventKey);
+        }
+
         const callbacks: StoreInput.Callbacks = {};
 
         const elementType = reducerOutline.getCurrentElement().type;

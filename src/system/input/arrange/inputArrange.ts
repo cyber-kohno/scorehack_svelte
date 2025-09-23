@@ -1,3 +1,4 @@
+import type StoreInput from "../../store/props/storeInput";
 import type { StoreUtil } from "../../store/store";
 import useInputGuitarEditor from "./inputGuitarEditor";
 import useInputPianoEditor from "./inputPianoEditor";
@@ -28,8 +29,19 @@ const useInputArrange = (storeUtil: StoreUtil) => {
         }
     }
 
+
+    const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
+        if (arrange == null) throw new Error();
+
+        switch (arrange.method) {
+            case 'piano': return inputPianoEditor.getHoldCallbacks(eventKey);
+            case 'guitar': return inputGuitarEditor.getHoldCallbacks(eventKey);
+        }
+    }
+
     return {
-        control
+        control,
+        getHoldCallbacks
     };
 }
 export default useInputArrange;

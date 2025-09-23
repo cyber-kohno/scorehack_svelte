@@ -3,10 +3,12 @@ import useReducerCache from "../../reducerCache";
 import useReducerOutline from "../../reducerOutline";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
+import useTerminalLogger from "../terminalLogger";
 
 const useBuilderSection = (lastStore: StoreProps) => {
     const reducer = useReducerTermianl(lastStore);
     const terminal = reducer.getTerminal();
+    const logger = useTerminalLogger(terminal);
 
     const get = (): CommandRegistUtil.FuncProps[] => {
 
@@ -25,15 +27,8 @@ const useBuilderSection = (lastStore: StoreProps) => {
                     const next = args[0];
                     renameSectionData(next);
                     calculate();
-                    terminal.outputs.push({
-                        type: 'record',
-                        record: {
-                            attr: 'info',
-                            texts: [
-                                { str: `The section name has been changed. [${prev} to ${next}]` }
-                            ]
-                        }
-                    });
+                    
+                    logger.outputInfo(`The section name has been changed. [${prev} to ${next}]`);
                 }
             },
         ];

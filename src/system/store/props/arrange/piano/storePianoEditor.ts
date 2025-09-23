@@ -29,7 +29,6 @@ namespace StorePianoEditor {
         cursorY: number;
     }
 
-
     export type Layer = {
         cols: Col[];
         items: string[];
@@ -52,6 +51,17 @@ namespace StorePianoEditor {
         };
     }
 
+    export const createInitialBackingProps = ():Backing => {
+
+        return {
+            cursorX: -1,
+            cursorY: -1,
+            layerIndex: 0,
+            recordNum: 0,
+            layers: createInitialLayers()
+        }
+    }
+
     type PresetBak = {
         list: StorePianoEditor.Unit[];
         index: number;
@@ -68,7 +78,7 @@ namespace StorePianoEditor {
         dot?: number;
         pedal: PedalState;
     }
-    export const getInitialLayers = (): Layer[] => {
+    export const createInitialLayers = (): Layer[] => {
         return [{ cols: [], items: [] }, { cols: [], items: [] }]
     }
 

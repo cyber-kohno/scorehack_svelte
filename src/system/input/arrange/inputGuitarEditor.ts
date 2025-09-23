@@ -1,3 +1,4 @@
+import type StoreInput from "../../store/props/storeInput";
 import type { StoreUtil } from "../../store/store";
 
 const useInputGuitarEditor = (storeUtil: StoreUtil) => {
@@ -10,8 +11,15 @@ const useInputGuitarEditor = (storeUtil: StoreUtil) => {
         if (arrange == null) throw new Error();
     }
 
+    const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
+        const callbacks: StoreInput.Callbacks = {};
+
+        return callbacks;
+    }
+
     return {
-        control
+        control,
+        getHoldCallbacks
     };
 }
 export default useInputGuitarEditor;

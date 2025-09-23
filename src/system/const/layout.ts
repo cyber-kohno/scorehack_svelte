@@ -56,7 +56,7 @@ namespace Layout {
             BACKING_RECORD_HEIGHT: 30,
             BACKING_RECORD_WIDTH: 60,
             BACKING_RECORD_MAX: 12,
-            BACKING_PEDAL_HEIGHT: 34,
+            BACKING_PEDAL_HEIGHT: 42,
         }
     }
 };
