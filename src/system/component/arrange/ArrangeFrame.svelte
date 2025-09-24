@@ -1,7 +1,7 @@
 <script lang="ts">
   import useReducerOutline from "../../store/reducer/reducerOutline";
   import store from "../../store/store";
-  import PianoEditor from "./piano/PianoEditor.svelte";
+  import PianoEditor from "./piano/ArrangePianoEditor.svelte";
   import SideItemLabel from "./SideItemLabel.svelte";
 
   $: reducerOutline = useReducerOutline($store);

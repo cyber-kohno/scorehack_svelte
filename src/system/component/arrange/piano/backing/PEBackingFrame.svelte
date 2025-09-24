@@ -2,11 +2,11 @@
   import useReducerArrange from "../../../../store/reducer/reducerArrange";
   import store from "../../../../store/store";
   import FocusableContent from "../../FocusableContent.svelte";
-  import LenFrame from "./ColFrame.svelte";
-  import MeasureFrame from "./MeasureFrame.svelte";
-  import PedalFrame from "./PedalFrame.svelte";
-  import RecordFrame from "./RecordFrame.svelte";
-  import TableFrame from "./TableFrame.svelte";
+  import LenFrame from "./PEBColFrame.svelte";
+  import MeasureFrame from "./PEBMeasureFrame.svelte";
+  import PedalFrame from "./PEBPedalFrame.svelte";
+  import RecordFrame from "./PEBRecordFrame.svelte";
+  import TableFrame from "./PEBTableFrame.svelte";
 
   $: reducer = useReducerArrange($store);
   $: editor = reducer.getPianoEditor();

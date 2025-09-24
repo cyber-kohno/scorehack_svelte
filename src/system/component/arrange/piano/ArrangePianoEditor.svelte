@@ -3,8 +3,8 @@
   import store from "../../../store/store";
   import ChordInfoHeader from "../ChordInfoHeader.svelte";
   import FocusableContent from "../FocusableContent.svelte";
-  import BackingFrame from "./backing/BackingFrame.svelte";
-  import VoicingChooser from "./voicing/VoicingChooser.svelte";
+  import BackingFrame from "./backing/PEBackingFrame.svelte";
+  import VoicingChooser from "./voicing/PEVoicingChooser.svelte";
 
   $: reducer = useReducerArrange($store);
   $: editor = reducer.getPianoEditor();
