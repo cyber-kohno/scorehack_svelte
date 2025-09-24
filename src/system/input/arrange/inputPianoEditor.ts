@@ -1,4 +1,5 @@
 import Layout from "../../const/layout";
+import type StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
 import type StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../store/props/storeInput";
 import useReducerArrange from "../../store/reducer/reducerArrange";
@@ -21,6 +22,14 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
 
         switch (editor.phase) {
             case 'edit': {
+
+                const shiftLayer = (backing: StorePianoBacking.EditorProps) => {
+                    backing.layerIndex = backing.layerIndex === 0 ? 1 : 0;
+
+                    backing.cursorX = -1;
+                    backing.cursorY = -1;
+                    commit();
+                }
 
                 /**
                  * ボイシング選択時の制御を定義
@@ -92,10 +101,146 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                     }
                 }
 
-                const recordControl = () => {
-                    if(editor.backing == null) throw new Error();
+                const colControl = () => {
                     const backing = editor.backing;
-                    const layers = editor.backing.layers;
+                    if (backing == null) throw new Error();
+
+                    const cols = backing.layers[backing.layerIndex].cols;
+                    const layer = backing.layers[backing.layerIndex];
+                    const isLimit = () => {
+                        return cols.length > Layout.arrange.piano.BACKING_COL_MAX;
+                    };
+
+                    const createInitialCol = (): StorePianoBacking.Col => {
+                        let div = 8;
+                        if (backing.cursorX >= 0) {
+                            const len = layer.cols[backing.cursorX];
+                            div = len.div;
+                        }
+                        return {
+                            div,
+                            tuplets: 1,
+                            pedal: 0
+                        }
+                    };
+
+                    const modDiv = (div: number) => {
+                        if (backing.cursorX === -1) return;
+                        const col = cols[backing.cursorX];
+                        col.div = div;
+                        commit();
+                    };
+                    const pedalChange = () => {
+                        const index = backing.cursorX;
+                        if (index === -1) return;
+                        const col = cols[index];
+                        let prevState = 0;
+                        if (index >= 1) prevState = cols[index - 1].pedal;
+                        switch (col.pedal) {
+                            case 0: {
+                                for (let i = index; i < cols.length; i++) {
+                                    if (cols[i].pedal === 1) break;
+                                    cols[i].pedal = 1;
+                                }
+                            } break;
+                            case 1: {
+                                if (prevState === 1) {
+                                    col.pedal = 2;
+                                } else {
+                                    for (let i = index; i < cols.length; i++) {
+                                        cols[i].pedal = 0;
+                                    }
+                                }
+                            } break;
+                            case 2: {
+                                for (let i = index; i < cols.length; i++) {
+                                    cols[i].pedal = 0;
+                                }
+                            } break;
+                        }
+                        commit();
+                    };
+                    const toggleDot = () => {
+                        if (backing.cursorX === -1) return;
+                        const col = cols[backing.cursorX];
+                        if (col.div >= 16) return;
+                        switch (col.dot) {
+                            case undefined: col.dot = 1; break;
+                            case 1: col.dot = undefined; break;
+                        }
+                        // console.log(col.dot);
+                        commit();
+                    };
+
+                    switch (eventKey) {
+                        case 'ArrowLeft': {
+                            if (backing.cursorX > 0) {
+                                backing.cursorX--;
+                                commit();
+                            }
+                        } break;
+                        case 'ArrowRight': {
+                            if (backing.cursorX < cols.length - 1) {
+                                backing.cursorX++;
+                                commit();
+                            }
+                        } break;
+                        case 'ArrowDown': {
+                            pedalChange();
+                        } break;
+                        case 'a': {
+                            if (!isLimit()) {
+                                cols.splice(backing.cursorX, 0, createInitialCol());
+                                layer.items.forEach((item, i) => {
+                                    const [c, r] = item.split('.').map(v => Number(v));
+                                    if (backing.cursorX < c) {
+                                        layer.items[i] = `${c + 1}.${r}`;
+                                    }
+                                });
+                                commit();
+                            }
+                        } break;
+                        case 'Delete': {
+                            if (backing.cursorX !== -1) {
+
+                                for (let i = layer.items.length - 1; i >= 0; i--) {
+                                    const item = layer.items[i];
+                                    const [c, r] = item.split('.').map(v => Number(v));
+                                    // console.log(`r, c = ${r}, ${c}`);
+                                    if (backing.cursorX === c) {
+                                        layer.items.splice(i, 1);
+                                    }
+                                }
+                                layer.items.forEach((item, i) => {
+                                    const [c, r] = item.split('.').map(v => Number(v));
+                                    if (backing.cursorX < c) {
+                                        layer.items[i] = `${c - 1}.${r}`;
+                                    }
+                                });
+
+                                cols.splice(backing.cursorX, 1);
+                                if (backing.cursorX > 0) backing.cursorX--;
+                                if (cols.length === 0) backing.cursorX = -1;
+                                commit();
+                            }
+                        } break;
+                        case '1': modDiv(16); break;
+                        case '2': modDiv(8); break;
+                        case '3': modDiv(4); break;
+                        case '4': modDiv(2); break;
+                        case '5': modDiv(1); break;
+                        case '.': toggleDot(); break;
+                        case 'r': {
+                            shiftLayer(backing);
+                        } break;
+                    }
+                }
+
+                const recordControl = () => {
+                    const backing = editor.backing;
+                    if (backing == null) throw new Error();
+
+                    const layers = backing.layers;
 
                     switch (eventKey) {
                         case 'ArrowDown': {
@@ -160,6 +305,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                 switch (editor.control) {
                     case 'voicing': voicingControl(); break;
                     case 'record': recordControl(); break;
+                    case 'col': colControl(); break;
                 }
             } break;
         }

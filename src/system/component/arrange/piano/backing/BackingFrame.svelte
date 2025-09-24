@@ -2,7 +2,7 @@
   import useReducerArrange from "../../../../store/reducer/reducerArrange";
   import store from "../../../../store/store";
   import FocusableContent from "../../FocusableContent.svelte";
-  import LenFrame from "./LenFrame.svelte";
+  import LenFrame from "./ColFrame.svelte";
   import MeasureFrame from "./MeasureFrame.svelte";
   import PedalFrame from "./PedalFrame.svelte";
   import RecordFrame from "./RecordFrame.svelte";

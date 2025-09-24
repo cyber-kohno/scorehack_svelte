@@ -9,6 +9,14 @@ namespace StoreRef {
         cursor?: HTMLElement;
         helper?: HTMLElement;
 
+        arrange: {
+            piano?: {
+                col?: HTMLElement;
+                table?: HTMLElement;
+                pedal?: HTMLElement;
+            }
+        }
+
         elementRefs: RefIndex[];
         trackArr: RefIndex[][];
 
@@ -25,6 +33,7 @@ namespace StoreRef {
         elementRefs: [],
         trackArr: [[]],
         timerKeys: [],
+        arrange: {}
     };
 
     export type ScrollLimitProps = {

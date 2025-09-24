@@ -1,3 +1,4 @@
+import StorePianoBacking from "../../../props/arrange/piano/storePianoBacking";
 import StorePianoEditor from "../../../props/arrange/piano/storePianoEditor";
 import { type StoreProps } from "../../../store";
 import useReducerArrange from "../../reducerArrange";
@@ -29,7 +30,7 @@ const useBuilderPianoEditor = (lastStore: StoreProps) => {
                         logger.outputInfo('The backing already exists.');
                         return;
                     }
-                    editor.backing = StorePianoEditor.createInitialBackingProps();
+                    editor.backing = StorePianoBacking.createInitialBackingProps();
                     logger.outputInfo('The backing property has been generated.');
                 }
             },

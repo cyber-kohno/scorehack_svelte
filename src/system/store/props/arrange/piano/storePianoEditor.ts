@@ -1,6 +1,7 @@
 import type StoreMelody from "../../storeMelody";
 import StoreArrange from "../storeArrange";
 import type ArrangeLibrary from "../arrangeLibrary";
+import type StorePianoBacking from "./storePianoBacking";
 
 
 namespace StorePianoEditor {
@@ -13,7 +14,7 @@ namespace StorePianoEditor {
 
         preset: PresetBak;
         voicing: Voicing;
-        backing: null | Backing;
+        backing: null | StorePianoBacking.EditorProps;
 
         /** エディタ起動時のソースを保持 */
         lastSource: string;
@@ -21,18 +22,6 @@ namespace StorePianoEditor {
         finder: ArrangeLibrary.PianoArrangeFinder | null;
     }
 
-    type Backing = {
-        recordNum: number;
-        layers: Layer[];
-        layerIndex: number;
-        cursorX: number;
-        cursorY: number;
-    }
-
-    export type Layer = {
-        cols: Col[];
-        items: string[];
-    }
 
     export const createInitialProps = (): Props => {
 
@@ -51,19 +40,8 @@ namespace StorePianoEditor {
         };
     }
 
-    export const createInitialBackingProps = ():Backing => {
-
-        return {
-            cursorX: -1,
-            cursorY: -1,
-            layerIndex: 0,
-            recordNum: 0,
-            layers: createInitialLayers()
-        }
-    }
-
     type PresetBak = {
-        list: StorePianoEditor.Unit[];
+        list: Unit[];
         index: number;
     }
 
@@ -73,22 +51,13 @@ namespace StorePianoEditor {
         cursorY: number;
     }
 
-    export type PedalState = 0 | 1 | 2;
-    export interface Col extends StoreMelody.Norm {
-        dot?: number;
-        pedal: PedalState;
-    }
-    export const createInitialLayers = (): Layer[] => {
-        return [{ cols: [], items: [] }, { cols: [], items: [] }]
-    }
-
     export interface Unit {// extends ArrangeEditor.Unit {
         voicingSounds: string[];
-        layers: Layer[];
+        layers: StorePianoBacking.Layer[];
     }
 
     export interface BackingPattern extends StoreArrange.Pattern {
-        backing: BackingProps;
+        backing: StorePianoBacking.DataProps;
 
         category: ArrangeLibrary.BackingCategory;
     }
@@ -114,10 +83,6 @@ namespace StorePianoEditor {
         presets: []
     });
 
-    export type BackingProps = {
-        layers: Layer[];
-        recordNum: number;
-    }
 
     // export const getUnitFromEditor = (editor: Props): Unit => {
     //     return {
@@ -136,7 +101,7 @@ namespace StorePianoEditor {
      */
     export const registPattern = (
         category: ArrangeLibrary.SearchCategory,
-        backing: BackingProps,
+        backing: StorePianoBacking.DataProps,
         sounds: string[],
         lib: Lib
     ) => {
