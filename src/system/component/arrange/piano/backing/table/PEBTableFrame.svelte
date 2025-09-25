@@ -1,9 +1,11 @@
 <script>
-  import PebTableMainLayer from "./table/PEBTableMainLayer.svelte.svelte";
+  import PEBTableBackLayer from "./PEBTableBackLayer.svelte";
+  import PEBTableMainLayer from "./PEBTableMainLayer.svelte.svelte";
 </script>
 
 <div class="wrap">
-  <PebTableMainLayer />
+  <PEBTableMainLayer />
+  <PEBTableBackLayer />
 </div>
 
 <style>

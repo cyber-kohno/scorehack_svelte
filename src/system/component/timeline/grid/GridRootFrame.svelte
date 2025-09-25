@@ -15,7 +15,12 @@
 
   $: isMelodyMode = (() => $store.control.mode === "melody")();
 
-  const {isPreview} = ContextUtil.use();
+  // const {isPreview} = ContextUtil.use();
+  const isPreview = ContextUtil.get('isPreview');
+  $: {
+    $store;
+    console.log($isPreview);
+  }
   $: isDispCursor =
     isMelodyMode && !$isPreview && $store.control.melody.focus === -1;
 

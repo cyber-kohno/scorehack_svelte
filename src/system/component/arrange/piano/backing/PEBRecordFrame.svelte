@@ -1,24 +1,20 @@
 <script lang="ts">
-  import useReducerArrange from "../../../../store/reducer/reducerArrange";
-  import store from "../../../../store/store";
+  import ContextUtil from "../../../../store/contextUtil";
   import MusicTheory from "../../../../util/musicTheory";
 
-  $: reducer = useReducerArrange($store);
-
-  $: editor = reducer.getPianoEditor();
-  $: backing = (() => {
-    if (editor.backing == null) throw new Error();
-    return editor.backing;
-  })();
+  $: arrange = ContextUtil.get('arrange');
+  $: editor = ContextUtil.get("pianoEditor");
+  $: bp = ContextUtil.get("backingProps");
+  $: backing = $bp.backing;
 
   $: structs = (() => {
-    const chord = reducer.getArrange().target.compiledChord;
+    const chord = $arrange.target.compiledChord;
     return chord.structs;
   })();
 
   $: getSoundName = (index: number) => {
-    if (editor.voicing.items.length - 1 < index) return "";
-    const item = editor.voicing.items[index];
+    if ($editor.voicing.items.length - 1 < index) return "";
+    const item = $editor.voicing.items[index];
     const items = item.split(".");
     const struct = structs[Number(items[1])];
     const octaveIndex = Number(items[0]);
@@ -28,8 +24,8 @@
   $: isFocus = (index: number) => {
     return (
       index === backing.cursorY &&
-      editor.control === "record" &&
-      editor.phase === "edit"
+      $editor.control === "record" &&
+      $editor.phase === "edit"
     );
   };
 </script>

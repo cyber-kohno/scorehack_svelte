@@ -1,21 +1,16 @@
 <script lang="ts">
+  import ContextUtil from "../../../../../store/contextUtil";
   import StorePianoBacking from "../../../../../store/props/arrange/piano/storePianoBacking";
-  import type StorePianoEditor from "../../../../../store/props/arrange/piano/storePianoEditor";
-  import useReducerArrange from "../../../../../store/reducer/reducerArrange";
-  import store from "../../../../../store/store";
 
   export let colIndex!: number;
   export let recordIndex!: number;
   export let col!: StorePianoBacking.Col;
 
-  $: reducer = useReducerArrange($store);
-  $: isEditActive = editor.control === "notes" && editor.phase === "edit";
-  $: editor = reducer.getPianoEditor();
-  $: backing = (() => {
-    if (editor.backing == null) throw new Error();
-    return editor.backing;
-  })();
-  $: layer = backing.layers[backing.layerIndex];
+  $: editor = ContextUtil.get("pianoEditor");
+  $: bp = ContextUtil.get("backingProps");
+  $: backing = $bp.backing;
+
+  $: isEditActive = $editor.control === "notes" && $editor.phase === "edit";
 
   $: [isFocus, isSelected] = (() => {
     const x = colIndex;
@@ -30,7 +25,9 @@
         return `${x}.${y}`;
       });
     };
-    const isSelected = convRemoveOptionNotes(layer.items).includes(currentKey);
+    const isSelected = convRemoveOptionNotes($bp.layer.items).includes(
+      currentKey
+    );
     return [isFocus, isSelected];
   })();
 </script>
@@ -38,7 +35,7 @@
 <div
   class="cell"
   style="
-        width: {StorePianoBacking.getColWidth(col).toString()}px;
+        width: {$bp.getColWidth(col).toString()}px;
     "
 >
   {#if isSelected}

@@ -1,22 +1,16 @@
 <script lang="ts">
+  import ContextUtil from "../../../../store/contextUtil";
   import StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
-  import useReducerArrange from "../../../../store/reducer/reducerArrange";
-  import store from "../../../../store/store";
-
-  $: reducer = useReducerArrange($store);
-
-  $: editor = reducer.getPianoEditor();
-  $: backing = (() => {
-    if (editor.backing == null) throw new Error();
-    return editor.backing;
-  })();
-  $: layer = backing.layers[backing.layerIndex];
+ 
+  $: editor = ContextUtil.get("pianoEditor");
+  $: bp = ContextUtil.get("backingProps");
+  $: backing = $bp.backing;
 
   $: isFocus = (index: number) => {
     return (
       index === backing.cursorX &&
-      editor.control === "col" &&
-      editor.phase === "edit"
+      $editor.control === "col" &&
+      $editor.phase === "edit"
     );
   };
   $: getDispName = (col: StorePianoBacking.Col) => {
@@ -26,8 +20,8 @@
 </script>
 
 <div class="wrap">
-  {#each layer.cols as col, index}
-    <div class="col" style:width={`${StorePianoBacking.getColWidth(col)}px`}>
+  {#each $bp.layer.cols as col, index}
+    <div class="col" style:width={`${$bp.getColWidth(col)}px`}>
       <div class="inner">{getDispName(col)}</div>
       {#if isFocus(index)}
         <div class="focus"></div>

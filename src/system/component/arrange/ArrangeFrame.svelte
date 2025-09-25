@@ -1,7 +1,7 @@
 <script lang="ts">
   import useReducerOutline from "../../store/reducer/reducerOutline";
   import store from "../../store/store";
-  import PianoEditor from "./piano/ArrangePianoEditor.svelte";
+  import ArrangePianoEditor from "./piano/ArrangePianoEditor.svelte";
   import SideItemLabel from "./SideItemLabel.svelte";
 
   $: reducerOutline = useReducerOutline($store);
@@ -16,7 +16,7 @@
     </div>
     <div class="maindiv">
       {#if track.method === "piano"}
-        <PianoEditor />
+        <ArrangePianoEditor />
       {:else if track.method === "guitar"}{/if}
     </div>
   </div>

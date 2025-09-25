@@ -7,6 +7,9 @@
   export let isSelected: boolean;
   export let isOver: boolean;
   export let isFocus: boolean;
+  $: {
+    console.log('PEVoicingCell');
+  }
 </script>
 
 <div class="struct-item" >

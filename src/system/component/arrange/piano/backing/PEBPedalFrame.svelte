@@ -1,35 +1,33 @@
 <script lang="ts">
-  import StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
-  import useReducerArrange from "../../../../store/reducer/reducerArrange";
-  import store from "../../../../store/store";
+  import ContextUtil from "../../../../store/contextUtil";
 
-  $: reducer = useReducerArrange($store);
+  const bp = ContextUtil.get("backingProps");
+  const editor = ContextUtil.get("pianoEditor");
+  $: backing = $bp.backing;
 
-  $: editor = reducer.getPianoEditor();
-  $: backing = (() => {
-    if (editor.backing == null) throw new Error();
-    return editor.backing;
-  })();
-  $: layer = backing.layers[backing.layerIndex];
-  $: isDivMode = editor.control === "col";
+  $: layer = backing.layers[0];
+  $: isDivMode = $editor.control === "col";
   $: isFocus = (index: number) => {
-    return index === backing.cursorX && isDivMode && editor.phase === "edit";
+    return (
+      backing.layerIndex === 0 &&
+      index === backing.cursorX &&
+      isDivMode &&
+      $editor.phase === "edit"
+    );
   };
 </script>
 
 <div class="wrap">
-  {#if backing.layerIndex === 0}
-    {#each layer.cols as col, index}
-      <div class="item" style:width={`${StorePianoBacking.getColWidth(col)}px`}>
-        <div class="frame">
-          <div class="inner" data-status={col.pedal}></div>
-        </div>
-        {#if isFocus(index)}
-          <div class="focus"></div>
-        {/if}
+  {#each layer.cols as col, index}
+    <div class="item" style:width={`${$bp.getColWidth(col)}px`}>
+      <div class="frame">
+        <div class="inner" data-status={col.pedal}></div>
       </div>
-    {/each}
-  {/if}
+      {#if isFocus(index)}
+        <div class="focus"></div>
+      {/if}
+    </div>
+  {/each}
 </div>
 
 <style>

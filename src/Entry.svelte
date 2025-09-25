@@ -6,9 +6,10 @@
   import DesignInitializer from "./system/util/disignInitializer";
   import useReducerCache from "./system/store/reducer/reducerCache";
   import ContextUtil from "./system/store/contextUtil";
+  import { derived, writable } from "svelte/store";
 
   onMount(() => {
-    const {lastStore, commit} = createStoreUtil($store);
+    const { lastStore, commit } = createStoreUtil($store);
     const { calculate } = useReducerCache(lastStore);
     DesignInitializer.initConstProps();
     calculate();
@@ -27,7 +28,12 @@
     DesignInitializer.initVariableProps($store);
   }
 
-  ContextUtil.build();
+  // ContextUtil.build();
+
+  $: {
+    // console.log($store.preview.timerKeys != null);
+    ContextUtil.set("isPreview", $store.preview.timerKeys != null);
+  }
 </script>
 
 <main>

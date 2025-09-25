@@ -1,35 +1,90 @@
 <script lang="ts">
-  import useReducerArrange from "../../../../store/reducer/reducerArrange";
-  import store from "../../../../store/store";
+  import { readable } from "svelte/store";
+  import ContextUtil from "../../../../store/contextUtil";
+  import type StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
   import FocusableContent from "../../FocusableContent.svelte";
   import LenFrame from "./PEBColFrame.svelte";
   import MeasureFrame from "./PEBMeasureFrame.svelte";
   import PedalFrame from "./PEBPedalFrame.svelte";
   import RecordFrame from "./PEBRecordFrame.svelte";
-  import TableFrame from "./PEBTableFrame.svelte";
+  import PEBTargetLayer from "./PEBTargetLayer.svelte";
+  import TableFrame from "./table/PEBTableFrame.svelte";
+  import store from "../../../../store/store";
 
-  $: reducer = useReducerArrange($store);
-  $: editor = reducer.getPianoEditor();
+  const editor = ContextUtil.get("pianoEditor");
+
+  $: backing = (() => {
+    const backing = $editor.backing;
+    if (backing == null) throw new Error();
+    return backing;
+  })();
+
+  const getColWidth = (col: StorePianoBacking.Col) => {
+    return getColWidthCriteriaBeatWidth(col, 540);
+  };
+
+  const getColWidthCriteriaBeatWidth = (
+    col: StorePianoBacking.Col,
+    beatWidth: number
+  ) => {
+    const getDotRate = () => {
+      switch (col.dot ?? 0) {
+        case 0:
+          return 1;
+        case 1:
+          return 1.5;
+        case 2:
+          return 1.75;
+      }
+      throw new Error(`col.dotが想定していない値である。[${col.dot}]`);
+    };
+    return Math.floor((beatWidth / col.div) * getDotRate());
+  };
+
+  $: layer = backing.layers[backing.layerIndex];
+  $: {
+    ContextUtil.set("backingProps", {
+      backing,
+      layer,
+      getColWidth,
+    });
+  }
+
+  // $: control = $editor.control;
+  // $: {
+  //   console.log(control);
+  // }
 </script>
 
 <div class="wrap">
   <div class="left">
-    <div class="headerdiv"></div>
+    <div class="headerdiv">
+      <PEBTargetLayer />
+    </div>
     <div class="recorddiv">
-      <FocusableContent isFocus={editor.control === 'record'}><RecordFrame /></FocusableContent>
+      <FocusableContent isFocus={$editor.control === "record"}
+        ><RecordFrame /></FocusableContent
+      >
     </div>
     <div class="pedaldiv"></div>
   </div>
   <div class="right">
     <div class="headerdiv">
-      <FocusableContent isFocus={editor.control === 'col'}><LenFrame /></FocusableContent>
+      <FocusableContent isFocus={$editor.control === "col"}
+        ><LenFrame /></FocusableContent
+      >
       <MeasureFrame />
     </div>
     <div class="recorddiv">
-      <FocusableContent isFocus={editor.control === 'notes'}><TableFrame /></FocusableContent>
+      <FocusableContent isFocus={$editor.control === "notes"}
+        ><TableFrame /></FocusableContent
+      >
     </div>
     <div class="pedaldiv">
-      <FocusableContent isFocus={editor.control === 'col'}><PedalFrame /></FocusableContent>
+      <FocusableContent
+        isFocus={$editor.control === "col" && backing.layerIndex === 0}
+        ><PedalFrame /></FocusableContent
+      >
     </div>
   </div>
 </div>

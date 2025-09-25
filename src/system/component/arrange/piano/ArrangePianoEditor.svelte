@@ -1,19 +1,28 @@
 <script lang="ts">
+  import { readable } from "svelte/store";
+  import ContextUtil from "../../../store/contextUtil";
   import useReducerArrange from "../../../store/reducer/reducerArrange";
   import store from "../../../store/store";
   import ChordInfoHeader from "../ChordInfoHeader.svelte";
   import FocusableContent from "../FocusableContent.svelte";
   import BackingFrame from "./backing/PEBackingFrame.svelte";
-  import VoicingChooser from "./voicing/PEVoicingChooser.svelte";
+  import PEVoicingChooser from "./voicing/PEVoicingChooser.svelte";
 
   $: reducer = useReducerArrange($store);
+  $: arrange = reducer.getArrange();
   $: editor = reducer.getPianoEditor();
+
+  $: {
+    // console.log('ArrangePianoEditor');
+    ContextUtil.set('arrange', arrange);
+    ContextUtil.set('pianoEditor', editor);
+  }
 </script>
 
 <div class="wrap">
   <ChordInfoHeader />
   <FocusableContent isFocus={editor.control === "voicing"}>
-    <VoicingChooser />
+    <PEVoicingChooser />
   </FocusableContent>
   {#if editor.backing != null}
     <BackingFrame />

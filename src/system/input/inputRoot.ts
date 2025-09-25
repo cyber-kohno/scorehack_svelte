@@ -1,5 +1,5 @@
 import type StoreInput from "../store/props/storeInput";
-import StoreTerminal from "../store/props/storeTerminal";
+import useReducerArrange from "../store/reducer/reducerArrange";
 import useReducerRoot from "../store/reducer/reducerRoot";
 import useReducerTermianl from "../store/reducer/reducerTerminal";
 import type { StoreProps, StoreUtil } from "../store/store";
@@ -54,6 +54,8 @@ const useInputRoot = (storeUtil: StoreUtil) => {
 
         const mode = control.mode;
 
+        const isUseArrange = lastStore.control.outline.arrange != null;
+
         if (!reducerRoot.hasHold()) {
             if (reducerTerminal.isUse()) {
                 const inputTerminal = useInputTerminal(storeUtil);
@@ -64,6 +66,7 @@ const useInputRoot = (storeUtil: StoreUtil) => {
 
             switch (eventKey) {
                 case 'r': {
+                    if (isUseArrange) break;
                     reducerRoot.switchMode();
                     commit();
                 } break;

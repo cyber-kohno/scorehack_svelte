@@ -1,16 +1,19 @@
 <script lang="ts">
-  import useReducerArrange from "../../../../store/reducer/reducerArrange";
-  import store from "../../../../store/store";
+  import Layout from "../../../../const/layout";
+  import ContextUtil from "../../../../store/contextUtil";
   import VoicingCell from "./PEVoicingCell.svelte";
 
-  $: reducer = useReducerArrange($store);
+  $: {
+    console.log('PEVoicingChooser');
+  }
+  const arrange = ContextUtil.get('arrange');
+  $: structs = $arrange.target.compiledChord.structs;
+  const editor = ContextUtil.get('pianoEditor');
 
-  $: arrange = reducer.getArrange();
-  $: structs = arrange.target.compiledChord.structs;
-  $: editor = reducer.getPianoEditor();
+  const OCTAVE_MAX = Layout.arrange.piano.VOICING_OCTAVE_MAX;
 
   $: cellTable = (() => {
-    const voicing = editor.voicing;
+    const voicing = $editor.voicing;
     type CellProps = {
       key12: number;
       isSelected: boolean;
@@ -21,9 +24,9 @@
     for (let y = 0; y < structs.length; y++) {
       const key12 = structs[y].key12;
       const record: CellProps[] = [];
-      for (let x = 0; x < 8; x++) {
+      for (let x = 0; x < OCTAVE_MAX; x++) {
         const isEditActive =
-          editor.phase === "edit" && editor.control === "voicing";
+          $editor.phase === "edit" && $editor.control === "voicing";
         const cursorKey = `${voicing.cursorX}.${voicing.cursorY}`;
         const currentKey = `${x}.${y}`;
 
@@ -42,14 +45,14 @@
 
     // オクターブ＞構成音準で、選択上限をチェック
     let chooseCnt = 0;
-    for (let x = 0; x < 8; x++) {
+    for (let x = 0; x < OCTAVE_MAX; x++) {
       for (let y = 0; y < structs.length; y++) {
         const cell = arr[y][x];
         if (cell.isSelected) chooseCnt++;
         cell.isOver =
           cell.isSelected &&
-          editor.backing != undefined &&
-          chooseCnt > editor.backing.recordNum;
+          $editor.backing != undefined &&
+          chooseCnt > $editor.backing.recordNum;
       }
     }
 
