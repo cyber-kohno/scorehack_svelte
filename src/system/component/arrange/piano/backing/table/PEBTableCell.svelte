@@ -25,7 +25,7 @@
         return `${x}.${y}`;
       });
     };
-    const isSelected = convRemoveOptionNotes($bp.layer.items).includes(
+    const isSelected = convRemoveOptionNotes($bp.getCurLayer().items).includes(
       currentKey
     );
     return [isFocus, isSelected];

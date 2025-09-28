@@ -2,8 +2,8 @@
   import ContextUtil from "../../../../store/contextUtil";
   import StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
  
-  $: editor = ContextUtil.get("pianoEditor");
-  $: bp = ContextUtil.get("backingProps");
+  const editor = ContextUtil.get("pianoEditor");
+  const bp = ContextUtil.get("backingProps");
   $: backing = $bp.backing;
 
   $: isFocus = (index: number) => {
@@ -20,7 +20,7 @@
 </script>
 
 <div class="wrap">
-  {#each $bp.layer.cols as col, index}
+  {#each $bp.getCurLayer().cols as col, index}
     <div class="col" style:width={`${$bp.getColWidth(col)}px`}>
       <div class="inner">{getDispName(col)}</div>
       {#if isFocus(index)}

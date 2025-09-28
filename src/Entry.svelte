@@ -28,12 +28,7 @@
     DesignInitializer.initVariableProps($store);
   }
 
-  // ContextUtil.build();
-
-  $: {
-    // console.log($store.preview.timerKeys != null);
-    ContextUtil.set("isPreview", $store.preview.timerKeys != null);
-  }
+  ContextUtil.set("isPreview", () => $store.preview.timerKeys != null);
 </script>
 
 <main>

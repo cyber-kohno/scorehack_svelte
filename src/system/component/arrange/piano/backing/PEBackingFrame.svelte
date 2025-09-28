@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { readable } from "svelte/store";
+  import { onMount } from "svelte";
   import ContextUtil from "../../../../store/contextUtil";
   import type StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
+  import store from "../../../../store/store";
   import FocusableContent from "../../FocusableContent.svelte";
   import LenFrame from "./PEBColFrame.svelte";
   import MeasureFrame from "./PEBMeasureFrame.svelte";
@@ -9,7 +10,10 @@
   import RecordFrame from "./PEBRecordFrame.svelte";
   import PEBTargetLayer from "./PEBTargetLayer.svelte";
   import TableFrame from "./table/PEBTableFrame.svelte";
-  import store from "../../../../store/store";
+
+  onMount(()=>{
+    $store.ref.arrange.piano = {};
+  });
 
   const editor = ContextUtil.get("pianoEditor");
 
@@ -41,11 +45,13 @@
     return Math.floor((beatWidth / col.div) * getDotRate());
   };
 
-  $: layer = backing.layers[backing.layerIndex];
   $: {
+    if($store.ref.arrange.piano == undefined) throw new Error();
     ContextUtil.set("backingProps", {
       backing,
-      layer,
+      pianoRef: $store.ref.arrange.piano,
+      getCurLayer: () => backing.layers[backing.layerIndex],
+      getBackLayer: () => backing.layers[backing.layerIndex === 0 ? 1 : 0],
       getColWidth,
     });
   }

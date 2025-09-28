@@ -1,12 +1,10 @@
 <script lang="ts">
   import ContextUtil from "../../../../../store/contextUtil";
-  import StorePianoBacking from "../../../../../store/props/arrange/piano/storePianoBacking";
 
-  $: editor = ContextUtil.get("pianoEditor");
   $: bp = ContextUtil.get("backingProps");
   $: backing = $bp.backing;
 
-  $: layerSub = backing.layers[backing.layerIndex === 0 ? 1 : 0];
+  $: layerSub = $bp.getBackLayer();
 
   $: isExist = (x: number, y: number) => {
     const currentKey = `${x}.${y}`;

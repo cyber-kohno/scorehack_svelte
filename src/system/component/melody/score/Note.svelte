@@ -9,11 +9,14 @@
   import ContextUtil from "../../../store/contextUtil";
   import UnitDisplay from "../UnitDisplay.svelte";
   import useReducerMelody from "../../../store/reducer/reducerMelody";
+  import { get } from "svelte/store";
 
   export let note: StoreMelody.Note;
   export let index: number;
   export let scrollLimitProps: StoreRef.ScrollLimitProps;
   export let cursorMiddle: number;
+
+  const isPreview = ContextUtil.get('isPreview');
 
   type OperationStatus =
     | "move" // 移動
@@ -78,7 +81,7 @@
   })();
 
   $: getOperationHighlight = (): OperationStatus => {
-    if ($isPreview) return "preview";
+    if ($isPreview()) return "preview";
     if (!isFocus) return "focus";
 
     const input = $store.input;
@@ -90,7 +93,6 @@
     return "none";
   };
 
-  const { isPreview } = ContextUtil.use();
 </script>
 
 {#if isDisp}
@@ -111,7 +113,7 @@
       style:top="{Layout.getPitchTop(note.pitch) - 2}px"
       data-isScale={isScale}
     >
-      {#if !$isPreview}
+      {#if !$isPreview()}
         {#if !isCriteria}
           <div class="protrusion" style:height="{28 / note.norm.div}px"></div>
         {:else}

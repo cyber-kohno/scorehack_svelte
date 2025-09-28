@@ -1,5 +1,6 @@
 <script lang="ts">
   import ContextUtil from "../../../../store/contextUtil";
+  import store from "../../../../store/store";
 
   const bp = ContextUtil.get("backingProps");
   const editor = ContextUtil.get("pianoEditor");
@@ -17,7 +18,7 @@
   };
 </script>
 
-<div class="wrap">
+<div class="wrap" bind:this={$bp.pianoRef.pedal}>
   {#each layer.cols as col, index}
     <div class="item" style:width={`${$bp.getColWidth(col)}px`}>
       <div class="frame">
@@ -36,6 +37,8 @@
     position: relative;
     width: 100%;
     height: var(--ap-backing-pedal-height);
+    overflow-x: hidden;
+    white-space: nowrap;
   }
   .item {
     display: inline-block;

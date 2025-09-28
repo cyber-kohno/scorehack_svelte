@@ -3,9 +3,6 @@
   import ContextUtil from "../../../../store/contextUtil";
   import VoicingCell from "./PEVoicingCell.svelte";
 
-  $: {
-    console.log('PEVoicingChooser');
-  }
   const arrange = ContextUtil.get('arrange');
   $: structs = $arrange.target.compiledChord.structs;
   const editor = ContextUtil.get('pianoEditor');

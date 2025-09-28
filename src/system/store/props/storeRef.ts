@@ -10,11 +10,7 @@ namespace StoreRef {
         helper?: HTMLElement;
 
         arrange: {
-            piano?: {
-                col?: HTMLElement;
-                table?: HTMLElement;
-                pedal?: HTMLElement;
-            }
+            piano?: PianoRefs;
         }
 
         elementRefs: RefIndex[];
@@ -22,6 +18,11 @@ namespace StoreRef {
 
         timerKeys: RefTimerKey[];
     }
+    export type PianoRefs = {
+        col?: HTMLElement;
+        table?: HTMLElement;
+        pedal?: HTMLElement;
+    };
     export type RefTimerKey = {
         id: number;
         target: string;

@@ -18,7 +18,7 @@
     return [side.pos, side.len].map((v) => v * $store.env.beatWidth);
   })();
   $: isMelodyMode = $store.control.mode === "melody";
-  const {isPreview} = ContextUtil.use();
+  const isPreview = ContextUtil.get('isPreview');
 </script>
 
 {#if focusInfo.isChord}
@@ -29,7 +29,7 @@
     data-isChord={focusInfo.isChord}
   ></div>
 {/if}
-{#if isMelodyMode && !$isPreview}
+{#if isMelodyMode && !$isPreview()}
   <div class="note" style:left="{noteLeft}px" style:width="{noteWidth}px"></div>
 {/if}
 
