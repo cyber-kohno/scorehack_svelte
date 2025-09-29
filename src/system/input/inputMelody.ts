@@ -550,6 +550,79 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 }
             }
         }
+
+        callbacks.holdCtrl = () => {
+            const track = reducerMelody.getCurrScoreTrack();
+
+            const getRangeProps = () => {
+                let start = melody.focus;
+                let cnt = 1;
+                if (melody.focusLock !== -1) {
+                    start = melody.focus <= melody.focusLock ? melody.focus : melody.focusLock;
+                    cnt = Math.abs(melody.focus - melody.focusLock) + 1;
+                }
+                return [start, cnt];
+            }
+            const copyNotes = () => {
+                const [start, cnt] = getRangeProps();
+                const notes = track.notes.filter((_, i) => {
+                    return i >= start && i < start + cnt;
+                });
+                melody.clipboard.notes = JSON.parse(JSON.stringify(notes));
+            }
+
+            switch (eventKey) {
+                case 'a': {
+                    // timeline.focus = 0;
+                    // timeline.focusLock = layer.notes.length - 1;
+                    // update();
+                } break;
+                case 'c': {
+                    copyNotes();
+                    melody.focusLock = -1;
+                    commit();
+                } break;
+                // case 'x': {
+                //     copyNotes();
+                //     delRangeNotes(timeline);
+                //     melody.focusLock = -1;
+                //     commit();
+                // } break;
+                case 'v': {
+
+                    const moveLen = (n: StoreMelody.Note, len: StoreMelody.Note) => {
+                        const dir = len.pos;
+                        if (n.norm.div >= len.norm.div) {
+                            const tuplets = n.norm.tuplets ?? 1;
+                            const rate = (n.norm.div * tuplets) / len.norm.div;
+                            n.pos += (dir * rate);
+                        } else {
+                            const rate = len.norm.div / n.norm.div;
+                            n.norm.div = len.norm.div;
+                            n.pos *= rate;
+                            n.len *= rate;
+                            n.pos += dir;
+                        }
+                    }
+                    const clipNotes = melody.clipboard.notes;
+                    if (clipNotes != null && melody.focus === -1) {
+                        const criteria: StoreMelody.Note = JSON.parse(JSON.stringify(clipNotes[0]));
+                        criteria.pos *= -1;
+                        clipNotes.forEach(n => {
+                            moveLen(n, criteria);
+                            moveLen(n, cursor);
+                            track.notes.push(n);
+                        });
+                        // sortNotes(layer, store.env);
+                        // ペースト後、先頭のノーツを選択した状態にする
+                        // const focusIndex = layer.notes.findIndex(n => n == clipNotes[0]);
+                        // melody.focus = focusIndex;
+                        melody.clipboard.notes = null;
+                        commit();
+                    }
+                } break;
+            }
+        }
         return callbacks;
     }
 
