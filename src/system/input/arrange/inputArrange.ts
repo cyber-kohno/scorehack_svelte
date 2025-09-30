@@ -20,7 +20,8 @@ const useInputArrange = (storeUtil: StoreUtil) => {
             case 'b': {
                 outline.arrange = null;
                 commit();
-            } break;
+                return;
+            }
         }
 
         switch (arrange.method) {

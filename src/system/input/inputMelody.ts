@@ -197,6 +197,32 @@ const useInputMelody = (storeUtil: StoreUtil) => {
         const callbacks: StoreInput.Callbacks = {};
         const cursor = melody.cursor;
         const notes = reducerMelody.getCurrScoreTrack().notes;
+        /**
+         * lenの単位、長さ（pos）分だけ、ノーツ（n）を移動する
+         * @param n 移動対象のノーツ
+         * @param len 移動する長さ
+         */
+        const moveLen = (n: StoreMelody.Note, len: StoreMelody.Note) => {
+            const dir = len.pos;
+            if (n.norm.div >= len.norm.div) {
+                const tuplets = n.norm.tuplets ?? 1;
+                const rate = (n.norm.div * tuplets) / len.norm.div;
+                n.pos += (dir * rate);
+            } else {
+                const rate = len.norm.div / n.norm.div;
+                n.norm.div = len.norm.div;
+                n.pos *= rate;
+                n.len *= rate;
+                n.pos += dir;
+            }
+        }
+
+        const sortTrackNotes = (track: StoreMelody.ScoreTrack) => {
+            track.notes.sort((a, b) => {
+                const [aX, bX] = [a, b].map(n => StoreMelody.calcBeatSide(n).pos);
+                return aX - bX;
+            });
+        }
 
         // プレビュー中は処理しない。
         // if (isPreview()) return callbacks;
@@ -326,17 +352,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
 
                         const move = (n: StoreMelody.Note) => {
                             const criteria = getFocusNote();
-                            if (n.norm.div >= criteria.norm.div) {
-                                const tuplets = n.norm.tuplets ?? 1;
-                                const rate = (n.norm.div * tuplets) / criteria.norm.div;
-                                n.pos += (dir * rate);
-                            } else {
-                                const rate = criteria.norm.div / n.norm.div;
-                                n.norm.div = criteria.norm.div;
-                                n.pos *= rate;
-                                n.len *= rate;
-                                n.pos += dir;
-                            }
+                            moveLen(n, { ...criteria, pos: dir });
                         }
 
                         const clone = (index: number) => JSON.parse(JSON.stringify(notes[index])) as StoreMelody.Note;
@@ -590,21 +606,8 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                 // } break;
                 case 'v': {
 
-                    const moveLen = (n: StoreMelody.Note, len: StoreMelody.Note) => {
-                        const dir = len.pos;
-                        if (n.norm.div >= len.norm.div) {
-                            const tuplets = n.norm.tuplets ?? 1;
-                            const rate = (n.norm.div * tuplets) / len.norm.div;
-                            n.pos += (dir * rate);
-                        } else {
-                            const rate = len.norm.div / n.norm.div;
-                            n.norm.div = len.norm.div;
-                            n.pos *= rate;
-                            n.len *= rate;
-                            n.pos += dir;
-                        }
-                    }
                     const clipNotes = melody.clipboard.notes;
+                    // フォーカスしていない時のみ利用可能
                     if (clipNotes != null && melody.focus === -1) {
                         const criteria: StoreMelody.Note = JSON.parse(JSON.stringify(clipNotes[0]));
                         criteria.pos *= -1;
@@ -613,10 +616,11 @@ const useInputMelody = (storeUtil: StoreUtil) => {
                             moveLen(n, cursor);
                             track.notes.push(n);
                         });
-                        // sortNotes(layer, store.env);
-                        // ペースト後、先頭のノーツを選択した状態にする
-                        // const focusIndex = layer.notes.findIndex(n => n == clipNotes[0]);
-                        // melody.focus = focusIndex;
+                        sortTrackNotes(track);
+                        // ペースト後、ペーストしたノーツ群を範囲選択した状態にする
+                        const focusIndex = track.notes.findIndex(n => n == clipNotes[0]);
+                        melody.focus = focusIndex;
+                        melody.focusLock = focusIndex + clipNotes.length - 1;
                         melody.clipboard.notes = null;
                         commit();
                     }
