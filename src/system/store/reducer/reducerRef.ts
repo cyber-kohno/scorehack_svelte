@@ -1,11 +1,15 @@
 import Layout from "../../const/layout";
+import StorePianoBacking from "../props/arrange/piano/storePianoBacking";
 import StoreMelody from "../props/storeMelody";
 import type StoreRef from "../props/storeRef";
 import type { StoreProps } from "../store";
+import useReducerArrange from "./reducerArrange";
 
 const useReducerRef = (lastStore: StoreProps) => {
 
     const timerKeys = lastStore.ref.timerKeys;
+
+    const reducerArrange = useReducerArrange(lastStore);
 
     const smoothScroll = (
         refs: HTMLElement[],
@@ -55,8 +59,6 @@ const useReducerRef = (lastStore: StoreProps) => {
             const width = gridRef.getBoundingClientRect().width;
 
             const left = getLeft(width);
-            // gridRef.scrollTo({ left, behavior: "smooth" });
-            // headerRef.scrollTo({ left, behavior: "smooth" });
             smoothScrollLeft([gridRef, headerRef], left);
         }
     }
@@ -150,6 +152,32 @@ const useReducerRef = (lastStore: StoreProps) => {
         })
     }
 
+
+    const adjustPEBScrollCol = () => {
+
+        const getColWidth = (col: StorePianoBacking.Col) => {
+            return StorePianoBacking.getColWidthCriteriaBeatWidth(
+                col,
+                Layout.arrange.piano.DIV1_WIDTH
+            );
+        };
+        const backing = reducerArrange.getPianoEditor().backing;
+        const pianoRef = lastStore.ref.arrange.piano;
+        if (pianoRef.col && pianoRef.table && pianoRef.pedal && backing != null) {
+            const width = pianoRef.col.getBoundingClientRect().width;
+
+            const currMiddle = backing.layers[backing.layerIndex].cols
+                .reduce((total, cur, i) => {
+                    const width = getColWidth(cur);
+                    if (i < backing.cursorX) total += width;
+                    else if (i === backing.cursorX) total += width / 2;
+                    return total;
+                }, 0);
+            const left = currMiddle - width / 2
+            smoothScrollLeft([pianoRef.col, pianoRef.table, pianoRef.pedal], left);
+        }
+    }
+
     return {
         adjustGridScrollXFromOutline,
         adjustOutlineScroll,
@@ -157,7 +185,8 @@ const useReducerRef = (lastStore: StoreProps) => {
         adjustGridScrollYFromCursor,
         adjustTerminalScroll,
         adjustHelperScroll,
-        resetScoreTrackRef
+        resetScoreTrackRef,
+        adjustPEBScrollCol
     };
 };
 

@@ -16,9 +16,11 @@
       $editor.phase === "edit"
     );
   };
+
+  $: pianoRef = $store.ref.arrange.piano;
 </script>
 
-<div class="wrap" bind:this={$bp.pianoRef.pedal}>
+<div class="wrap" bind:this={pianoRef.pedal}>
   {#each layer.cols as col, index}
     <div class="item" style:width={`${$bp.getColWidth(col)}px`}>
       <div class="frame">

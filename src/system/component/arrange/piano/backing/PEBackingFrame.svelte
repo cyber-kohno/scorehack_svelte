@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import ContextUtil from "../../../../store/contextUtil";
-  import type StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
+  import StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
   import store from "../../../../store/store";
   import FocusableContent from "../../FocusableContent.svelte";
   import LenFrame from "./PEBColFrame.svelte";
@@ -10,10 +10,7 @@
   import RecordFrame from "./PEBRecordFrame.svelte";
   import PEBTargetLayer from "./PEBTargetLayer.svelte";
   import TableFrame from "./table/PEBTableFrame.svelte";
-
-  onMount(()=>{
-    $store.ref.arrange.piano = {};
-  });
+  import Layout from "../../../../const/layout";
 
   const editor = ContextUtil.get("pianoEditor");
 
@@ -24,35 +21,34 @@
   })();
 
   const getColWidth = (col: StorePianoBacking.Col) => {
-    return getColWidthCriteriaBeatWidth(col, 540);
+    return StorePianoBacking.getColWidthCriteriaBeatWidth(
+      col,
+      Layout.arrange.piano.DIV1_WIDTH
+    );
   };
 
-  const getColWidthCriteriaBeatWidth = (
-    col: StorePianoBacking.Col,
-    beatWidth: number
-  ) => {
-    const getDotRate = () => {
-      switch (col.dot ?? 0) {
-        case 0:
-          return 1;
-        case 1:
-          return 1.5;
-        case 2:
-          return 1.75;
-      }
-      throw new Error(`col.dotが想定していない値である。[${col.dot}]`);
-    };
-    return Math.floor((beatWidth / col.div) * getDotRate());
+  $: getCurLayer = () => backing.layers[backing.layerIndex];
+  $: getBackLayer = () => backing.layers[backing.layerIndex === 0 ? 1 : 0];
+  $: getColFrameWidth = () => {
+    let width = 0;
+    backing.layers.forEach((l) => {
+      const layerWidth = l.cols.reduce((total, cur, i) => {
+        const width = getColWidth(cur);
+        total += width + 1;
+        if (i === l.cols.length - 1) total += 1;
+        return total;
+      }, 0);
+      if (width < layerWidth) width = layerWidth;
+    });
+    return width;
   };
-
   $: {
-    if($store.ref.arrange.piano == undefined) throw new Error();
     ContextUtil.set("backingProps", {
       backing,
-      pianoRef: $store.ref.arrange.piano,
-      getCurLayer: () => backing.layers[backing.layerIndex],
-      getBackLayer: () => backing.layers[backing.layerIndex === 0 ? 1 : 0],
+      getCurLayer,
+      getBackLayer,
       getColWidth,
+      getColFrameWidth,
     });
   }
 

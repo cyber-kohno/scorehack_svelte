@@ -17,7 +17,7 @@
   };
 </script>
 
-<div class="wrap" style="z-index: 1;">
+<div class="wrap" style="z-index: 1;" style:width="{$bp.getColFrameWidth()}px">
   {#each Array.from({ length: backing.recordNum }, (_, i) => backing.recordNum - 1 - i) as recordIndex}
     <div class="record">
       {#each layerSub.cols as len, colIndex}
@@ -44,7 +44,7 @@
     margin: 1px 0 0 0;
     /* background-color: rgba(255, 255, 255, 0.74); */
     width: 100%;
-    height: 24px;
+    height: var(--ap-backing-record-height);
     padding: 0;
     overflow-x: hidden;
     white-space: nowrap;

@@ -10,7 +10,7 @@ namespace StoreRef {
         helper?: HTMLElement;
 
         arrange: {
-            piano?: PianoRefs;
+            piano: PianoRefs;
         }
 
         elementRefs: RefIndex[];
@@ -34,7 +34,7 @@ namespace StoreRef {
         elementRefs: [],
         trackArr: [[]],
         timerKeys: [],
-        arrange: {}
+        arrange: { piano: {} }
     };
 
     export type ScrollLimitProps = {

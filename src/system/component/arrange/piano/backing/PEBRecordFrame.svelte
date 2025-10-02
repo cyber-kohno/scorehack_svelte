@@ -1,8 +1,9 @@
 <script lang="ts">
   import ContextUtil from "../../../../store/contextUtil";
+  import store from "../../../../store/store";
   import MusicTheory from "../../../../util/musicTheory";
 
-  $: arrange = ContextUtil.get('arrange');
+  $: arrange = ContextUtil.get("arrange");
   $: editor = ContextUtil.get("pianoEditor");
   $: bp = ContextUtil.get("backingProps");
   $: backing = $bp.backing;
@@ -28,6 +29,7 @@
       $editor.phase === "edit"
     );
   };
+
 </script>
 
 <div class="wrap">
@@ -57,7 +59,7 @@
     position: relative;
     margin: 1px 0 0 0;
     width: 100%;
-    height: 24px;
+    height: var(--ap-backing-record-height);
     padding: 0;
     background-color: rgb(204, 228, 228);
   }

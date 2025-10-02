@@ -1,6 +1,7 @@
 <script lang="ts">
   import ContextUtil from "../../../../store/contextUtil";
   import StorePianoBacking from "../../../../store/props/arrange/piano/storePianoBacking";
+  import store from "../../../../store/store";
  
   const editor = ContextUtil.get("pianoEditor");
   const bp = ContextUtil.get("backingProps");
@@ -17,9 +18,11 @@
     const dot = col.dot ?? 0;
     return `${col.div}${".".repeat(dot)}`;
   };
+  
+  $: pianoRef = $store.ref.arrange.piano;
 </script>
 
-<div class="wrap">
+<div class="wrap" bind:this={pianoRef.col}>
   {#each $bp.getCurLayer().cols as col, index}
     <div class="col" style:width={`${$bp.getColWidth(col)}px`}>
       <div class="inner">{getDispName(col)}</div>

@@ -7,7 +7,7 @@
   $: layer = backing.layers[backing.layerIndex];
 </script>
 
-<div class="wrap" style="z-index: 2;">
+<div class="wrap" style:width="{$bp.getColFrameWidth()}px">
   {#each Array.from({ length: backing.recordNum }, (_, i) => backing.recordNum - 1 - i) as recordIndex}
     <div class="record">
       {#each layer.cols as col, colIndex}
@@ -23,17 +23,16 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    /* width: 100%; */
     height: 100%;
+    z-index: 2;
   }
   .record {
-    display: inline-block;
+    display: block;
     position: relative;
     margin: 1px 0 0 0;
-    width: 100%;
-    height: 24px;
+    /* width: 100%; */
+    height: var(--ap-backing-record-height);
     padding: 0;
-    overflow-x: hidden;
-    white-space: nowrap;
   }
 </style>

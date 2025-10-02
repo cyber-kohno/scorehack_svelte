@@ -54,7 +54,8 @@ namespace DesignInitializer {
             { key: '--ap-backing-measure-height', value: `${AP.BACKING_MEASURE_HEIGHT}px` },
             { key: '--ap-backing-header-height', value: `${AP.BACKING_LEN_HEIGHT + AP.BACKING_MEASURE_HEIGHT}px` },
             { key: '--ap-backing-record-width', value: `${AP.BACKING_RECORD_WIDTH}px` },
-            { key: '--ap-backing-table-height', value: `${AP.BACKING_RECORD_HEIGHT * AP.BACKING_RECORD_MAX}px` },
+            { key: '--ap-backing-record-height', value: `${AP.BACKING_RECORD_HEIGHT}px` },
+            { key: '--ap-backing-table-height', value: `${(AP.BACKING_RECORD_HEIGHT + 1) * AP.BACKING_RECORD_MAX + 1}px` },
             { key: '--ap-backing-pedal-height', value: `${AP.BACKING_PEDAL_HEIGHT}px` },
 
         ]);

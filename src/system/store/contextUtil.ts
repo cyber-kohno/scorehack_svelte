@@ -17,10 +17,10 @@ namespace ContextUtil {
         pianoEditor: StorePianoEditor.Props;
         backingProps: {
             backing: StorePianoBacking.EditorProps,
-            pianoRef: StoreRef.PianoRefs,
             getCurLayer: () => StorePianoBacking.Layer,
             getBackLayer: () => StorePianoBacking.Layer,
             getColWidth: (col: StorePianoBacking.Col) => number
+            getColFrameWidth: () => number
         }
     };
 

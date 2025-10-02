@@ -53,11 +53,13 @@ namespace Layout {
 
             BACKING_LEN_HEIGHT: 30,
             BACKING_MEASURE_HEIGHT: 30,
-            BACKING_RECORD_HEIGHT: 30,
+            BACKING_RECORD_HEIGHT: 24,
             BACKING_RECORD_WIDTH: 60,
             BACKING_RECORD_MAX: 12,
             BACKING_COL_MAX: 16,
             BACKING_PEDAL_HEIGHT: 42,
+
+            DIV1_WIDTH: 540,
         }
     }
 };

@@ -3,6 +3,7 @@ import type StorePianoBacking from "../../store/props/arrange/piano/storePianoBa
 import type StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../store/props/storeInput";
 import useReducerArrange from "../../store/reducer/reducerArrange";
+import useReducerRef from "../../store/reducer/reducerRef";
 import type { StoreUtil } from "../../store/store";
 import MusicTheory from "../../util/musicTheory";
 
@@ -10,6 +11,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
 
     const reducerArrange = useReducerArrange(lastStore);
+    const reducerRef = useReducerRef(lastStore);
 
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
@@ -27,8 +29,9 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                     backing.layerIndex = backing.layerIndex === 0 ? 1 : 0;
 
                     backing.cursorX = -1;
-                    backing.cursorY = -1;
+                    editor.control = 'record';
                     commit();
+                    reducerRef.adjustPEBScrollCol();
                 }
 
                 /**
@@ -177,12 +180,14 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                             if (backing.cursorX > 0) {
                                 backing.cursorX--;
                                 commit();
+                                reducerRef.adjustPEBScrollCol();
                             }
                         } break;
                         case 'ArrowRight': {
                             if (backing.cursorX < cols.length - 1) {
                                 backing.cursorX++;
                                 commit();
+                                reducerRef.adjustPEBScrollCol();
                             }
                         } break;
                         case 'ArrowDown': {
@@ -299,82 +304,87 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                                 commit();
                             }
                         } break;
+                        case 'r': {
+                            shiftLayer(backing);
+                        } break;
                     }
                 }
-                
-        const notesControl = () => {
+
+                const notesControl = () => {
                     const backing = editor.backing;
                     if (backing == null) throw new Error();
-            const layer = backing.layers[backing.layerIndex];
+                    const layer = backing.layers[backing.layerIndex];
 
-            const adjustRange = () => {
-                if (backing.cursorX < 0) backing.cursorX = 0;
-                if (backing.cursorY < 0) backing.cursorY = 0;
-                if (backing.cursorX > layer.cols.length - 1) backing.cursorX = layer.cols.length - 1;
-                if (backing.cursorY > backing.recordNum - 1) backing.cursorY = backing.recordNum - 1;
-            }
-
-            switch (eventKey) {
-                case 'ArrowDown': {
-                    backing.cursorY--;
-                    adjustRange();
-                    commit();
-                } break;
-                case 'ArrowUp': {
-                    backing.cursorY++;
-                    adjustRange();
-                    commit();
-                } break;
-                case 'ArrowLeft': {
-                    backing.cursorX--;
-                    adjustRange();
-                    commit();
-                } break;
-                case 'ArrowRight': {
-                    backing.cursorX++;
-                    adjustRange();
-                    commit();
-                } break;
-                case 'a': {
-                    if (backing.cursorX === -1 || backing.cursorY === -1) {
-                        // store.message.confirm = {
-                        //     msgLines: [
-                        //         'This point cannot be selected.',
-                        //         ''
-                        //     ],
-                        //     width: 380,
-                        //     buttons: [
-                        //         {
-                        //             name: 'ok', width: 180, shortCutKey: 'Enter', callback: () => { }
-                        //         }
-                        //     ]
-                        // }
-                        // commit();
-                        break;
+                    const adjustRange = () => {
+                        if (backing.cursorX < 0) backing.cursorX = 0;
+                        if (backing.cursorY < 0) backing.cursorY = 0;
+                        if (backing.cursorX > layer.cols.length - 1) backing.cursorX = layer.cols.length - 1;
+                        if (backing.cursorY > backing.recordNum - 1) backing.cursorY = backing.recordNum - 1;
                     }
-                    const key = `${backing.cursorX}.${backing.cursorY}`;
-                    if (!layer.items.map((item) => {
-                        const props = item.split(".");
-                        return `${props[0]}.${props[1]}`;
-                    }).includes(key)) {
-                        layer.items.push(key);
-                    } else {
-                        const pos = layer.items
-                            .map((item) => {
+
+                    switch (eventKey) {
+                        case 'ArrowDown': {
+                            backing.cursorY--;
+                            adjustRange();
+                            commit();
+                        } break;
+                        case 'ArrowUp': {
+                            backing.cursorY++;
+                            adjustRange();
+                            commit();
+                        } break;
+                        case 'ArrowLeft': {
+                            backing.cursorX--;
+                            adjustRange();
+                            commit();
+                            reducerRef.adjustPEBScrollCol();
+                        } break;
+                        case 'ArrowRight': {
+                            backing.cursorX++;
+                            adjustRange();
+                            commit();
+                            reducerRef.adjustPEBScrollCol();
+                        } break;
+                        case 'a': {
+                            if (backing.cursorX === -1 || backing.cursorY === -1) {
+                                // store.message.confirm = {
+                                //     msgLines: [
+                                //         'This point cannot be selected.',
+                                //         ''
+                                //     ],
+                                //     width: 380,
+                                //     buttons: [
+                                //         {
+                                //             name: 'ok', width: 180, shortCutKey: 'Enter', callback: () => { }
+                                //         }
+                                //     ]
+                                // }
+                                // commit();
+                                break;
+                            }
+                            const key = `${backing.cursorX}.${backing.cursorY}`;
+                            if (!layer.items.map((item) => {
                                 const props = item.split(".");
                                 return `${props[0]}.${props[1]}`;
-                            })
-                            .findIndex(i => i === key);
-                        layer.items.splice(pos, 1);
-                    }
-                    commit();
-                } break;
+                            }).includes(key)) {
+                                layer.items.push(key);
+                            } else {
+                                const pos = layer.items
+                                    .map((item) => {
+                                        const props = item.split(".");
+                                        return `${props[0]}.${props[1]}`;
+                                    })
+                                    .findIndex(i => i === key);
+                                layer.items.splice(pos, 1);
+                            }
+                            commit();
+                        } break;
 
-                case 'r': {
-                    shiftLayer(backing);
-                } break;
-            }
-        }
+                        case 'r': {
+                            shiftLayer(backing);
+                        } break;
+                    }
+                }
 
                 switch (editor.control) {
                     case 'voicing': voicingControl(); break;
