@@ -5,6 +5,7 @@
 
   const arrange = ContextUtil.get('arrange');
   $: structs = $arrange.target.compiledChord.structs;
+
   const editor = ContextUtil.get('pianoEditor');
 
   const OCTAVE_MAX = Layout.arrange.piano.VOICING_OCTAVE_MAX;

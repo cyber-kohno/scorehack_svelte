@@ -249,27 +249,27 @@ namespace MusicTheory {
 
     /** インターバルの関係性 */
     export const getIntervalFromRelation = (name: IntervalRelationName) => {
-        // switch (name) {
-        //     case 'p1': return 0;
-        //     case 'm2': return 1;
-        //     case 'M2': return 2;
-        //     case 'm3': return 3;
-        //     case 'M3': return 4;
-        //     case 'p4': return 5;
-        //     case 'd5': return 6;
-        //     case 'p5': return 7;
-        //     case 'a5': return 8;
-        //     case 'm6': return 8;
-        //     case 'M6': return 9;
-        //     case 'd7': return 9;
-        //     case 'm7': return 10;
-        //     case 'M7': return 11;
-        //     case 'on': return -1;
-        // }
-        const arr = getIntervalArray();
-        const index = arr.findIndex(i => i === name);
-        if (index === -1) throw new Error(`[${name}]は、定義の中に存在しない。`);
-        return index;
+        switch (name) {
+            case 'p1': return 0;
+            case 'm2': return 1;
+            case 'M2': return 2;
+            case 'm3': return 3;
+            case 'M3': return 4;
+            case 'p4': return 5;
+            case 'd5': return 6;
+            case 'p5': return 7;
+            case 'a5': return 8;
+            case 'm6': return 8;
+            case 'M6': return 9;
+            case 'd7': return 9;
+            case 'm7': return 10;
+            case 'M7': return 11;
+            case 'on': return -1;
+        }
+        // const arr = getIntervalArray();
+        // const index = arr.findIndex(i => i === name);
+        // if (index === -1) throw new Error(`[${name}]は、定義の中に存在しない。`);
+        // return index;
     }
     export const getRelationFromInterval = (interval: number) => {
         const arr = getIntervalArray();

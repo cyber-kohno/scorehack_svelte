@@ -3,6 +3,7 @@ import type StorePianoBacking from "../../store/props/arrange/piano/storePianoBa
 import type StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../store/props/storeInput";
 import useReducerArrange from "../../store/reducer/reducerArrange";
+import useReducerCache from "../../store/reducer/reducerCache";
 import useReducerRef from "../../store/reducer/reducerRef";
 import type { StoreUtil } from "../../store/store";
 import MusicTheory from "../../util/musicTheory";
@@ -12,6 +13,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
 
     const reducerArrange = useReducerArrange(lastStore);
     const reducerRef = useReducerRef(lastStore);
+    const reducerCache = useReducerCache(lastStore);
 
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
@@ -429,8 +431,82 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                     if (eventKey === 'ArrowLeft') shiftControl('record');
                 } break;
             }
+
+            switch (eventKey) {
+                case 'Enter': applyArrange(); break;
+            }
         }
         return callbacks;
+    }
+
+    /**
+     * エディタのアレンジをコード要素に適用する
+     * @param store ストア
+     * @param update 画面再描画
+     */
+    const applyArrange = () => {
+        if (arrange == null) throw new Error();
+
+        const editor = reducerArrange.getPianoEditor();
+
+        const compiledChord = arrange.target.compiledChord;
+        const scoreBase = arrange.target.scoreBase;
+
+        // // パターンの登録
+        // const pianoLib = arrange.pianoLib;
+
+        // // 有効チャンネル外のノーツは削除する
+        // editor.notes.layers.forEach(l => {
+        //     l.items = l.items.filter(item => {
+        //         const [x, y] = item.split('.').map(v => Number(v));
+        //         return x >= 0 && x <= l.cols.length - 1 && y >= 0 && y <= editor.voicing.sounds.length - 1;
+        //     });
+        // });
+        // const backing: PBEditor.BackingProps = {
+        //     layers: JSON.parse(JSON.stringify(editor.notes.layers)),
+        //     recordNum: editor.record.num
+        // };
+        // const sounds = JSON.parse(JSON.stringify(editor.voicing.sounds));
+        // // 検索用カテゴリの作成
+        // const category: ArrangeLibrary.SearchCategory = {
+        //     beat: chordInfo.beat,
+        //     structCnt: chordInfo.structs.length,
+        //     tsGloup: [scoreBase.timeSignature],
+        //     eatHead: chordInfo.eatHead === 0 ? undefined : chordInfo.eatHead,
+        //     eatTail: chordInfo.eatTail === 0 ? undefined : chordInfo.eatTail
+        // }
+        // // 新しいパターンの場合は登録してパターンNoをそれぞれ取得
+        // const [backingPattNo, soundsPattNo] = PBEditor.registPattern(category, backing, sounds, pianoLib);
+
+        // // コード連番と参照先ライブラリの紐付け
+        // const relations = arrange.layers[outline.layerIndex].relations;
+        // const relation = relations.find(r => r.chordSeq === chordSeq);
+        // if (relation == undefined) {
+        //     // 未定義の場合は新規追加
+        //     relations.push({
+        //         chordSeq, bkgPatt: backingPattNo, sndsPatt: soundsPattNo
+        //     });
+        // } else {
+        //     // 既定義の場合は更新
+        //     relation.bkgPatt = backingPattNo;
+        //     relation.sndsPatt = soundsPattNo;
+
+        //     // 紐付けが変わったことにより不参照のピアノライブラリのパターンを削除
+        //     PBEditor.deleteUnreferUnit(arrange);
+        // }
+
+        // ダイアログを閉じる
+        lastStore.control.outline.arrange = null;
+
+        reducerCache.calculate();
+
+        // MessageUtil.pushFadeItem(store.message.fade, {
+        //     text: 'Arrangement has been applied.',
+        //     type: 'notice',
+        //     width: 500,
+        //     x: 100, y: 100
+        // }, update);
+        commit();
     }
 
     return {
