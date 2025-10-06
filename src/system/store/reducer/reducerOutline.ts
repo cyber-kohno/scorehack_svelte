@@ -117,12 +117,13 @@ const useReducerOutline = (lastStore: StoreProps) => {
         const target: StoreArrange.Target = {
             scoreBase,
             beat: chord.beat,
-            compiledChord: chord.compiledChord
+            compiledChord: chord.compiledChord,
+            chordSeq
         }
 
         const buildEditor = () => {
             switch (track.method) {
-                case 'piano': return StorePianoEditor.createInitialProps()
+                case 'piano': return StorePianoEditor.getEditorProps(chordSeq, track)
             }
         }
         outline.arrange = {

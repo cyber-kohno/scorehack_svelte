@@ -1,6 +1,7 @@
 import Layout from "../../const/layout";
+import type ArrangeLibrary from "../../store/props/arrange/arrangeLibrary";
 import type StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
-import type StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
+import StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../store/props/storeInput";
 import useReducerArrange from "../../store/reducer/reducerArrange";
 import useReducerCache from "../../store/reducer/reducerCache";
@@ -405,6 +406,10 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
         const callbacks: StoreInput.Callbacks = {};
 
         callbacks.holdShift = () => {
+
+            switch (eventKey) {
+                case 'Enter': applyArrange(); break;
+            }
             if (editor.backing == null) return;
 
             const shiftControl = (next: StorePianoEditor.Control) => {
@@ -431,10 +436,6 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
                     if (eventKey === 'ArrowLeft') shiftControl('record');
                 } break;
             }
-
-            switch (eventKey) {
-                case 'Enter': applyArrange(); break;
-            }
         }
         return callbacks;
     }
@@ -451,49 +452,59 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
 
         const compiledChord = arrange.target.compiledChord;
         const scoreBase = arrange.target.scoreBase;
+        const beatCache = arrange.target.beat;
 
-        // // パターンの登録
-        // const pianoLib = arrange.pianoLib;
+        const chordSeq = arrange.target.chordSeq;
 
-        // // 有効チャンネル外のノーツは削除する
-        // editor.notes.layers.forEach(l => {
-        //     l.items = l.items.filter(item => {
-        //         const [x, y] = item.split('.').map(v => Number(v));
-        //         return x >= 0 && x <= l.cols.length - 1 && y >= 0 && y <= editor.voicing.sounds.length - 1;
-        //     });
-        // });
-        // const backing: PBEditor.BackingProps = {
-        //     layers: JSON.parse(JSON.stringify(editor.notes.layers)),
-        //     recordNum: editor.record.num
-        // };
-        // const sounds = JSON.parse(JSON.stringify(editor.voicing.sounds));
-        // // 検索用カテゴリの作成
-        // const category: ArrangeLibrary.SearchCategory = {
-        //     beat: chordInfo.beat,
-        //     structCnt: chordInfo.structs.length,
-        //     tsGloup: [scoreBase.timeSignature],
-        //     eatHead: chordInfo.eatHead === 0 ? undefined : chordInfo.eatHead,
-        //     eatTail: chordInfo.eatTail === 0 ? undefined : chordInfo.eatTail
-        // }
-        // // 新しいパターンの場合は登録してパターンNoをそれぞれ取得
-        // const [backingPattNo, soundsPattNo] = PBEditor.registPattern(category, backing, sounds, pianoLib);
+        // パターンの登録
+        const arrTrack = reducerArrange.getCurTrack();
+        const pianoLib = arrTrack.pianoLib;
+        if (pianoLib == undefined) throw new Error();
 
-        // // コード連番と参照先ライブラリの紐付け
-        // const relations = arrange.layers[outline.layerIndex].relations;
-        // const relation = relations.find(r => r.chordSeq === chordSeq);
-        // if (relation == undefined) {
-        //     // 未定義の場合は新規追加
-        //     relations.push({
-        //         chordSeq, bkgPatt: backingPattNo, sndsPatt: soundsPattNo
-        //     });
-        // } else {
-        //     // 既定義の場合は更新
-        //     relation.bkgPatt = backingPattNo;
-        //     relation.sndsPatt = soundsPattNo;
+        // 有効チャンネル外のノーツは削除する
+        const backing = editor.backing;
+        let backingData: StorePianoBacking.DataProps | null = null;
+        if (backing != null) {
+            backing.layers.forEach(l => {
+                l.items = l.items.filter(item => {
+                    const [x, y] = item.split('.').map(v => Number(v));
+                    return x >= 0 && x <= l.cols.length - 1 && y >= 0 && y <= editor.voicing.items.length - 1;
+                });
+            });
+            backingData = {
+                layers: JSON.parse(JSON.stringify(backing.layers)),
+                recordNum: backing.recordNum
+            };
+        }
+        const sounds = JSON.parse(JSON.stringify(editor.voicing.items));
+        // 検索用カテゴリの作成
+        const category: ArrangeLibrary.SearchCategory = {
+            beat: beatCache.num,
+            structCnt: compiledChord.structs.length,
+            tsGloup: [scoreBase.ts],
+            eatHead: beatCache.eatHead,
+            eatTail: beatCache.eatTail
+        }
+        // 新しいパターンの場合は登録してパターンNoをそれぞれ取得
+        const [backingPattNo, soundsPattNo] = StorePianoEditor
+            .registPattern(category, backingData, sounds, pianoLib);
 
-        //     // 紐付けが変わったことにより不参照のピアノライブラリのパターンを削除
-        //     PBEditor.deleteUnreferUnit(arrange);
-        // }
+        // コード連番と参照先ライブラリの紐付け
+        const relations = arrTrack.relations;
+        const relation = relations.find(r => r.chordSeq === chordSeq);
+        if (relation == undefined) {
+            // 未定義の場合は新規追加
+            relations.push({
+                chordSeq, bkgPatt: backingPattNo, sndsPatt: soundsPattNo
+            });
+        } else {
+            // 既定義の場合は更新
+            relation.bkgPatt = backingPattNo;
+            relation.sndsPatt = soundsPattNo;
+
+            // 紐付けが変わったことにより不参照のピアノライブラリのパターンを削除
+            StorePianoEditor.deleteUnreferUnit(arrTrack);
+        }
 
         // ダイアログを閉じる
         lastStore.control.outline.arrange = null;
@@ -506,6 +517,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
         //     width: 500,
         //     x: 100, y: 100
         // }, update);
+        // console.log(relations);
         commit();
     }
 

@@ -13,10 +13,16 @@ const useReducerArrange = (lastStore: StoreProps) => {
         if (arrange.method !== 'piano') throw new Error();
         return arrange.editor as StorePianoEditor.Props
     }
+    const getCurTrack = () => {
+        const track = lastStore.data.arrange.tracks[lastStore.control.outline.trackIndex];
+        if (track == undefined) throw new Error();
+        return track;
+    }
 
     return {
         getArrange,
-        getPianoEditor
+        getPianoEditor,
+        getCurTrack
     }
 }
 export default useReducerArrange;

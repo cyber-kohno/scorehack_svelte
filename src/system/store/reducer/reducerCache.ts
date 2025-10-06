@@ -146,6 +146,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                     const chordCache: StoreCache.ChordCache = {
                         chordSeq: lastChordSeq,
                         elementSeq: i,
+                        baseSeq: baseCaches.length,
                         beat,
                         compiledChord,
                         startBeat,

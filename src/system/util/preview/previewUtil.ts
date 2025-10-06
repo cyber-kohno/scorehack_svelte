@@ -7,6 +7,10 @@ import StoreMelody from "../../store/props/storeMelody";
 import StoreCache from "../../store/props/storeCache";
 import FileUtil from "../fileUtil";
 import type { StoreProps, StoreUtil } from "../../store/store";
+import useReducerArrange from "../../store/reducer/reducerArrange";
+import { date } from "zod";
+import StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
+import StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
 
 namespace PreviewUtil {
 
@@ -61,6 +65,7 @@ namespace PreviewUtil {
             const { getChordFromBeat } = useReducerCache(lastStore);
 
             const { getCurrScoreTrack } = useReducerMelody(lastStore);
+            const reducerArrange = useReducerArrange(lastStore);
             const { adjustGridScrollXFromOutline, adjustOutlineScroll } = useReducerRef(lastStore);
 
             const containsLayer = (...targets: LayerTargetMode[]) => {
@@ -155,8 +160,63 @@ namespace PreviewUtil {
                         referIndex: i
                     });
                 });
-
             }
+
+            // アレンジのノートを収集
+            if (!containsLayer('tl-focus-layer', 'tl-layer-all')) {
+                const arrange = lastStore.data.arrange;
+                const { chordCaches, baseCaches } = lastStore.cache;
+                arrange.tracks.forEach((track, trackIndex) => {
+
+                    if (option.target === 'ol-focus-layer') {
+                        if (outline.trackIndex !== trackIndex) return 1;
+                    }
+                    // ミュートもしくは音源未設定の場合コンティニュー
+                    if (track.isMute || track.soundFont === '') return 1;
+
+                    const sf = preview.sfItems.find(sf => sf.instrumentName === track.soundFont);
+                    if (sf == null || sf.player == undefined) return 1;
+                    const notes: NotePlayer[] = [];
+                    trackPlayList.push({
+                        sf: sf.player, notes
+                    });
+
+                    // ノート情報の追加
+                    switch (track.method) {
+                        case 'piano': {
+
+                            chordCaches.forEach((chordCache, i) => {
+                                const chordSeq = chordCache.chordSeq;
+                                const unit = StorePianoEditor.searchPianoLibUnit(chordSeq, track);
+                                if (unit == undefined) return 1;
+                                const baseCache = baseCaches[chordCache.baseSeq];
+
+                                // フォーカスより前のコードはコンテニュー
+                                if (baseCache.startBeat < outlineStart) return 1;
+                                const compiledChord = chordCache.compiledChord;
+                                if (compiledChord == undefined) return 1;
+                                const chord = compiledChord.chord;
+                                const notes = StorePianoEditor.buildNotesFromUnit(unit, chord);
+
+                                const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
+                                const beatRate = beatDiv16Cnt / 4;
+                                const chordStart = baseCache.startBeat * beatRate;
+
+                                notes.forEach(note => {
+                                    // コードブロック開始位置を加算
+                                    const startBeat = chordStart + chordCache.prevEat / 4;
+                                    const targetNote = getAddBeat(note, startBeat);
+                                    const playInfo = getNotePlayInfo(timelineStart, targetNote, store.cache);
+                                    if (playInfo == null) return 1;
+                                    // console.log(`start:${playInfo.startMs}, sustain:${playInfo.sustainMs}`);
+                                    list.push(playInfo);
+                                });
+                            });
+                        } break;
+                    }
+                });
+            }
+
 
             preview.timerKeys = [];
             preview.intervalKeys = [];
@@ -202,7 +262,7 @@ namespace PreviewUtil {
             });
 
             // オーディオファイルを再生
-            audioTracks.forEach((track,i) => {
+            audioTracks.forEach((track, i) => {
                 const audio = preview.audios[i];
                 let lateTime = 0;
                 const adjustTime = track.adjust + preview.progressTime;

@@ -30,6 +30,7 @@ namespace StoreArrange {
         scoreBase: StoreOutline.DataInit,
         beat: StoreCache.BeatCache;
         compiledChord: StoreCache.CompiledChord;
+        chordSeq: number;
     }
 
     export type Track = {
