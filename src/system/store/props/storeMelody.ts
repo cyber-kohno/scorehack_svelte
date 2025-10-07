@@ -54,6 +54,17 @@ namespace StoreMelody {
         return n1r > n2l && n1r <= n2r || n2r > n1l && n2r < n1r;
     }
 
+    export const calcAddBeat = (note: Note, beat: number): Note => {
+        const norm = note.norm;
+        const rate = norm.div / 4;
+        const addVal = rate * beat;
+        const pos = note.pos + addVal;
+        return {
+            ...note,
+            pos
+        }
+    }
+
     export const compareNotes = (aNorm: Norm, aSize: number, bNorm: Norm, bSize: number) => {
 
     }
