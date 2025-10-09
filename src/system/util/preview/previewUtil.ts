@@ -11,6 +11,7 @@ import useReducerArrange from "../../store/reducer/reducerArrange";
 import { date } from "zod";
 import StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
+import PianoArrangePreviewUtil from "./arrange/pianoArrangePreviewUtil";
 
 namespace PreviewUtil {
 
@@ -34,140 +35,98 @@ namespace PreviewUtil {
     export interface SoundNote extends StoreMelody.Note {
         velocity: number;
     }
-
     /**
-     * アレンジのユニットからノーツを生成する。
-     * @param unit 
-     * @param chord 
-     * @returns 
-     */
-    export const buildNotesFromUnit = (unit: StorePianoEditor.Unit, chord: MusicTheory.KeyChordProps): SoundNote[] => {
+         * 鳴らすノーツの情報を返す。
+         * @param baseCaches
+         * @param currentLeft 
+         * @param note 
+         * @returns 
+         */
+    const buildNotePlayer = (
+        baseCaches: StoreCache.BaseCache[],
+        currentLeft: number,
+        note: StoreMelody.Note,
+        velocity: number
+    ): PreviewUtil.NotePlayer | null => {
 
-        const notes: SoundNote[] = [];
+        const side = StoreMelody.calcBeatSide(note);
+        const [left, right] = [side.pos, side.pos + side.len]
+            // 1拍（全音符→4分音符）に基準に合わせる
+            .map(p => p * 4);
+        // console.log(`left: ${left}, right: ${right}`);
+        // プレビュー開始位置より前のノーツは除外する
+        if (left < currentLeft) return null;
 
-        const relationStructs = calcRelationStructs(chord);
-
-        const pitchIndexes = unit.voicingSounds.map(v => {
-            const [octaveIndex, structIndex] = v.split('.').map(v => Number(v));
-            const struct = relationStructs[structIndex];
-            return (octaveIndex + struct.carryForwardOctave) * 12 + struct.key12;
-        });
-        const baseCols = unit.layers[0].cols;
-
-        unit.layers.forEach((l) => {
-
-            l.items.forEach(n => {
-                const note = convNotesInfo(n);
-                const col = l.cols[note.colIndex];
-                const norm: StoreMelody.Norm = col;
-                const criteriaRate = 4 / norm.div / (norm.tuplets ?? 1);
-                const pos = l.cols.reduce((prev, cur, i) => {
-                    let ret = prev;
-                    const curRate = 4 / cur.div / (cur.tuplets ?? 1);
-                    const len = getDotRate(cur.dot);
-                    if (note.colIndex > i) {
-                        ret += len * (curRate / criteriaRate);
-                    }
-                    return ret;
-                }, 0);
-                let len = getDotRate(col.dot);
-
-                // ペダルを考慮
-                const getPedalBaseCol = () => {
-                    let curPos = 0;
-                    for (let i = 0; i < baseCols.length; i++) {
-                        const curCol = baseCols[i];
-                        const curRate = 4 / curCol.div / (curCol.tuplets ?? 1);
-                        const len = getDotRate(curCol.dot);
-                        const colLen = len * (curRate / criteriaRate);
-                        if (pos >= curPos && pos < curPos + colLen) {
-                            return [i, curPos];
-                        }
-                        curPos += colLen;
-                    }
-                    return [-1, 0, 1];
-                }
-                const [baseColIndex, baseColPos] = getPedalBaseCol();
-                // console.log(`layer:${layerIndex}, ${note.colIndex}-${note.recordIndex} pedalIndex:[${baseColIndex}]`);
-                if (baseColIndex !== -1 && baseCols[baseColIndex].pedal !== 0) {
-                    let pedalLen = 0;
-                    for (let i = baseColIndex; i < baseCols.length; i++) {
-                        const curCol = baseCols[i];
-                        const curRate = 4 / curCol.div / (curCol.tuplets ?? 1);
-                        const len = getDotRate(curCol.dot);
-                        const colLen = len * (curRate / criteriaRate);
-                        // ペダル開始要素のみPOSの差分を考慮する
-                        if (i === baseColIndex) {
-                            const adjust = pos - baseColPos;
-                            // console.log(`layer:${layerIndex}, ${note.colIndex}-${note.recordIndex} baseColPos:[${baseColPos}], pos:[${pos}]`);
-                            pedalLen += (colLen - adjust);
-                        } else {
-                            // 踏みっぱなし以外は切る
-                            if (curCol.pedal !== 1) break;
-                            pedalLen += colLen;
-                        }
-                    }
-                    // ペダルの方が長ければ上書きする
-                    if (len < pedalLen) len = pedalLen;
-                }
-                const pitch = pitchIndexes[note.recordIndex];
-                const velocity = note.velocity;
-                notes.push({ pos, len, pitch, norm, velocity });
-            });
-        });
-        return notes;
-    }
-
-    const getDotRate = (dot: number | undefined) => {
-        switch (dot) {
-            case undefined: return 1;
-            case 1: return 1.5;
-            case 2: return 1.75;
+        /** 開始時間（ミリ秒） */
+        let startMs = 0;
+        const getTime = (len: number, tempo: number) => {
+            return 60000 / tempo * len;
         }
-        throw new Error(`dotが想定していないパターンの値。[${dot}]`);
-    };
-
-    const convNotesInfo = (note: string) => {
-
-        const items = note.split('.').map(v => Number(v));
-        const [colIndex, recordIndex] = items;
-        let velocity = 10;
-        let delay = 0;
-        if (items.length !== 2) {
-            velocity = items[2];
-            delay = items[3];
+        const addStart = (len: number, tempo: number) => {
+            startMs += getTime(len, tempo);
         }
-        return { colIndex, recordIndex, velocity, delay };
-    }
+        /** 持続時間（ミリ秒） */
+        let sustainMs = 0;
 
-    const calcRelationStructs = (chord: MusicTheory.KeyChordProps) => {
-        const symbolProps = MusicTheory.getSymbolProps(chord.symbol);
-        const relationStructs: {
-            /** オクターブ繰り上げ */
-            carryForwardOctave: number;
-            key12: number;
-        }[] = symbolProps.structs.map(s => {
-            const tempPitchIndex = chord.key12 + MusicTheory.getIntervalFromRelation(s);
-            return {
-                carryForwardOctave: Math.floor(tempPitchIndex / 12),
-                key12: tempPitchIndex % 12
+        // ベースリストを走査する
+        // console.log(baseBlocks);
+        baseCaches.some(base => {
+            /** ベースの終端 */
+            const end = base.startBeatNote + base.lengthBeatNote;
+            const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
+            const beatRate = beatDiv16Cnt / 4;
+            const tempo = base.scoreBase.tempo * beatRate;
+
+            // ベース範囲内のノーツである場合
+            if (left < end) {
+
+                // ベースのルールで持続時間を確定
+                sustainMs = getTime(right - left, tempo);
+
+                // ベースの開始からノーツまでの長さを加算
+                addStart(left - base.startBeatNote, tempo);
+
+                // ノーツ以降のベースは走査する必要がないためブレイク
+                return 1;
             }
+
+            // ベース終端以降のノーツである場合、ベースの持続時間を加算する
+            // const start = currentLet + base.startBeatNote;
+            // addStart(side.left - start, tempo);
+            addStart(base.lengthBeatNote, tempo);
         });
-        // console.log(chord);
-        // オンコードを構成音に足す
-        if (chord.on != undefined) {
-            const on = chord.on;
-            if (!relationStructs.map(r => r.key12).includes(on.key12)) {
-                relationStructs.push({
-                    key12: on.key12,
-                    carryForwardOctave: 0
-                });
-                // console.log(relationStructs);
-                relationStructs.sort((a, b) => a.key12 - b.key12);
-                // console.log(relationStructs);
+
+        // プレビュー開始位置の考慮を、演奏開始時間に反映させる
+        baseCaches.some(base => {
+            /** ベースの終端 */
+            const end = base.startBeatNote + base.lengthBeatNote;
+            const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
+            const beatRate = beatDiv16Cnt / 4;
+            const tempo = base.scoreBase.tempo * beatRate;
+
+            // ベース範囲内の開始位置である場合
+            if (currentLeft < end) {
+
+                // ベースの開始からノーツまでの長さを加算
+                addStart(-(currentLeft - base.startBeatNote), tempo);
+
+                // ノーツ以降のベースは走査する必要がないためブレイク
+                return 1;
             }
+
+            // ベース終端以降のノーツである場合、ベースの持続時間を加算する
+            addStart(-base.lengthBeatNote, tempo);
+        });
+
+        const pitchName = MusicTheory.getKey12FullName(note.pitch);
+        const gain = 5 * (velocity / 10);
+        return {
+            startMs,
+            gain,
+            sustainMs,
+            pitchName,
+            target: ''
         }
-        return relationStructs;
     }
 
     export const useReducer = (lastStore: StoreProps) => {
@@ -335,7 +294,7 @@ namespace PreviewUtil {
                                 const compiledChord = chordCache.compiledChord;
                                 if (compiledChord == undefined) return 1;
                                 const chord = compiledChord.chord;
-                                const notes = buildNotesFromUnit(unit, chord);
+                                const notes = PianoArrangePreviewUtil.buildNotesFromUnit(unit, chord);
 
                                 const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(baseCache.scoreBase.ts);
                                 const beatRate = beatDiv16Cnt / 4;
@@ -506,97 +465,6 @@ namespace PreviewUtil {
             return beat;
         }
 
-        /**
-         * 鳴らすノーツの情報を返す。
-         * @param baseCaches
-         * @param currentLeft 
-         * @param note 
-         * @returns 
-         */
-        const buildNotePlayer = (
-            baseCaches: StoreCache.BaseCache[],
-            currentLeft: number,
-            note: StoreMelody.Note,
-            velocity: number
-        ): NotePlayer | null => {
-
-            const side = StoreMelody.calcBeatSide(note);
-            const [left, right] = [side.pos, side.pos + side.len];
-            // console.log(`noteLeft: ${noteLeft}, currentLet: ${currentLet}`);
-            // プレビュー開始位置より前のノーツは除外する
-            if (left < currentLeft) return null;
-
-            /** 開始時間（ミリ秒） */
-            let startMs = 0;
-            const getTime = (len: number, tempo: number) => {
-                return 60000 / tempo * len;
-            }
-            const addStart = (len: number, tempo: number) => {
-                startMs += getTime(len, tempo);
-            }
-            /** 持続時間（ミリ秒） */
-            let sustainMs = 0;
-
-            // ベースリストを走査する
-            // console.log(baseBlocks);
-            baseCaches.some(base => {
-                /** ベースの終端 */
-                const end = base.startBeatNote + base.lengthBeatNote;
-                const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
-                const beatRate = beatDiv16Cnt / 4;
-                const tempo = base.scoreBase.tempo * beatRate;
-
-                // ベース範囲内のノーツである場合
-                if (left < end) {
-
-                    // ベースのルールで持続時間を確定
-                    sustainMs = getTime(right - left, tempo);
-
-                    // ベースの開始からノーツまでの長さを加算
-                    addStart(left - base.startBeatNote, tempo);
-
-                    // ノーツ以降のベースは走査する必要がないためブレイク
-                    return 1;
-                }
-
-                // ベース終端以降のノーツである場合、ベースの持続時間を加算する
-                // const start = currentLet + base.startBeatNote;
-                // addStart(side.left - start, tempo);
-                addStart(base.lengthBeatNote, tempo);
-            });
-
-            // プレビュー開始位置の考慮を、演奏開始時間に反映させる
-            baseCaches.some(base => {
-                /** ベースの終端 */
-                const end = base.startBeatNote + base.lengthBeatNote;
-                const beatDiv16Cnt = MusicTheory.getBeatDiv16Count(base.scoreBase.ts);
-                const beatRate = beatDiv16Cnt / 4;
-                const tempo = base.scoreBase.tempo * beatRate;
-
-                // ベース範囲内の開始位置である場合
-                if (currentLeft < end) {
-
-                    // ベースの開始からノーツまでの長さを加算
-                    addStart(-(currentLeft - base.startBeatNote), tempo);
-
-                    // ノーツ以降のベースは走査する必要がないためブレイク
-                    return 1;
-                }
-
-                // ベース終端以降のノーツである場合、ベースの持続時間を加算する
-                addStart(-base.lengthBeatNote, tempo);
-            });
-
-            const pitchName = MusicTheory.getKey12FullName(note.pitch);
-            const gain = 5 * (velocity / 10);
-            return {
-                startMs,
-                gain,
-                sustainMs,
-                pitchName,
-                target: ''
-            }
-        }
 
         const stopTest = () => {
             const { syncCursorFromElementSeq } = useReducerMelody(lastStore);

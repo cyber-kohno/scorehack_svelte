@@ -19,8 +19,6 @@ namespace StorePianoEditor {
 
         /** エディタ起動時のソースを保持 */
         lastSource: string;
-
-        finder: ArrangeLibrary.PianoArrangeFinder | null;
     }
 
 
@@ -36,8 +34,7 @@ namespace StorePianoEditor {
                 cursorY: 0,
                 items: []
             },
-            preset: { index: -1, list: [] },
-            finder: null
+            preset: { index: -1, list: [] }
         };
     }
 

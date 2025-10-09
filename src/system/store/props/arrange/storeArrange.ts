@@ -23,7 +23,8 @@ namespace StoreArrange {
     export type EditorProps = {
         method: StoreArrange.ArrangeMedhod;
         target: Target;
-        editor: any;
+        editor?: any;
+        finder?: any;
     }
     
     export type Target = {

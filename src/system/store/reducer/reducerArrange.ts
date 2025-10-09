@@ -1,4 +1,5 @@
-import type StorePianoEditor from "../props/arrange/piano/storePianoEditor";
+import ArrangeLibrary from "../props/arrange/arrangeLibrary";
+import StorePianoEditor from "../props/arrange/piano/storePianoEditor";
 import type { StoreProps } from "../store";
 
 const useReducerArrange = (lastStore: StoreProps) => {

@@ -2,7 +2,7 @@
   import useReducerOutline from "../../store/reducer/reducerOutline";
   import store from "../../store/store";
   import ArrangePianoEditor from "./piano/ArrangePianoEditor.svelte";
-  import SideItemLabel from "./SideItemLabel.svelte";
+  import ArrangeStatusBar from "./status/ArrangeStatusBar.svelte";
 
   $: reducerOutline = useReducerOutline($store);
 
@@ -11,9 +11,7 @@
 
 <div class="frame">
   <div class="wrap">
-    <div class="sidediv">
-      <SideItemLabel label={"piano"} />
-    </div>
+    <ArrangeStatusBar />
     <div class="maindiv">
       {#if track.method === "piano"}
         <ArrangePianoEditor />
@@ -52,15 +50,6 @@
     * {
       vertical-align: top;
     }
-  }
-  .sidediv {
-    display: inline-block;
-    position: relative;
-    width: 90px;
-    /* height: 100%; */
-    /* min-height: 500px; */
-    background-color: rgba(178, 178, 178, 0.601);
-    padding: 2px;
   }
   .maindiv {
     display: inline-block;

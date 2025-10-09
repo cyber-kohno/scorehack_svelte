@@ -6,6 +6,7 @@ import useReducerOutline from "../store/reducer/reducerOutline";
 import useReducerRef from "../store/reducer/reducerRef";
 import type { StoreUtil } from "../store/store";
 import MusicTheory from "../util/musicTheory";
+import PreviewUtil from "../util/preview/previewUtil";
 import useInputArrange from "./arrange/inputArrange";
 
 const useInputOutline = (storeUtil: StoreUtil) => {
@@ -17,14 +18,29 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const element = reducerOutline.getCurrentElement();
     const inputArrange = useInputArrange(storeUtil);
 
+    const { startTest, stopTest } = PreviewUtil.useUpdater(storeUtil);
+
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
+    const isPreview = lastStore.preview.timerKeys != null;
+
+    const isArrangeEditorActive = () => {
+        return arrange != null && arrange.editor != undefined;
+    }
 
     const control = (eventKey: string) => {
         const isInit = element.type === 'init';
 
-        if (arrange != null) {
+        if (isArrangeEditorActive()) {
             inputArrange.control(eventKey);
+            return;
+        }
+
+        if (isPreview) {
+
+            switch (eventKey) {
+                case ' ': stopTest();
+            }
             return;
         }
 
@@ -123,13 +139,14 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             case 'b': {
                 reducerOutline.openArrangeEditor();
                 commit();
-            }
+            } break;
+            case ' ': startTest({ target: 'all' });
         }
     }
 
     const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
 
-        if (arrange != null) {
+        if (isArrangeEditorActive()) {
             // console.log('arrange != null');
             return inputArrange.getHoldCallbacks(eventKey);
         }
@@ -255,6 +272,16 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             switch (eventKey) {
                 case 'ArrowLeft': modEat(-1); break;
                 case 'ArrowRight': modEat(1); break;
+            }
+        }
+
+        callbacks.holdShift = () => {
+
+            switch (eventKey) {
+                case 'B': {
+                    reducerOutline.openArrangeFinder();
+                    commit();
+                } break;
             }
         }
         return callbacks;

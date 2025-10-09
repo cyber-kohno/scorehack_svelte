@@ -80,7 +80,7 @@ const useInputMelody = (storeUtil: StoreUtil) => {
             commit();
         }
 
-        if (lastStore.preview.timerKeys != null) {
+        if (isPreview) {
 
             switch (eventKey) {
                 case ' ': stopTest();

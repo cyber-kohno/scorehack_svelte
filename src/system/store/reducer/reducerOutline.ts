@@ -1,8 +1,11 @@
+import ArrangeLibrary from "../props/arrange/arrangeLibrary";
 import StorePianoEditor from "../props/arrange/piano/storePianoEditor";
 import type StoreArrange from "../props/arrange/storeArrange";
+import type StoreCache from "../props/storeCache";
 import StoreMelody from "../props/storeMelody";
 import type StoreOutline from "../props/storeOutline";
 import type { StoreProps } from "../store";
+import useReducerArrange from "./reducerArrange";
 import useReducerRef from "./reducerRef";
 
 
@@ -100,7 +103,11 @@ const useReducerOutline = (lastStore: StoreProps) => {
         return lastStore.data.arrange.tracks[outline.trackIndex];
     }
 
-    const openArrangeEditor = () => {
+    const buildArrange = (buildDetail: (props: {
+        arrange: StoreArrange.EditorProps,
+        track: StoreArrange.Track,
+        chordCache: StoreCache.ChordCache
+    }) => void) => {
 
         const track = getCurrArrangeTrack();
 
@@ -109,28 +116,58 @@ const useReducerOutline = (lastStore: StoreProps) => {
         const { baseCaches, elementCaches, chordCaches } = lastStore.cache;
         const { chordSeq, baseSeq } = elementCaches[outline.focus];
         if (chordSeq === -1) return;
-        const chord = chordCaches[chordSeq];
+        const chordCache = chordCaches[chordSeq];
         const scoreBase = baseCaches[baseSeq].scoreBase;
 
-        if (chord.compiledChord == undefined) return;
+        if (chordCache.compiledChord == undefined) return;
 
         const target: StoreArrange.Target = {
             scoreBase,
-            beat: chord.beat,
-            compiledChord: chord.compiledChord,
-            chordSeq
+            beat: chordCache.beat,
+            compiledChord: chordCache.compiledChord,
+            chordSeq: chordCache.chordSeq
         }
 
-        const buildEditor = () => {
-            switch (track.method) {
-                case 'piano': return StorePianoEditor.getEditorProps(chordSeq, track)
-            }
-        }
-        outline.arrange = {
+        const arrange: StoreArrange.EditorProps = {
             method: track.method,
             target,
-            editor: buildEditor()
         };
+        buildDetail({ arrange, track, chordCache });
+
+        lastStore.control.outline.arrange = arrange;
+    }
+
+    const openArrangeEditor = () => {
+
+        buildArrange((props) => {
+            const { arrange, track, chordCache } = props;
+
+            const getEditor = () => {
+                switch (track.method) {
+                    case 'piano': return StorePianoEditor.getEditorProps(chordCache.chordSeq, track);
+                }
+            }
+            arrange.editor = getEditor();
+        });
+    }
+    const openArrangeFinder = () => {
+
+        buildArrange((props) => {
+            const { arrange, track, chordCache } = props;
+
+            const ts = lastStore.cache.baseCaches[chordCache.baseSeq].scoreBase.ts;
+
+            const getFinder = () => {
+                switch (track.method) {
+                    case 'piano': return ArrangeLibrary.getFinder({
+                        chord: chordCache,
+                        track,
+                        ts
+                    });
+                }
+            }
+            arrange.finder = getFinder();
+        });
     }
 
     const changeHarmonizeTrack = (nextIndex: number) => {
@@ -160,8 +197,9 @@ const useReducerOutline = (lastStore: StoreProps) => {
         syncChordSeqFromNote,
         moveSectionFocus,
         openArrangeEditor,
+        openArrangeFinder,
         changeHarmonizeTrack,
-        getCurrHarmonizeTrack
+        getCurrHarmonizeTrack,
     }
 };
 

@@ -1,6 +1,8 @@
 import type MusicTheory from "../../../util/musicTheory";
 import type StoreArrange from "./storeArrange";
 import type StorePianoEditor from "./piano/storePianoEditor";
+import type StoreOutline from "../storeOutline";
+import type StoreCache from "../storeCache";
 
 
 namespace ArrangeLibrary {
@@ -35,11 +37,36 @@ namespace ArrangeLibrary {
         cursorBacking: number;
         cursorSounds: number;
     }
+
     export type Pattern = {
         backingNo: number;
         soundsNos: number[];
     }
 
+    export const getFinder = (props: {
+        ts: MusicTheory.TimeSignature,
+        chord: StoreCache.ChordCache,
+        track: StoreArrange.Track
+    }) => {
+
+        const { ts, chord, track } = props;
+        const compiledChord = chord.compiledChord;
+        if (compiledChord == undefined) throw new Error();
+
+        const searchReq: SearchRequest = {
+            beat: chord.beat.num,
+            eatHead: chord.beat.eatHead,
+            eatTail: chord.beat.eatTail,
+            structCnt: compiledChord.structs.length,
+            ts
+        };
+        const finder: ArrangeLibrary.PianoArrangeFinder = {
+            cursorBacking: -1, cursorSounds: -1,
+            info: searchReq,
+            list: searchPianoPatterns(searchReq, track)
+        }
+        return finder;
+    }
 
     export const getPianoBackingPatternFromNo = (no: number, lib: StorePianoEditor.Lib) => {
         const patt = lib.backingPatterns.find(p => p.no === no);
