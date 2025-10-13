@@ -1,7 +1,6 @@
 import type MusicTheory from "../../../util/musicTheory";
 import type StoreArrange from "./storeArrange";
 import type StorePianoEditor from "./piano/storePianoEditor";
-import type StoreOutline from "../storeOutline";
 import type StoreCache from "../storeCache";
 
 
@@ -31,7 +30,7 @@ namespace ArrangeLibrary {
     }
 
     export type PianoArrangeFinder = {
-        info: SearchRequest;
+        request: SearchRequest;
         list: StorePianoEditor.Preset[];
 
         cursorBacking: number;
@@ -62,7 +61,7 @@ namespace ArrangeLibrary {
         };
         const finder: ArrangeLibrary.PianoArrangeFinder = {
             cursorBacking: -1, cursorSounds: -1,
-            info: searchReq,
+            request: searchReq,
             list: searchPianoPatterns(searchReq, track)
         }
         return finder;

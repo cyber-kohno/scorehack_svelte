@@ -11,6 +11,7 @@ namespace StoreRef {
 
         arrange: {
             piano: PianoRefs;
+            finder?: HTMLElement;
         }
 
         elementRefs: RefIndex[];

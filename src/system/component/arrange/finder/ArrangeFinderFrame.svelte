@@ -1,10 +1,36 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import ScrollRateFrame from "../../common/ScrollRateFrame.svelte";
   import FinderConditionFrame from "./condition/FinderConditionFrame.svelte";
+  import store from "../../../store/store";
+    import type ArrangeLibrary from "../../../store/props/arrange/arrangeLibrary";
+
+  let ref: HTMLElement | null = null; // 要素の参照を保存
+  onMount(() => {
+    if (ref != null) {
+      // コンポーネントのマウント時に必ず実行
+      $store.ref.arrange.finder = ref;
+      const rect = ref.getClientRects()[0];
+      const top = -rect.width / 2 + finder.cursorBacking * 71;
+      ref.scrollTo({ top });
+      store.set($store);
+    }
+
+    return () => {
+      // クリーンアップ関数
+      $store.ref.arrange.finder = undefined;
+    };
+  });
+
+  $: finder = (() => {
+    const finder = $store.control.outline.arrange?.finder;
+    if (finder == null) throw new Error("finderがnullであってはならない。");
+    return finder as ArrangeLibrary.PianoArrangeFinder;
+  })();
 </script>
 
 <div class="wrap">
-  <FinderConditionFrame />
+  <FinderConditionFrame request={finder.request}/>
   <div class="list-base">
     <ScrollRateFrame
       {ref}
@@ -18,7 +44,7 @@
         <div class="msg">No matching presets found.</div>
       {:else}
         {#each finder.list as preset, backingIndex}
-          <PBPresetItem {finder} usageBkg={preset} {backingIndex} />
+          <!-- <PBPresetItem {finder} usageBkg={preset} {backingIndex} /> -->
         {/each}
       {/if}
     </div>
@@ -29,8 +55,10 @@
   .wrap {
     display: inline-block;
     position: absolute;
-    left: 4px;
-    top: 4px;
+    /* left: 4px;
+    top: 4px; */
+    top: var(--arrange-frame-y);
+    left: var(--arrange-frame-x);
 
     width: 500px;
     height: 600px;
