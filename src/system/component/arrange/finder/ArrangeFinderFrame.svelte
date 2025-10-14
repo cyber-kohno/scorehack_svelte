@@ -3,13 +3,15 @@
   import ScrollRateFrame from "../../common/ScrollRateFrame.svelte";
   import FinderConditionFrame from "./condition/FinderConditionFrame.svelte";
   import store from "../../../store/store";
-    import type ArrangeLibrary from "../../../store/props/arrange/arrangeLibrary";
+  import type ArrangeLibrary from "../../../store/props/arrange/arrangeLibrary";
+  import APFinderPresetItem from "./list/piano/APFinderPresetItem.svelte";
 
   let ref: HTMLElement | null = null; // 要素の参照を保存
   onMount(() => {
+    const finderRefs = $store.ref.arrange.finder;
     if (ref != null) {
       // コンポーネントのマウント時に必ず実行
-      $store.ref.arrange.finder = ref;
+      finderRefs.frame = ref;
       const rect = ref.getClientRects()[0];
       const top = -rect.width / 2 + finder.cursorBacking * 71;
       ref.scrollTo({ top });
@@ -18,7 +20,7 @@
 
     return () => {
       // クリーンアップ関数
-      $store.ref.arrange.finder = undefined;
+      finderRefs.frame = undefined;
     };
   });
 
@@ -30,7 +32,7 @@
 </script>
 
 <div class="wrap">
-  <FinderConditionFrame request={finder.request}/>
+  <FinderConditionFrame request={finder.request} />
   <div class="list-base">
     <ScrollRateFrame
       {ref}
@@ -44,7 +46,7 @@
         <div class="msg">No matching presets found.</div>
       {:else}
         {#each finder.list as preset, backingIndex}
-          <!-- <PBPresetItem {finder} usageBkg={preset} {backingIndex} /> -->
+          <APFinderPresetItem {finder} usageBkg={preset} {backingIndex} />
         {/each}
       {/if}
     </div>
@@ -68,14 +70,6 @@
     z-index: 5;
     border-radius: 4px;
     opacity: 0.99;
-  }
-
-  .info {
-    display: inline-block;
-    position: relative;
-    background-color: rgba(200, 231, 240, 0.842);
-    width: 100%;
-    height: 40px;
   }
   .list-base {
     display: inline-block;

@@ -27,3 +27,13 @@
     value={request.structCnt.toString()}
   />
 </div>
+
+<style>
+  .info {
+    display: inline-block;
+    position: relative;
+    background-color: rgba(200, 231, 240, 0.842);
+    width: 100%;
+    height: 40px;
+  }
+</style>

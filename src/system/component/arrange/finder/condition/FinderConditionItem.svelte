@@ -15,8 +15,8 @@
         position: relative;
         background-color: rgba(138, 255, 239, 0.459);
         width: 90px;
-        height: calc(100% - 12px);
-        margin: 4px 0 0 7px;
+        height: calc(100% - 10px);
+        margin: 5px 0 0 4px;
         padding: 0 8px;
         border: 1px solid rgb(17, 0, 255);
         border-radius: 4px;
