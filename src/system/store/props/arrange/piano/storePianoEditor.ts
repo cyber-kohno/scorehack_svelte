@@ -44,7 +44,7 @@ namespace StorePianoEditor {
         if (relation != undefined) {
             const lib = track.pianoLib;
             if (lib == undefined) throw new Error();
-            console.log(relation);
+            // console.log(relation);
             if (relation.bkgPatt !== -1) {
                 const bkgPatt = lib.backingPatterns.find(p => p.no === relation.bkgPatt);
                 if (bkgPatt == undefined) throw new Error();

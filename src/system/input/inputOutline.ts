@@ -7,6 +7,7 @@ import useReducerRef from "../store/reducer/reducerRef";
 import type { StoreUtil } from "../store/store";
 import MusicTheory from "../util/musicTheory";
 import PreviewUtil from "../util/preview/previewUtil";
+import useInputFinder from "./arrange/finder/inputFinder";
 import useInputArrange from "./arrange/inputArrange";
 
 const useInputOutline = (storeUtil: StoreUtil) => {
@@ -17,6 +18,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const reducerRef = useReducerRef(lastStore);
     const element = reducerOutline.getCurrentElement();
     const inputArrange = useInputArrange(storeUtil);
+    const inputFinder = useInputFinder(storeUtil);
 
     const { startTest, stopTest } = PreviewUtil.useUpdater(storeUtil);
 
@@ -27,12 +29,19 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const isArrangeEditorActive = () => {
         return arrange != null && arrange.editor != undefined;
     }
+    const isArrangeFinderActive = () => {
+        return arrange != null && arrange.finder != undefined;
+    }
 
     const control = (eventKey: string) => {
         const isInit = element.type === 'init';
 
         if (isArrangeEditorActive()) {
             inputArrange.control(eventKey);
+            return;
+        }
+        if (isArrangeFinderActive()) {
+            inputFinder.control(eventKey);
             return;
         }
 
@@ -149,6 +158,10 @@ const useInputOutline = (storeUtil: StoreUtil) => {
         if (isArrangeEditorActive()) {
             // console.log('arrange != null');
             return inputArrange.getHoldCallbacks(eventKey);
+        }
+        if (isArrangeFinderActive()) {
+            // console.log('arrange != null');
+            return inputFinder.getHoldCallbacks(eventKey);
         }
 
         const callbacks: StoreInput.Callbacks = {};

@@ -1,4 +1,4 @@
-import type MusicTheory from "../../../util/musicTheory";
+import MusicTheory from "../../../util/musicTheory";
 import type StoreArrange from "./storeArrange";
 import type StorePianoEditor from "./piano/storePianoEditor";
 import type StoreCache from "../storeCache";
@@ -88,12 +88,17 @@ namespace ArrangeLibrary {
             const condEatHead = cond.eatHead ?? 0;
             const condEatTail = cond.eatTail ?? 0;
 
-            return cond.tsGloup.includes(req.ts) &&
+            // console.log(cond);
+            // console.log(req);
+            return cond.tsGloup
+                .map(ts => MusicTheory.getTSName(ts))
+                .includes(MusicTheory.getTSName(req.ts)) &&
                 cond.beat === req.beat &&
                 condEatHead === req.eatHead &&
                 condEatTail === req.eatTail
         });
 
+        // console.log(bkgPatts);
         const list: StorePianoEditor.Preset[] = bkgPatts.map(bkgPatt => {
             const voics: number[] = [];
 

@@ -52,7 +52,7 @@ namespace PreviewUtil {
         const side = StoreMelody.calcBeatSide(note);
         const [left, right] = [side.pos, side.pos + side.len]
             // 1拍（全音符→4分音符）に基準に合わせる
-            .map(p => p * 4);
+            // .map(p => p * 4);
         // console.log(`left: ${left}, right: ${right}`);
         // プレビュー開始位置より前のノーツは除外する
         if (left < currentLeft) return null;
@@ -338,10 +338,10 @@ namespace PreviewUtil {
                     const startMs = np.startMs;
                     // console.log(`pitch:${np.pitchName}, ms:${np.startMs}, sus:${np.sustainMs}`);
                     const key = setTimeout(() => {
+                        console.log(tp);
                         // ミリ秒をサウンドフォントの時間基準（秒）に合わせる
                         const susSec = np.sustainMs / 1000;
                         tp.sf.play(np.pitchName, 0, { gain: np.gain, duration: susSec });
-
                         const [refTrIdx, refNtIndx] = np.target.split('.').map(t => Number(t));
                         const ref = lastStore.ref.trackArr[refTrIdx].find(r => r.seq === refNtIndx)?.ref;
                         if (ref != undefined) {
