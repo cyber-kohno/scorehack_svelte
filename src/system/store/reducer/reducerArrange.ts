@@ -11,8 +11,13 @@ const useReducerArrange = (lastStore: StoreProps) => {
     }
     const getPianoEditor = () => {
         const arrange = getArrange();
-        if (arrange.method !== 'piano') throw new Error();
+        if (arrange.method !== 'piano' || arrange.editor == undefined) throw new Error();
         return arrange.editor as StorePianoEditor.Props
+    }
+    const getPianoFinder = () => {
+        const arrange = getArrange();
+        if (arrange.method !== 'piano' || arrange.finder == undefined) throw new Error();
+        return arrange.finder as ArrangeLibrary.PianoArrangeFinder;
     }
     const getCurTrack = () => {
         const track = lastStore.data.arrange.tracks[lastStore.control.outline.trackIndex];
@@ -23,6 +28,7 @@ const useReducerArrange = (lastStore: StoreProps) => {
     return {
         getArrange,
         getPianoEditor,
+        getPianoFinder,
         getCurTrack
     }
 }

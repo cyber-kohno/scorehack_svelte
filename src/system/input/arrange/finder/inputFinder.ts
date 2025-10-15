@@ -1,4 +1,5 @@
 import type StoreInput from "../../../store/props/storeInput";
+import useReducerArrange from "../../../store/reducer/reducerArrange";
 import type { StoreUtil } from "../../../store/store";
 
 const useInputFinder = (storeUtil: StoreUtil) => {
@@ -7,9 +8,11 @@ const useInputFinder = (storeUtil: StoreUtil) => {
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
 
+    const arrangeReducer = useReducerArrange(lastStore);
+
 
     const control = (eventKey: string) => {
-        if (arrange == null) throw new Error();
+        const finder = arrangeReducer.getPianoFinder();
 
         switch (eventKey) {
             case 'Escape':
@@ -18,6 +21,16 @@ const useInputFinder = (storeUtil: StoreUtil) => {
                 commit();
                 return;
             }
+            case 'ArrowUp': {
+                finder.cursorBacking --;
+                commit();
+                console.log(finder.cursorBacking);
+            } break;
+            case 'ArrowDown': {
+                finder.cursorBacking ++;
+                commit();
+                console.log(finder.cursorBacking);
+            } break;
         }
     }
 
