@@ -42,31 +42,6 @@ namespace ArrangeLibrary {
         soundsNos: number[];
     }
 
-    export const getFinder = (props: {
-        ts: MusicTheory.TimeSignature,
-        chord: StoreCache.ChordCache,
-        track: StoreArrange.Track
-    }) => {
-
-        const { ts, chord, track } = props;
-        const compiledChord = chord.compiledChord;
-        if (compiledChord == undefined) throw new Error();
-
-        const searchReq: SearchRequest = {
-            beat: chord.beat.num,
-            eatHead: chord.beat.eatHead,
-            eatTail: chord.beat.eatTail,
-            structCnt: compiledChord.structs.length,
-            ts
-        };
-        const finder: ArrangeLibrary.PianoArrangeFinder = {
-            cursorBacking: -1, cursorSounds: -1,
-            request: searchReq,
-            list: searchPianoPatterns(searchReq, track)
-        }
-        return finder;
-    }
-
     export const getPianoBackingPatternFromNo = (no: number, lib: StorePianoEditor.Lib) => {
         const patt = lib.backingPatterns.find(p => p.no === no);
         if (patt == undefined) throw new Error('pattがundefinedであってはならない。');
@@ -78,7 +53,12 @@ namespace ArrangeLibrary {
         return patt.sounds;
     }
 
-    export const searchPianoPatterns = (req: SearchRequest, track: StoreArrange.Track) => {
+    export const searchPianoPatterns = (args: {
+        req: SearchRequest;
+        track: StoreArrange.Track;
+        isFilterPatternOnly: boolean;
+    }) => {
+        const { req, track, isFilterPatternOnly } = args;
         const lib = track.pianoLib as StorePianoEditor.Lib;
 
         // console.log(req);
@@ -135,7 +115,9 @@ namespace ArrangeLibrary {
                 voics
             }
         });
-        return list;
+        return list
+            // パターンのみのオプション時、ボイシング0のパターンを除外
+            .filter(patt => !(isFilterPatternOnly && patt.voics.length === 0));
     }
 }
 

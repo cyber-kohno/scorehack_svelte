@@ -25,11 +25,20 @@ const useReducerArrange = (lastStore: StoreProps) => {
         return track;
     }
 
+    const getPianoLib = () => {
+        const track = getCurTrack();
+        if (track.method === 'piano' && track.pianoLib != undefined) {
+            return track.pianoLib as StorePianoEditor.Lib;
+        }
+        throw new Error();
+    }
+
     return {
         getArrange,
         getPianoEditor,
         getPianoFinder,
-        getCurTrack
+        getCurTrack,
+        getPianoLib
     }
 }
 export default useReducerArrange;

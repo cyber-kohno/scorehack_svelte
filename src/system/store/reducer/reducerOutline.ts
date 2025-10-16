@@ -1,3 +1,4 @@
+import type MusicTheory from "../../util/musicTheory";
 import ArrangeLibrary from "../props/arrange/arrangeLibrary";
 import StorePianoEditor from "../props/arrange/piano/storePianoEditor";
 import type StoreArrange from "../props/arrange/storeArrange";
@@ -159,7 +160,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
 
             const getFinder = () => {
                 switch (track.method) {
-                    case 'piano': return ArrangeLibrary.getFinder({
+                    case 'piano': return getPianoFinder({
                         chord: chordCache,
                         track,
                         ts
@@ -168,6 +169,38 @@ const useReducerOutline = (lastStore: StoreProps) => {
             }
             arrange.finder = getFinder();
         });
+    }
+
+    const getPianoFinder = (props: {
+        ts: MusicTheory.TimeSignature,
+        chord: StoreCache.ChordCache,
+        track: StoreArrange.Track
+    }) => {
+
+        const { ts, chord, track } = props;
+        const compiledChord = chord.compiledChord;
+        if (compiledChord == undefined) throw new Error();
+
+        const req: ArrangeLibrary.SearchRequest = {
+            beat: chord.beat.num,
+            eatHead: chord.beat.eatHead,
+            eatTail: chord.beat.eatTail,
+            structCnt: compiledChord.structs.length,
+            ts
+        };
+        const finder: ArrangeLibrary.PianoArrangeFinder = {
+            cursorBacking: -1, cursorSounds: -1,
+            request: req,
+            list: ArrangeLibrary.searchPianoPatterns({
+                req, track, isFilterPatternOnly: true
+            })
+        }
+        // リストがあれば先頭を選択した状態にする
+        if (finder.list.length > 0) {
+            finder.cursorBacking = 0;
+            finder.cursorSounds = 0;
+        }
+        return finder;
     }
 
     const changeHarmonizeTrack = (nextIndex: number) => {

@@ -14,7 +14,7 @@
   })();
 </script>
 
-<div class="info">
+<div class="wrap">
   <FinderConditionItem
     width={95}
     title={"TS"}
@@ -29,7 +29,7 @@
 </div>
 
 <style>
-  .info {
+  .wrap {
     display: inline-block;
     position: relative;
     background-color: rgba(200, 231, 240, 0.842);

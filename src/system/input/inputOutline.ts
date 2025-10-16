@@ -146,7 +146,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             } break;
 
             case 'b': {
-                reducerOutline.openArrangeEditor();
+                reducerOutline.openArrangeFinder();
                 commit();
             } break;
             case ' ': startTest({ target: 'all' });
@@ -292,7 +292,7 @@ const useInputOutline = (storeUtil: StoreUtil) => {
 
             switch (eventKey) {
                 case 'B': {
-                    reducerOutline.openArrangeFinder();
+                    reducerOutline.openArrangeEditor();
                     commit();
                 } break;
             }
