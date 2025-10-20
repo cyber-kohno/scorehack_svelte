@@ -92,22 +92,6 @@ namespace StoreOutline {
     }
 
     export const MARGIN_HEAD = 4;
-
-    export const getElementViewHeight = (element: Element) => {
-        const EL = Layout.element;
-        switch (element.type) {
-            case 'init': return (EL.INIT_RECORD_HEIGHT + EL.INIT_RECORD_MARGIN) * 3 + EL.INIT_RECORD_MARGIN;
-            case 'section': return EL.SECTION_LABEL_HEIGHT + EL.SECTION_BORDER_HEIGHT + EL.SECTION_TOP_MARGIN + EL.SECTION_BOTTOM_MARGIN;
-            case 'chord': {
-                const data = element.data as DataChord;
-                let ret = EL.CHORD_SEQ_HEIGHT + EL.CHORD_TIP_HEIGHT + EL.CHORD_DEGREE_HEIGHT;
-                if (data.degree != undefined) ret += EL.CHORD_NAME_HEIGHT;
-                return ret;
-            }
-            case 'modulate': return EL.MODULATE_RECRORD_HEIGHT * 3;
-        }
-        return 0;
-    }
 }
 
 export default StoreOutline;

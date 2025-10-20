@@ -13,7 +13,7 @@
       // コンポーネントのマウント時に必ず実行
       finderRefs.frame = ref;
       const rect = ref.getClientRects()[0];
-      const top = -rect.width / 2 + finder.cursorBacking * 71;
+      const top = -rect.width / 2 + finder.cursor.backing * 71;
       ref.scrollTo({ top });
       store.set($store);
     }
@@ -39,7 +39,7 @@
       dir={"y"}
       frameLength={300}
       frameWidth={10}
-      dependencies={[finder.cursorBacking]}
+      dependencies={[finder.cursor.backing]}
     />
     <div class="list-inner" bind:this={ref}>
       {#if finder.list.length === 0}
@@ -64,7 +64,7 @@
 
     width: 500px;
     height: 600px;
-    background-color: black;
+    /* background-color: black; */
     border: 1px solid #1efe00;
     box-sizing: border-box;
     z-index: 5;

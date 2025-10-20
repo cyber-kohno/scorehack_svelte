@@ -9,6 +9,7 @@
     export let voicingCnt: number;
     export let layers: StorePianoBacking.Layer[];
     export let isRecordFocus: boolean;
+    export let isRecordApply: boolean;
     export let usageBkg: StorePianoEditor.Preset;
 
     const getColWidth = (col: StorePianoBacking.Col) => {
@@ -24,11 +25,12 @@
     })();
 </script>
 
-<div class="wrap">
+<div class="wrap" data-apply={isRecordApply}>
     {#if isRecordFocus}
         <div class="focus"></div>
     {/if}
     <APFinderExistMark {isPresetExist} />
+    <!-- 両面のレイヤーを描画 -->
     {#each layers as layer, i}
         <div class="layer">
             {#each new Array(voicingCnt) as _, y}
@@ -63,7 +65,10 @@
         margin: 2px 0 0 2px;
         width: calc(100% - 4px);
         height: calc(100% - 2px);
-        background-color: rgba(255, 255, 255, 0.128);
+        /* background-color: rgba(255, 255, 255, 0.128); */
+    }
+    .wrap[data-apply=true] {
+        background-color: rgba(232, 161, 74, 0.623);
     }
     .focus {
         display: inline-block;
@@ -73,7 +78,7 @@
         width: 100%;
         height: 100%;
         background-color: rgba(240, 236, 0, 0.137);
-        z-index: 1;
+        z-index: 2;
         border: 1px solid rgb(241, 229, 0);
         box-sizing: border-box;
     }

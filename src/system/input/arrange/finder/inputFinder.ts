@@ -25,13 +25,13 @@ const useInputFinder = (storeUtil: StoreUtil) => {
         if (chordSeq === -1) throw new Error();
 
         const moveBackingList = (dir: -1 | 1) => {
-            if (finder.cursorBacking === -1) return;
-            const temp = finder.cursorBacking + dir;
+            if (finder.cursor.backing === -1) return;
+            const temp = finder.cursor.backing + dir;
             if (temp >= 0 && temp <= finder.list.length - 1) {
-                finder.cursorSounds = -1;
+                finder.cursor.sounds = -1;
                 // 移動する前に列のスクロールをリセットする
                 // adjustPattColumnScroll(finder);
-                finder.cursorBacking = temp;
+                finder.cursor.backing = temp;
                 // adjustPattRecordScroll(finder);
                 commit();
             }
@@ -39,13 +39,13 @@ const useInputFinder = (storeUtil: StoreUtil) => {
 
         const moveVoicingList = (dir: -1 | 1) => {
             const list = finder.list;
-            if (list.length === 0 || finder.cursorBacking === -1) return;
-            const voics = finder.list[finder.cursorBacking].voics;
-            const temp = finder.cursorSounds + dir;
+            if (list.length === 0 || finder.cursor.backing === -1) return;
+            const voics = finder.list[finder.cursor.backing].voics;
+            const temp = finder.cursor.sounds + dir;
             // エディタでない時は未選択を許さない
             const min = isEditor ? -1 : 0;
             if (temp >= min && temp <= voics.length - 1) {
-                finder.cursorSounds = temp;
+                finder.cursor.sounds = temp;
                 // adjustPattColumnScroll(finder);
                 commit();
             }
@@ -53,9 +53,9 @@ const useInputFinder = (storeUtil: StoreUtil) => {
 
         const applyPattern = () => {
 
-            const usageBkg = finder.list[finder.cursorBacking];
+            const usageBkg = finder.list[finder.cursor.backing];
             const bkgPattNo = usageBkg.bkgPatt;
-            const sndsPattNo = usageBkg.voics[finder.cursorSounds];
+            const sndsPattNo = usageBkg.voics[finder.cursor.sounds];
             const lib = arrangeReducer.getPianoLib();
             const bkgPatt = lib.backingPatterns.find(patt => patt.no === bkgPattNo);
             const sndsPatt = lib.soundsPatterns.find(patt => patt.no === sndsPattNo);
@@ -81,6 +81,7 @@ const useInputFinder = (storeUtil: StoreUtil) => {
             relation.bkgPatt = bkgPatt.no;
             relation.sndsPatt = sndsPatt.no;
             lastStore.control.outline.arrange = null;
+            cacheReducer.calculate();
             commit();
         }
 

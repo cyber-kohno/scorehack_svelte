@@ -40,6 +40,7 @@ namespace Layout {
         CHORD_TIP_HEIGHT: 20,
         CHORD_DEGREE_HEIGHT: 30,
         CHORD_NAME_HEIGHT: 30,
+        CHORD_ARR_HEIGHT: 20,
         MODULATE_RECRORD_HEIGHT: 30,
     }
 

@@ -35,7 +35,8 @@
         return [bkgPatt.backing, sndsPatts];
     })();
 
-    $: isRecordFocus = backingIndex === finder.cursorBacking;
+    $: isRecordFocus = backingIndex === finder.cursor.backing;
+    $: isRecordApply = backingIndex === finder.apply.backing;
 </script>
 
 <div class="wrap">
@@ -48,6 +49,7 @@
                 layers={backing.layers}
                 voicingCnt={backing.recordNum}
                 {isRecordFocus}
+                {isRecordApply}
                 usageBkg={usageBkg}
             />
         </div>

@@ -47,6 +47,7 @@ namespace StoreCache {
         sectionStart?: string;
         modulate?: ModulateCahce;
         tempo?: TempoCahce;
+        arrs: string[];
     }
 
     export interface ModulateCahce {
@@ -83,6 +84,7 @@ namespace StoreCache {
         baseSeq: number;
         lastChordSeq: number;
 
+        viewHeight: number;
         outlineTop: number;
         curSection: string;
         

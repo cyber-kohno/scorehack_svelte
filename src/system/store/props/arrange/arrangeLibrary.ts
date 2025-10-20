@@ -29,12 +29,17 @@ namespace ArrangeLibrary {
 
     }
 
+    export type Cursor = {
+        backing: number, sounds: number;
+    }
     export type PianoArrangeFinder = {
         request: SearchRequest;
         list: StorePianoEditor.Preset[];
 
-        cursorBacking: number;
-        cursorSounds: number;
+        /** 選択カーソル */
+        cursor: Cursor;
+        /** 適用されているパターン */
+        apply: Cursor;
     }
 
     export type Pattern = {

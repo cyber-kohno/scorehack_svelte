@@ -37,6 +37,7 @@ namespace DesignInitializer {
             { key: '--chord-tip-height', value: `${EL.CHORD_TIP_HEIGHT}px` },
             { key: '--chord-degree-height', value: `${EL.CHORD_DEGREE_HEIGHT}px` },
             { key: '--chord-name-height', value: `${EL.CHORD_NAME_HEIGHT}px` },
+            { key: '--chord-arr-height', value: `${EL.CHORD_ARR_HEIGHT}px` },
             { key: '--modulate-record-height', value: `${EL.MODULATE_RECRORD_HEIGHT}px` },
 
 

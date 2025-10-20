@@ -1,3 +1,6 @@
+import type DataChord from "../../component/outline/element/data/DataChord.svelte";
+import type Element from "../../component/outline/element/Element.svelte";
+import Layout from "../../const/layout";
 import MusicTheory from "../../util/musicTheory";
 import type StoreCache from "../props/storeCache";
 import StoreOutline from "../props/storeOutline";
@@ -55,6 +58,7 @@ const useReducerCache = (lastStore: StoreProps) => {
                 elementSeq: i,
                 chordSeq: -1,
                 lastChordSeq,
+                viewHeight: 0,
                 outlineTop: outlineTailPos,
                 curSection
             }
@@ -143,6 +147,17 @@ const useReducerCache = (lastStore: StoreProps) => {
                         eatHead: prevEat,
                         eatTail: data.eat,
                     }
+
+                    // アレンジのキャッシュを作成
+                    const arrs: string[] = [];
+                    lastStore.data.arrange.tracks.forEach((track) => {
+                        const relation = track.relations.find(
+                            (r) => r.chordSeq === lastChordSeq
+                        );
+                        if (relation != undefined) {
+                            arrs.push(track.name);
+                        }
+                    });
                     const chordCache: StoreCache.ChordCache = {
                         chordSeq: lastChordSeq,
                         elementSeq: i,
@@ -161,7 +176,8 @@ const useReducerCache = (lastStore: StoreProps) => {
                         startTime: elapsedTime,
                         sectionStart,
                         modulate: lastModulate,
-                        tempo: lastTempo
+                        tempo: lastTempo,
+                        arrs
                     };
 
                     // startBeat += data.beat;
@@ -277,8 +293,24 @@ const useReducerCache = (lastStore: StoreProps) => {
                     }
                 }
             }
-
-            outlineTailPos += StoreOutline.getElementViewHeight(el);
+            const getElementViewHeight = () => {
+                const EL = Layout.element;
+                switch (elementCache.type) {
+                    case 'init': return (EL.INIT_RECORD_HEIGHT + EL.INIT_RECORD_MARGIN) * 3 + EL.INIT_RECORD_MARGIN;
+                    case 'section': return EL.SECTION_LABEL_HEIGHT + EL.SECTION_BORDER_HEIGHT + EL.SECTION_TOP_MARGIN + EL.SECTION_BOTTOM_MARGIN;
+                    case 'chord': {
+                        const data = elementCache.data as DataChord;
+                        let ret = EL.CHORD_SEQ_HEIGHT + EL.CHORD_TIP_HEIGHT + EL.CHORD_DEGREE_HEIGHT;
+                        if (data.degree != undefined) ret += EL.CHORD_NAME_HEIGHT;
+                        if(chordCaches[lastChordSeq].arrs.length > 0) ret += EL.CHORD_ARR_HEIGHT;
+                        return ret;
+                    }
+                    case 'modulate': return EL.MODULATE_RECRORD_HEIGHT * 3;
+                }
+                return 0;
+            }
+            elementCache.viewHeight = getElementViewHeight();
+            outlineTailPos += elementCache.viewHeight;
             outlineTailPos += 2; // 上下のボーダー
             outlineTailPos += StoreOutline.MARGIN_HEAD;
 

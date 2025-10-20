@@ -8,6 +8,7 @@
     import PbPresetExistMark from "./APFinderExistMark.svelte";
 
     export let finder: ArrangeLibrary.PianoArrangeFinder;
+    export let backingIndex: number;
     export let soundsIndex: number;
     export let structCnt: number;
     export let voicingSounds: string[];
@@ -24,10 +25,15 @@
         const presetSndsNo = preset.voics.find((v) => v === sndsNo);
         return presetSndsNo != undefined;
     })();
+
+    $: isVoicApply = (()=>{
+        if(backingIndex !== finder.apply.backing) return false;
+        return soundsIndex === finder.apply.sounds;
+    })();
 </script>
 
-<div class="wrap">
-    {#if isRecordFocus && soundsIndex === finder.cursorSounds}
+<div class="wrap" data-apply={isVoicApply}>
+    {#if isRecordFocus && soundsIndex === finder.cursor.sounds}
         <div class="focus"></div>
     {/if}
     <PbPresetExistMark {isPresetExist} />
@@ -55,6 +61,9 @@
         background-color: rgba(0, 26, 48, 0.479);
         box-sizing: border-box;
         white-space: initial;
+    }
+    .wrap[data-apply=true] {
+        background-color: rgba(232, 161, 74, 0.623);
     }
     .focus {
         display: inline-block;

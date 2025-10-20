@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import PbPresetVoicing from "./APFinderVoicItem.svelte";
+  import APFinderVoicItem from "./APFinderVoicItem.svelte";
   import type StorePianoEditor from "../../../../../store/props/arrange/piano/storePianoEditor";
   import type ArrangeLibrary from "../../../../../store/props/arrange/arrangeLibrary";
   import store from "../../../../../store/store";
@@ -18,8 +18,8 @@
 
       let instance = finderRefs.records.find((r) => r.seq === backingIndex);
 
-      if (backingIndex === finder.cursorBacking) {
-        const left = finder.cursorSounds * 109;
+      if (backingIndex === finder.cursor.backing) {
+        const left = finder.cursor.sounds * 109;
         ref.scrollTo({ left });
       }
       if (instance == undefined) {
@@ -32,8 +32,9 @@
 
 <div class="wrap" bind:this={ref}>
   {#each sndsPatts as patt, soundsIndex}
-    <PbPresetVoicing
+    <APFinderVoicItem
       {finder}
+      {backingIndex}
       {soundsIndex}
       structCnt={patt.category.structCnt}
       voicingSounds={patt.sounds}

@@ -151,6 +151,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
             arrange.editor = getEditor();
         });
     }
+
     const openArrangeFinder = () => {
 
         buildArrange((props) => {
@@ -188,17 +189,34 @@ const useReducerOutline = (lastStore: StoreProps) => {
             structCnt: compiledChord.structs.length,
             ts
         };
+
         const finder: ArrangeLibrary.PianoArrangeFinder = {
-            cursorBacking: -1, cursorSounds: -1,
+            cursor: { backing: -1, sounds: -1 },
+            apply: { backing: -1, sounds: -1 },
             request: req,
             list: ArrangeLibrary.searchPianoPatterns({
-                req, track, isFilterPatternOnly: true
+                req, track, isFilterPatternOnly: false
             })
         }
         // リストがあれば先頭を選択した状態にする
         if (finder.list.length > 0) {
-            finder.cursorBacking = 0;
-            finder.cursorSounds = 0;
+            finder.cursor.backing = 0;
+            finder.cursor.sounds = 0;
+
+            const { getCurTrack } = useReducerArrange(lastStore);
+            const arrTrack = getCurTrack();
+            // コード連番と参照先ライブラリの紐付け
+            const relations = arrTrack.relations;
+            const relation = relations.find(r => r.chordSeq === chord.chordSeq);
+            if (relation != undefined) {
+
+                const bkgPatt = finder.list.findIndex(f => f.bkgPatt === relation.bkgPatt);
+                const sndPatt = finder.list[bkgPatt].voics.findIndex(v => v === relation.sndsPatt);
+
+                if (bkgPatt === -1 || sndPatt === -1) throw new Error();
+                finder.apply.backing = bkgPatt;
+                finder.apply.sounds = sndPatt;
+            }
         }
         return finder;
     }

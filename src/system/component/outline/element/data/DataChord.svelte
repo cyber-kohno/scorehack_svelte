@@ -40,9 +40,9 @@
     return degreeName;
   })();
 
+  $: chordCache = $store.cache.chordCaches[chordSeq];
   $: chordName = (() => {
-    const chordInfo = $store.cache.chordCaches[chordSeq];
-    const compiledChord = chordInfo.compiledChord;
+    const compiledChord = chordCache.compiledChord;
     if (compiledChord == undefined) return null;
     return MusicTheory.getKeyChordName(compiledChord.chord);
   })();
@@ -68,6 +68,14 @@
   <div class="degreediv">{degreeName}</div>
   {#if chordName != null}
     <div class="chorddiv">{chordName}</div>
+  {/if}
+  <!-- アレンジのチップ -->
+  {#if chordCache.arrs.length > 0}
+    <div class="arr-frame">
+      {#each chordCache.arrs as arr}
+        <div class="arr-tip">{arr}</div>
+      {/each}
+    </div>
   {/if}
 </div>
 
@@ -134,5 +142,33 @@
     line-height: 18px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.639);
+  }
+  .arr-frame {
+    display: inline-block;
+    position: relative;
+    background-color: #ffffff49;
+    width: 100%;
+    height: var(--chord-arr-height);
+    font-size: 22px;
+    font-weight: 600;
+    color: #ccc;
+    padding: 2px 0 0 0;
+    box-sizing: border-box;
+    vertical-align: top;
+    overflow: hidden;
+  }
+  .arr-tip {
+    display: inline-block;
+    position: relative;
+    background-color: #b44c44af;
+    height: 16px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    vertical-align: top;
+    padding: 0 4px;
+    box-sizing: border-box;
+    margin: 0 0 0 2px;
   }
 </style>

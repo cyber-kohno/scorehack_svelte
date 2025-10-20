@@ -19,7 +19,8 @@
         Math.abs(elementSeq - i) < 12 ||
         Math.abs(
           limitProps.scrollMiddleY -
-            (el.outlineTop + StoreOutline.getElementViewHeight(el) / 2)
+            // (el.outlineTop + StoreOutline.getElementViewHeight(el) / 2)
+            (el.outlineTop + el.viewHeight / 2)
         ) <= limitProps.rectHeight
     );
   })();
