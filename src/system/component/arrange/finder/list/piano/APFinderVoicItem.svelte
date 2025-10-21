@@ -1,7 +1,7 @@
 <script lang="ts">
   import type ArrangeLibrary from "../../../../../store/props/arrange/arrangeLibrary";
   import type StorePianoEditor from "../../../../../store/props/arrange/piano/storePianoEditor";
-  import useReducerArrange from "../../../../../store/reducer/reducerArrange";
+  import ArrangeUtil from "../../../../../store/reducer/arrangeUtil";
   import store from "../../../../../store/store";
 
 
@@ -16,7 +16,7 @@
     export let usageBkg: StorePianoEditor.Preset;
 
     $: isPresetExist = (() => {
-        const {getCurTrack} = useReducerArrange($store);
+        const {getCurTrack} = ArrangeUtil.useReducer($store);
         const lib = getCurTrack().pianoLib;
         if(lib == undefined) throw new Error();
         const preset = lib.presets.find((p) => p.bkgPatt === usageBkg.bkgPatt);

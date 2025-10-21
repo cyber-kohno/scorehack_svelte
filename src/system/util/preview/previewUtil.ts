@@ -7,11 +7,9 @@ import StoreMelody from "../../store/props/storeMelody";
 import StoreCache from "../../store/props/storeCache";
 import FileUtil from "../fileUtil";
 import type { StoreProps, StoreUtil } from "../../store/store";
-import useReducerArrange from "../../store/reducer/reducerArrange";
-import { date } from "zod";
 import StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
-import StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
 import PianoArrangePreviewUtil from "./arrange/pianoArrangePreviewUtil";
+import ArrangeUtil from "../../store/reducer/arrangeUtil";
 
 namespace PreviewUtil {
 
@@ -163,7 +161,7 @@ namespace PreviewUtil {
             const { getChordFromBeat } = useReducerCache(lastStore);
 
             const { getCurrScoreTrack } = useReducerMelody(lastStore);
-            const reducerArrange = useReducerArrange(lastStore);
+            const reducerArrange = ArrangeUtil.useReducer(lastStore);
             const { adjustGridScrollXFromOutline, adjustOutlineScroll } = useReducerRef(lastStore);
 
             const containsLayer = (...targets: LayerTargetMode[]) => {

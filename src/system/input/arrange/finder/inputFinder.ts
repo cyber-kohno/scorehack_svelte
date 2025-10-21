@@ -1,6 +1,6 @@
 import StorePianoEditor from "../../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../../store/props/storeInput";
-import useReducerArrange from "../../../store/reducer/reducerArrange";
+import ArrangeUtil from "../../../store/reducer/arrangeUtil";
 import useReducerCache from "../../../store/reducer/reducerCache";
 import type { StoreUtil } from "../../../store/store";
 
@@ -10,7 +10,7 @@ const useInputFinder = (storeUtil: StoreUtil) => {
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
 
-    const arrangeReducer = useReducerArrange(lastStore);
+    const arrangeReducer = ArrangeUtil.useReducer(lastStore);
     const cacheReducer = useReducerCache(lastStore);
 
     const control = (eventKey: string) => {
@@ -87,7 +87,7 @@ const useInputFinder = (storeUtil: StoreUtil) => {
 
         switch (eventKey) {
             case 'Escape':
-            case 'b': {
+            case 'w': {
                 outline.arrange = null;
                 commit();
                 return;

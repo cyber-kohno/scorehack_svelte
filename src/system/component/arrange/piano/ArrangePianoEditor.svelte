@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { readable } from "svelte/store";
   import ContextUtil from "../../../store/contextUtil";
-  import useReducerArrange from "../../../store/reducer/reducerArrange";
   import store from "../../../store/store";
   import ChordInfoHeader from "../ChordInfoHeader.svelte";
   import FocusableContent from "../FocusableContent.svelte";
   import BackingFrame from "./backing/PEBackingFrame.svelte";
   import PEVoicingChooser from "./voicing/PEVoicingChooser.svelte";
+  import ArrangeUtil from "../../../store/reducer/arrangeUtil";
 
-  $: reducer = useReducerArrange($store);
+  $: reducer = ArrangeUtil.useReducer($store);
   $: arrange = reducer.getArrange();
   $: editor = reducer.getPianoEditor();
 

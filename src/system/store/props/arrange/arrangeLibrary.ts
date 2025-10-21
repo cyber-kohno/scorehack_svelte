@@ -60,10 +60,10 @@ namespace ArrangeLibrary {
 
     export const searchPianoPatterns = (args: {
         req: SearchRequest;
-        track: StoreArrange.Track;
+        arrTrack: StoreArrange.Track;
         isFilterPatternOnly: boolean;
     }) => {
-        const { req, track, isFilterPatternOnly } = args;
+        const { req, arrTrack: track, isFilterPatternOnly } = args;
         const lib = track.pianoLib as StorePianoEditor.Lib;
 
         // console.log(req);

@@ -1,9 +1,7 @@
 import StorePianoBacking from "../../../props/arrange/piano/storePianoBacking";
 import StorePianoEditor from "../../../props/arrange/piano/storePianoEditor";
 import { type StoreProps } from "../../../store";
-import useReducerArrange from "../../reducerArrange";
-import useReducerCache from "../../reducerCache";
-import useReducerOutline from "../../reducerOutline";
+import ArrangeUtil from "../../arrangeUtil";
 import useReducerTermianl from "../../reducerTerminal";
 import CommandRegistUtil from "../commandRegistUtil";
 import useTerminalLogger from "../terminalLogger";
@@ -13,7 +11,7 @@ const useBuilderPianoEditor = (lastStore: StoreProps) => {
     const terminal = reducer.getTerminal();
     const logger = useTerminalLogger(terminal);
 
-    const { getPianoEditor } = useReducerArrange(lastStore);
+    const { getPianoEditor } = ArrangeUtil.useReducer(lastStore);
 
     const get = (): CommandRegistUtil.FuncProps[] => {
 

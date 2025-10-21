@@ -3,13 +3,13 @@ import StorePianoBacking from "../props/arrange/piano/storePianoBacking";
 import StoreMelody from "../props/storeMelody";
 import type StoreRef from "../props/storeRef";
 import type { StoreProps } from "../store";
-import useReducerArrange from "./reducerArrange";
+import ArrangeUtil from "./arrangeUtil";
 
 const useReducerRef = (lastStore: StoreProps) => {
 
     const timerKeys = lastStore.ref.timerKeys;
 
-    const reducerArrange = useReducerArrange(lastStore);
+    const reducerArrange = ArrangeUtil.useReducer(lastStore);
 
     const smoothScroll = (
         refs: HTMLElement[],

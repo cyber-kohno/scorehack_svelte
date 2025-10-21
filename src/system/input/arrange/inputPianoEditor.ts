@@ -3,8 +3,9 @@ import type ArrangeLibrary from "../../store/props/arrange/arrangeLibrary";
 import type StorePianoBacking from "../../store/props/arrange/piano/storePianoBacking";
 import StorePianoEditor from "../../store/props/arrange/piano/storePianoEditor";
 import type StoreInput from "../../store/props/storeInput";
-import useReducerArrange from "../../store/reducer/reducerArrange";
+import ArrangeUtil from "../../store/reducer/arrangeUtil";
 import useReducerCache from "../../store/reducer/reducerCache";
+import useReducerOutline from "../../store/reducer/reducerOutline";
 import useReducerRef from "../../store/reducer/reducerRef";
 import type { StoreUtil } from "../../store/store";
 import MusicTheory from "../../util/musicTheory";
@@ -12,13 +13,13 @@ import MusicTheory from "../../util/musicTheory";
 const useInputPianoEditor = (storeUtil: StoreUtil) => {
     const { lastStore, commit } = storeUtil;
 
-    const reducerArrange = useReducerArrange(lastStore);
+    const reducerArrange = ArrangeUtil.useReducer(lastStore);
     const reducerRef = useReducerRef(lastStore);
+    const reducerOutline = useReducerOutline(lastStore);
     const reducerCache = useReducerCache(lastStore);
 
     const outline = lastStore.control.outline;
     const arrange = outline.arrange;
-
 
     const control = (eventKey: string) => {
         if (arrange == null) throw new Error();
@@ -27,6 +28,19 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
 
         switch (editor.phase) {
             case 'edit': {
+                switch (eventKey) {
+                    case 'w': {
+                        const arrTrack = reducerArrange.getCurTrack();
+                        const chord = reducerCache.getCurChord();
+                        const ts = reducerCache.getCurBase().scoreBase.ts;
+                        arrange.finder = ArrangeUtil.createPianoFinder({
+                            arrTrack,
+                            chordCache: chord,
+                            ts
+                        });
+                        commit();
+                    } break;
+                }
 
                 const shiftLayer = (backing: StorePianoBacking.EditorProps) => {
                     backing.layerIndex = backing.layerIndex === 0 ? 1 : 0;

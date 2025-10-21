@@ -160,7 +160,7 @@
   .arr-tip {
     display: inline-block;
     position: relative;
-    background-color: #b44c44af;
+    background-color: #4478b4af;
     height: 16px;
     font-size: 12px;
     line-height: 16px;

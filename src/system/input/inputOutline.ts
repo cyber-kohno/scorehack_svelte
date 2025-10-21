@@ -36,14 +36,17 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     const control = (eventKey: string) => {
         const isInit = element.type === 'init';
 
-        if (isArrangeEditorActive()) {
-            inputArrange.control(eventKey);
-            return;
-        }
+        let isReturn = false;
         if (isArrangeFinderActive()) {
             inputFinder.control(eventKey);
-            return;
+            isReturn = true;
         }
+        if (isArrangeEditorActive()) {
+            inputArrange.control(eventKey);
+            isReturn = true;
+        }
+        if (isReturn) return;
+
 
         if (isPreview) {
 
@@ -146,6 +149,10 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             } break;
 
             case 'b': {
+                reducerOutline.openArrangeEditor();
+                commit();
+            } break;
+            case 'w': {
                 reducerOutline.openArrangeFinder();
                 commit();
             } break;
@@ -292,8 +299,6 @@ const useInputOutline = (storeUtil: StoreUtil) => {
 
             switch (eventKey) {
                 case 'B': {
-                    reducerOutline.openArrangeEditor();
-                    commit();
                 } break;
             }
         }

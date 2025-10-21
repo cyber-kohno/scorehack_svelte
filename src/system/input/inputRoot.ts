@@ -1,5 +1,4 @@
 import type StoreInput from "../store/props/storeInput";
-import useReducerArrange from "../store/reducer/reducerArrange";
 import useReducerRoot from "../store/reducer/reducerRoot";
 import useReducerTermianl from "../store/reducer/reducerTerminal";
 import type { StoreProps, StoreUtil } from "../store/store";

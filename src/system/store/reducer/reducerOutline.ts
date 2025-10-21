@@ -1,14 +1,10 @@
-import type MusicTheory from "../../util/musicTheory";
-import ArrangeLibrary from "../props/arrange/arrangeLibrary";
 import StorePianoEditor from "../props/arrange/piano/storePianoEditor";
 import type StoreArrange from "../props/arrange/storeArrange";
 import type StoreCache from "../props/storeCache";
 import StoreMelody from "../props/storeMelody";
 import type StoreOutline from "../props/storeOutline";
 import type { StoreProps } from "../store";
-import useReducerArrange from "./reducerArrange";
-import useReducerRef from "./reducerRef";
-
+import ArrangeUtil from "./arrangeUtil";
 
 const useReducerOutline = (lastStore: StoreProps) => {
 
@@ -106,7 +102,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
 
     const buildArrange = (buildDetail: (props: {
         arrange: StoreArrange.EditorProps,
-        track: StoreArrange.Track,
+        arrTrack: StoreArrange.Track,
         chordCache: StoreCache.ChordCache
     }) => void) => {
 
@@ -133,7 +129,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
             method: track.method,
             target,
         };
-        buildDetail({ arrange, track, chordCache });
+        buildDetail({ arrange, arrTrack: track, chordCache });
 
         lastStore.control.outline.arrange = arrange;
     }
@@ -141,11 +137,11 @@ const useReducerOutline = (lastStore: StoreProps) => {
     const openArrangeEditor = () => {
 
         buildArrange((props) => {
-            const { arrange, track, chordCache } = props;
+            const { arrange, arrTrack, chordCache } = props;
 
             const getEditor = () => {
-                switch (track.method) {
-                    case 'piano': return StorePianoEditor.getEditorProps(chordCache.chordSeq, track);
+                switch (arrTrack.method) {
+                    case 'piano': return StorePianoEditor.getEditorProps(chordCache.chordSeq, arrTrack);
                 }
             }
             arrange.editor = getEditor();
@@ -155,70 +151,11 @@ const useReducerOutline = (lastStore: StoreProps) => {
     const openArrangeFinder = () => {
 
         buildArrange((props) => {
-            const { arrange, track, chordCache } = props;
+            const { arrange, arrTrack, chordCache } = props;
 
             const ts = lastStore.cache.baseCaches[chordCache.baseSeq].scoreBase.ts;
-
-            const getFinder = () => {
-                switch (track.method) {
-                    case 'piano': return getPianoFinder({
-                        chord: chordCache,
-                        track,
-                        ts
-                    });
-                }
-            }
-            arrange.finder = getFinder();
+            arrange.finder = ArrangeUtil.createFinder({arrTrack, ts, chordCache});
         });
-    }
-
-    const getPianoFinder = (props: {
-        ts: MusicTheory.TimeSignature,
-        chord: StoreCache.ChordCache,
-        track: StoreArrange.Track
-    }) => {
-
-        const { ts, chord, track } = props;
-        const compiledChord = chord.compiledChord;
-        if (compiledChord == undefined) throw new Error();
-
-        const req: ArrangeLibrary.SearchRequest = {
-            beat: chord.beat.num,
-            eatHead: chord.beat.eatHead,
-            eatTail: chord.beat.eatTail,
-            structCnt: compiledChord.structs.length,
-            ts
-        };
-
-        const finder: ArrangeLibrary.PianoArrangeFinder = {
-            cursor: { backing: -1, sounds: -1 },
-            apply: { backing: -1, sounds: -1 },
-            request: req,
-            list: ArrangeLibrary.searchPianoPatterns({
-                req, track, isFilterPatternOnly: false
-            })
-        }
-        // リストがあれば先頭を選択した状態にする
-        if (finder.list.length > 0) {
-            finder.cursor.backing = 0;
-            finder.cursor.sounds = 0;
-
-            const { getCurTrack } = useReducerArrange(lastStore);
-            const arrTrack = getCurTrack();
-            // コード連番と参照先ライブラリの紐付け
-            const relations = arrTrack.relations;
-            const relation = relations.find(r => r.chordSeq === chord.chordSeq);
-            if (relation != undefined) {
-
-                const bkgPatt = finder.list.findIndex(f => f.bkgPatt === relation.bkgPatt);
-                const sndPatt = finder.list[bkgPatt].voics.findIndex(v => v === relation.sndsPatt);
-
-                if (bkgPatt === -1 || sndPatt === -1) throw new Error();
-                finder.apply.backing = bkgPatt;
-                finder.apply.sounds = sndPatt;
-            }
-        }
-        return finder;
     }
 
     const changeHarmonizeTrack = (nextIndex: number) => {

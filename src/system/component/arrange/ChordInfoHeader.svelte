@@ -1,10 +1,10 @@
 <script lang="ts">
   import StoreCache from "../../store/props/storeCache";
-  import useReducerArrange from "../../store/reducer/reducerArrange";
+  import ArrangeUtil from "../../store/reducer/arrangeUtil";
   import store from "../../store/store";
   import MusicTheory from "../../util/musicTheory";
 
-  $: reducer = useReducerArrange($store);
+  $: reducer = ArrangeUtil.useReducer($store);
   $: target = reducer.getArrange().target;
 </script>
 
