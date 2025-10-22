@@ -35,18 +35,17 @@ const useInputOutline = (storeUtil: StoreUtil) => {
 
     const control = (eventKey: string) => {
         const isInit = element.type === 'init';
+        const isChord = element.type === 'chord';
 
-        let isReturn = false;
         if (isArrangeFinderActive()) {
             inputFinder.control(eventKey);
-            isReturn = true;
+            return;
         }
         if (isArrangeEditorActive()) {
             inputArrange.control(eventKey);
-            isReturn = true;
+            return;
         }
-        if (isReturn) return;
-
+        if (isArrangeFinderActive() || isArrangeEditorActive()) return;
 
         if (isPreview) {
 
@@ -136,8 +135,9 @@ const useInputOutline = (storeUtil: StoreUtil) => {
             case '6':
             case '7': {
                 // if (isLock) break;
-                const element = reducerOutline.getCurrentElement();
-                if (element.type === 'chord') {
+                // const element = reducerOutline.getCurrentElement();
+                // if (element.type === 'chord') {
+                if (isChord) {
                     const chordData: StoreOutline.DataChord = { ...element.data };
                     const scaleIndex = Number(eventKey) - 1;
                     const diatonic = MusicTheory.getDiatonicDegreeChord('major', scaleIndex);
@@ -153,22 +153,23 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 commit();
             } break;
             case 'w': {
-                reducerOutline.openArrangeFinder();
-                commit();
+                if (isChord) {
+                    reducerOutline.openArrangeFinder();
+                    commit();
+                }
             } break;
             case ' ': startTest({ target: 'all' });
         }
     }
 
     const getHoldCallbacks = (eventKey: string): StoreInput.Callbacks => {
-
-        if (isArrangeEditorActive()) {
-            // console.log('arrange != null');
-            return inputArrange.getHoldCallbacks(eventKey);
-        }
         if (isArrangeFinderActive()) {
             // console.log('arrange != null');
             return inputFinder.getHoldCallbacks(eventKey);
+        }
+        if (isArrangeEditorActive()) {
+            // console.log('arrange != null');
+            return inputArrange.getHoldCallbacks(eventKey);
         }
 
         const callbacks: StoreInput.Callbacks = {};

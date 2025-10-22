@@ -336,7 +336,7 @@ namespace PreviewUtil {
                     const startMs = np.startMs;
                     // console.log(`pitch:${np.pitchName}, ms:${np.startMs}, sus:${np.sustainMs}`);
                     const key = setTimeout(() => {
-                        console.log(tp);
+                        // console.log(tp);
                         // ミリ秒をサウンドフォントの時間基準（秒）に合わせる
                         const susSec = np.sustainMs / 1000;
                         tp.sf.play(np.pitchName, 0, { gain: np.gain, duration: susSec });

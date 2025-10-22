@@ -32,6 +32,7 @@
     return (
       // control.melody.dialog == null &&
       control.mode === "harmonize" &&
+      control.outline.arrange == null &&
       $store.input.holdC &&
       element.type === "chord" &&
       (element.data as StoreOutline.DataChord).degree != undefined

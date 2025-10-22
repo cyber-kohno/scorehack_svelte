@@ -41,10 +41,8 @@ namespace ArrangeUtil {
                 req, arrTrack, isFilterPatternOnly: false
             })
         }
-        // リストがあれば先頭を選択した状態にする
+
         if (finder.list.length > 0) {
-            finder.cursor.backing = 0;
-            finder.cursor.sounds = 0;
 
             // コード連番と参照先ライブラリの紐付け
             const relations = arrTrack.relations;
@@ -55,8 +53,8 @@ namespace ArrangeUtil {
                 const sndPatt = finder.list[bkgPatt].voics.findIndex(v => v === relation.sndsPatt);
 
                 if (bkgPatt === -1 || sndPatt === -1) throw new Error();
-                finder.apply.backing = bkgPatt;
-                finder.apply.sounds = sndPatt;
+                finder.cursor.backing = finder.apply.backing = bkgPatt;
+                finder.cursor.sounds = finder.apply.sounds = sndPatt;
             }
         }
         return finder;

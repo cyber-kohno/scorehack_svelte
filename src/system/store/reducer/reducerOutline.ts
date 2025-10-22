@@ -154,7 +154,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
             const { arrange, arrTrack, chordCache } = props;
 
             const ts = lastStore.cache.baseCaches[chordCache.baseSeq].scoreBase.ts;
-            arrange.finder = ArrangeUtil.createFinder({arrTrack, ts, chordCache});
+            arrange.finder = ArrangeUtil.createFinder({ arrTrack, ts, chordCache });
         });
     }
 

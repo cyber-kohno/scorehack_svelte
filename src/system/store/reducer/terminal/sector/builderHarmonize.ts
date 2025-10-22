@@ -40,8 +40,8 @@ const useBuilderHarmonize = (lastStore: StoreProps) => {
                         table: {
                             cols: [
                                 { headerName: 'Index', width: 80, attr: 'item', isNumber: true },
-                                { headerName: 'Method', width: 100, attr: 'def' },
                                 { headerName: 'Name', width: 120, attr: 'item' },
+                                { headerName: 'Method', width: 100, attr: 'def' },
                                 { headerName: 'Soundfont', width: 220, attr: 'def' },
                                 { headerName: 'Vol', width: 70, attr: 'sentence', isNumber: true },
                                 { headerName: 'Mute', width: 80, attr: 'sentence' },
