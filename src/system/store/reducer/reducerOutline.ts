@@ -47,12 +47,6 @@ const useReducerOutline = (lastStore: StoreProps) => {
         const focus = lastStore.control.outline.focus;
         elements.splice(focus + 1, 0, element);
     };
-    const removeCurElement = () => {
-        const elements = lastStore.data.elements;
-        const focus = lastStore.control.outline.focus;
-        elements.splice(focus, 1);
-        lastStore.control.outline.focus--;
-    };
 
     const moveFocus = (val: number) => {
         const focus = lastStore.control.outline.focus;
@@ -170,6 +164,65 @@ const useReducerOutline = (lastStore: StoreProps) => {
         return lastStore.data.arrange.tracks[outline.trackIndex];
     }
 
+    const removeFocusElement = () => {
+        const { focus, focusLock } = lastStore.control.outline;
+
+        let [st, ed] = [focus, focus];
+        if (focusLock !== -1) {
+            [st, ed] = focus < focusLock ? [focus, focusLock] : [focusLock, focus];
+        }
+        console.log(`st:${st}, ed:${ed}`);
+
+        const { elementCaches } = lastStore.cache;
+
+        // 一つでもコード要素以外が含まれていたら削除できない
+        if (st !== ed) {
+            let canDelete = true;
+            for (let i = st; i <= ed; i++) {
+                if (elementCaches[i].type !== 'chord') {
+                    canDelete = false;
+                    break;
+                }
+            }
+            if (!canDelete) return;
+        }
+
+        // 削除時は逆回転する
+        for (let i = ed; i >= st; i--) {
+            console.log(i);
+            removeElementFromIndex(i);
+        }
+    };
+
+    /**
+     * 指定したインデックスの要素を削除する
+     * コードの場合は、連動してアレンジとの紐づけも解除し、
+     * コードシーケンスの調整も行う
+     * @param index 
+     */
+    const removeElementFromIndex = (index: number) => {
+        const { elementCaches } = lastStore.cache;
+        const tracks = lastStore.data.arrange.tracks;
+        const { chordSeq } = elementCaches[index];
+
+        if (chordSeq !== -1) {
+            // コード要素の場合、紐づくユニットの削
+            tracks.forEach(track => {
+                // 関連の削除
+                const delIndex = track.relations.findIndex(r => r.chordSeq === chordSeq);
+                track.relations.splice(delIndex, 1);
+                // 対象要素以降のコード連番を繰り下げ
+                track.relations.forEach(r => {
+                    if (r.chordSeq > chordSeq) r.chordSeq--;
+                });
+                // 不要なライブラリユニットの削除
+                StorePianoEditor.deleteUnreferUnit(track);
+            });
+        }
+        const elements = lastStore.data.elements;
+        elements.splice(index, 1);
+    };
+
     return {
         getCurrentElement,
         getCurrentSectionData,
@@ -178,7 +231,7 @@ const useReducerOutline = (lastStore: StoreProps) => {
         getCurrentModulateData,
         getCurrentTempoData,
         insertElement,
-        removeCurElement,
+        removeFocusElement,
         moveFocus,
         renameSectionData,
         setChordData,

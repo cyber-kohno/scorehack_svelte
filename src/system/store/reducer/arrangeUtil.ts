@@ -14,11 +14,22 @@ namespace ArrangeUtil {
         arrTrack: StoreArrange.Track
     };
 
+    /**
+     * メソッドに応じたファインダーを生成して返す
+     * @param props 
+     * @returns 
+     */
     export const createFinder = (props: FinderProps) => {
         switch (props.arrTrack.method) {
             case 'piano': return ArrangeUtil.createPianoFinder(props);
         }
     }
+
+    /**
+     * ピアノ用のファインダーを生成して返す。
+     * @param props 
+     * @returns 
+     */
     export const createPianoFinder = (props: FinderProps) => {
 
         const { ts, chordCache: chord, arrTrack } = props;
@@ -60,6 +71,11 @@ namespace ArrangeUtil {
         return finder;
     }
 
+    /**
+     * リデューサを返す。
+     * @param lastStore 
+     * @returns 
+     */
     export const useReducer = (lastStore: StoreProps) => {
 
         const getArrange = () => {

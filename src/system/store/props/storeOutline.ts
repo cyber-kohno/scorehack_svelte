@@ -6,12 +6,14 @@ namespace StoreOutline {
 
     export type Props = {
         focus: number;
+        focusLock: number;
         trackIndex: number;
         arrange: null | StoreArrange.EditorProps;
     }
 
     export const INITIAL: Props = {
         focus: 1,
+        focusLock: -1,
         trackIndex: -1,
         arrange: null
     };

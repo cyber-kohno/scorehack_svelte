@@ -94,11 +94,11 @@ const useInputOutline = (storeUtil: StoreUtil) => {
                 commit();
             } break;
             case 'Delete': {
-                const sectionCnt = lastStore.data.elements.filter(e => e.type === 'init').length;
+                const sectionCnt = lastStore.data.elements.filter(e => e.type === 'section').length;
                 const isLastSection = element.type === 'section' && sectionCnt === 1;
                 // 初期値ブロックと、最後の1つのセクションは消せない
                 if (element.type === 'init' || isLastSection) break;
-                reducerOutline.removeCurElement();
+                reducerOutline.removeFocusElement();
                 reducerCache.calculate();
                 commit();
             } break;
