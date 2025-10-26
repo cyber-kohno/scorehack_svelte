@@ -49,6 +49,17 @@ const useReducerOutline = (lastStore: StoreProps) => {
   const insertElement = (element: StoreOutline.Element) => {
     const elements = lastStore.data.elements;
     const focus = lastStore.control.outline.focus;
+    const lastChordSeq = lastStore.cache.elementCaches[focus].lastChordSeq;
+    // コード要素を追加する場合は、それ以降のコード連番を1つ後ろにズラす
+    if (element.type === "chord") {
+      const tracks = lastStore.data.arrange.tracks;
+      tracks.forEach((track) => {
+        // 対象要素以降のコード連番を繰り上げ
+        track.relations.forEach((r) => {
+          if (r.chordSeq > lastChordSeq) r.chordSeq++;
+        });
+      });
+    }
     elements.splice(focus + 1, 0, element);
   };
 
@@ -229,8 +240,8 @@ const useReducerOutline = (lastStore: StoreProps) => {
     const { chordSeq } = elementCaches[index];
 
     if (chordSeq !== -1) {
-      console.log(`chordSeq: ${chordSeq}`);
-      // コード要素の場合、紐づくユニットの削
+      // console.log(`chordSeq: ${chordSeq}`);
+      // コード要素の場合、紐づくユニットの削除
       tracks.forEach((track) => {
         // コード連番に紐づくアレンジの関連を検索
         const delIndex = track.relations.findIndex(
