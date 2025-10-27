@@ -55,6 +55,22 @@ const useInputOutline = (storeUtil: StoreUtil) => {
       return;
     }
 
+    const moveFocus = (dir: -1 | 1) => {
+      outline.focusLock = -1;
+      reducerOutline.moveFocus(dir);
+      reducerRef.adjustGridScrollXFromOutline();
+      reducerRef.adjustOutlineScroll();
+      commit();
+    };
+
+    const moveSectionFocus = (dir: -1 | 1) => {
+      outline.focusLock = -1;
+      reducerOutline.moveSectionFocus(dir);
+      reducerRef.adjustGridScrollXFromOutline();
+      reducerRef.adjustOutlineScroll();
+      commit();
+    };
+
     switch (eventKey) {
       case "a":
         {
@@ -110,41 +126,23 @@ const useInputOutline = (storeUtil: StoreUtil) => {
           if (element.type === "init" || isLastSection) break;
           reducerOutline.removeFocusElement();
           reducerCache.calculate();
+          reducerRef.adjustGridScrollXFromOutline();
+          reducerRef.adjustOutlineScroll();
           commit();
         }
         break;
 
       case "ArrowUp":
-        {
-          reducerOutline.moveFocus(-1);
-          reducerRef.adjustGridScrollXFromOutline();
-          reducerRef.adjustOutlineScroll();
-          commit();
-        }
+        moveFocus(-1);
         break;
       case "ArrowDown":
-        {
-          reducerOutline.moveFocus(1);
-          reducerRef.adjustGridScrollXFromOutline();
-          reducerRef.adjustOutlineScroll();
-          commit();
-        }
+        moveFocus(1);
         break;
       case "ArrowLeft":
-        {
-          reducerOutline.moveSectionFocus(-1);
-          reducerRef.adjustGridScrollXFromOutline();
-          reducerRef.adjustOutlineScroll();
-          commit();
-        }
+        moveSectionFocus(-1);
         break;
       case "ArrowRight":
-        {
-          reducerOutline.moveSectionFocus(1);
-          reducerRef.adjustGridScrollXFromOutline();
-          reducerRef.adjustOutlineScroll();
-          commit();
-        }
+        moveSectionFocus(1);
         break;
       case "1":
       case "2":
@@ -367,22 +365,28 @@ const useInputOutline = (storeUtil: StoreUtil) => {
     };
 
     callbacks.holdShift = () => {
+      /**
+       * 基準をロックして、範囲指定のフォーカスを移動する
+       * @param dir
+       */
+      const moveRange = (dir: -1 | 1) => {
+        // フォーカスが未ロックである場合、現在のフォーカスをロックに設定する
+        if (outline.focusLock === -1) outline.focusLock = outline.focus;
+        reducerOutline.moveFocus(dir);
+        reducerRef.adjustGridScrollXFromOutline();
+        reducerRef.adjustOutlineScroll();
+        commit();
+      };
       switch (eventKey) {
-        case "B":
-          {
-          }
+        case "ArrowUp":
+          moveRange(-1);
+          break;
+        case "ArrowDown":
+          moveRange(1);
           break;
       }
     };
 
-    callbacks.holdShift = () => {
-      switch (eventKey) {
-        case "ArrowDown":
-          {
-          }
-          break;
-      }
-    };
     return callbacks;
   };
 

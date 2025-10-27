@@ -221,10 +221,9 @@ const useReducerOutline = (lastStore: StoreProps) => {
 
     // 削除時は逆回転する
     for (let i = ed; i >= st; i--) {
-      console.log(i);
       removeElementFromIndex(i);
     }
-    outline.focus -= delCnt;
+    outline.focus = st - 1;
     outline.focusLock = -1;
   };
 
