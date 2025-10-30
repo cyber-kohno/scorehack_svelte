@@ -101,11 +101,11 @@ namespace PianoArrangePreviewUtil {
   const getDotRate = (dot: number | undefined) => {
     switch (dot) {
       case undefined:
-        return 1 * 4;
+        return 1;
       case 1:
-        return 1.5 * 4;
+        return 1.5;
       case 2:
-        return 1.75 * 4;
+        return 1.75;
     }
     throw new Error(`dotが想定していないパターンの値。[${dot}]`);
   };

@@ -28,7 +28,9 @@ namespace StoreMelody {
   };
 
   export interface Norm {
+    /** 1拍（4分音符）を1とした場合、何分割するか */
     div: number;
+    /** 基準の長さ何分割するか（連符で使用） */
     tuplets?: number;
   }
 
