@@ -138,7 +138,10 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
             }
           };
 
-          const colControl = () => {
+          /**
+           * カラムモードの制御
+           */
+          const colModeControl = () => {
             const backing = editor.backing;
             if (backing == null) throw new Error();
 
@@ -149,7 +152,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
             };
 
             const createInitialCol = (): StorePianoBacking.Col => {
-              let div = 8;
+              let div = 1;
               if (backing.cursorX >= 0) {
                 const len = layer.cols[backing.cursorX];
                 div = len.div;
@@ -167,6 +170,9 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
               col.div = div / 4;
               commit();
             };
+            /**
+             * ペダルの切り替えをする
+             */
             const pedalChange = () => {
               const index = backing.cursorX;
               if (index === -1) return;
@@ -206,7 +212,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
             const toggleDot = () => {
               if (backing.cursorX === -1) return;
               const col = cols[backing.cursorX];
-              if (col.div >= 16) return;
+              if (col.div >= 4) return;
               switch (col.dot) {
                 case undefined:
                   col.dot = 1;
@@ -490,7 +496,7 @@ const useInputPianoEditor = (storeUtil: StoreUtil) => {
               recordControl();
               break;
             case "col":
-              colControl();
+              colModeControl();
               break;
             case "notes":
               notesControl();
