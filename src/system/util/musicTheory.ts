@@ -53,7 +53,7 @@ namespace MusicTheory {
         // 3和音（トライアド）
         '', 'm', 'sus4', 'sus2', 'dim', 'aug', 'm-5',
         // 4和音（テトラド）
-        '7', 'm7', 'M7', 'mmaj7', '7sus4', 'dim7', 'aug7', '6', 'm6', 'add9',
+        '7', 'm7', 'M7', 'mmaj7', '7sus4', 'dim7', 'aug7', '6', 'm6', 'add9', 'madd9',
         // 5和音（9th系）
         '9', 'm9', 'M9',
         // 6和音（11th系）
@@ -66,7 +66,7 @@ namespace MusicTheory {
         // 3和音（トライアド）
         ['', 'm', 'sus4', 'sus2', 'dim', 'aug', 'm-5'],
         // 4和音（テトラド）
-        ['7', 'M7', 'm7', 'mmaj7', '7sus4', 'dim7', 'aug7', '6', 'm6', 'add9'],
+        ['7', 'M7', 'm7', 'mmaj7', '7sus4', 'dim7', 'aug7', '6', 'm6', 'add9', 'madd9'],
         // 5和音（9th系）
         ['9', 'm9', 'M9'],
         // 6和音（11th系）
@@ -361,6 +361,10 @@ namespace MusicTheory {
             };
             case 'add9': return {
                 structs: ['p1', 'M3', 'p5', 'M2'],
+                lower: ''
+            };
+            case 'madd9': return {
+                structs: ['p1', 'm3', 'p5', 'M2'],
                 lower: ''
             };
 

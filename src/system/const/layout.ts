@@ -17,7 +17,7 @@ namespace Layout {
   };
   export const outline = {
     HEADER_HEIGHT: 102,
-    FOOTER_HEIGHT: 20,
+    FOOTER_HEIGHT: 0,
   };
 
   export const pitch = {

@@ -172,6 +172,22 @@ const useBuilderHarmonize = (lastStore: StoreProps) => {
           }
         },
       },
+      {
+        ...defaultProps,
+        funcKey: "volume",
+        usage: "Adjust volume for the active track.",
+        args: [{ name: "value" }],
+        callback: (args) => {
+          const arg0 = logger.validateRequired(args[0], 1);
+          if (arg0 == null) return;
+          const arg0Number = logger.validateNumber(arg0, 1);
+          if (arg0Number == null) return;
+          const track = getCurrHarmonizeTrack();
+          const prev = track.volume;
+          track.volume = arg0Number;
+          logger.outputInfo(`Changed volume. [${prev} → ${arg0}]`);
+        },
+      },
     ];
   };
   return {
